@@ -2,7 +2,6 @@ package com.example.tabletennistournament.modules.players;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -33,7 +32,6 @@ import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class AddPlayerActivity extends AppCompatActivity {
@@ -107,15 +105,10 @@ public class AddPlayerActivity extends AppCompatActivity {
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, ApiRoutes.PLAYERS_ROUTE, new JSONObject(gson.toJson(newPlayer)),
                 response -> {
-                    Log.d("addPlayer", "AICI 0");
                     Intent intent = new Intent(this, PlayersActivity.class);
-                    Log.d("addPlayer", "AICI 1");
                     intent.putExtra(PLAYER_ADDED, true);
-                    Log.d("addPlayer", "AICI 2");
                     startActivity(intent);
-                    Log.d("addPlayer", "AICI 3");
                     finish();
-                    Log.d("addPlayer", "AICI 4");
                 },
                 error -> {
                     progressIndicator.hide();
@@ -133,7 +126,7 @@ public class AddPlayerActivity extends AppCompatActivity {
     private void inflateLevelDropdown() {
         AutoCompleteTextView levelDropdown = findViewById(R.id.auto_complete_text_view_add_player_level);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.list_item, Arrays.stream(Level.values()).map(Enum::name).toArray(String[]::new));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.dropdown_item, Level.getValues());
 
         levelDropdown.setAdapter(adapter);
     }
@@ -147,7 +140,7 @@ public class AddPlayerActivity extends AppCompatActivity {
             dropdownValues.add(String.valueOf(i));
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.list_item, dropdownValues);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.dropdown_item, dropdownValues);
 
         birthYearDropdown.setAdapter(adapter);
     }

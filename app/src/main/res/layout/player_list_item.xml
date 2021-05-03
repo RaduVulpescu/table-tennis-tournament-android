@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/player_level_icon"
         android:paddingStart="0dp"
-        android:paddingTop="18dp"
+        android:paddingTop="16dp"
         android:paddingEnd="16dp" />
 
     <TextView

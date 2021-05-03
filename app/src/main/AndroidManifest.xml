@@ -28,6 +28,11 @@
             android:name=".modules.players.AddPlayerActivity"
             android:label="@string/label_new_player"
             android:parentActivityName=".modules.players.PlayersActivity" />
+        <activity
+            android:name=".modules.players.PlayerProfileActivity"
+            android:label="Player Profile"
+            android:parentActivityName=".modules.players.PlayersActivity" />
+
     </application>
 
 </manifest>

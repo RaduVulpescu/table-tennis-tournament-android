@@ -28,4 +28,5 @@
     <string name="text_layout_error_required">*Required</string>
     <string name="text_layout_error_height">Between 20 and 250</string>
     <string name="text_layout_error_weight">Between 10 and 200</string>
+    <string name="player_picture">player picture</string>
 </resources>

@@ -2,7 +2,6 @@ package com.example.tabletennistournament.modules.players;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +36,6 @@ public class PlayersActivity extends AppCompatActivity {
 
     Gson gson;
     RequestQueue requestQueue;
-    TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +46,6 @@ public class PlayersActivity extends AppCompatActivity {
 
         gson = new Gson();
         requestQueue = Volley.newRequestQueue(this);
-        textView = findViewById(R.id.textView);
 
         initiatePlayersView();
     }
@@ -84,23 +81,15 @@ public class PlayersActivity extends AppCompatActivity {
 
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, ApiRoutes.PLAYERS_ROUTE, null,
                 response -> {
-                    Log.i("ceva", "aici 0");
                     List<PlayerModel> players = gson.fromJson(response.toString(), new TypeToken<List<PlayerModel>>() {
                     }.getType());
-                    Log.i("ceva", "aici 1");
                     players.sort(Comparator.comparing(PlayerModel::getName));
-                    Log.i("ceva", "aici 2");
-                    populatePlayersRecyclerView(players);
-                    Log.i("ceva", "aici 3");
+                    createPlayersRecyclerView(players);
                     progressIndicator.hide();
-                    Log.i("ceva", "aici 4");
                 },
                 error -> {
-                    if (error.networkResponse != null) {
-                        Log.e("ceva", "Status code: " + error.networkResponse.statusCode);
-                    }
-                    Log.e("ceva", "Mesaj: " + error.getMessage());
-                    textView.setText(R.string.players_fetching_error);
+                    TextView serverErrorTextView = findViewById(R.id.text_view_server_error);
+                    serverErrorTextView.setText(R.string.players_fetching_error);
                     progressIndicator.hide();
                 }
         );
@@ -108,7 +97,7 @@ public class PlayersActivity extends AppCompatActivity {
         requestQueue.add(jsonArrayRequest);
     }
 
-    private void populatePlayersRecyclerView(List<PlayerModel> players) {
+    private void createPlayersRecyclerView(List<PlayerModel> players) {
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -120,8 +109,13 @@ public class PlayersActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-                bind((PlayerListItemViewHolder) holder, position);
+            public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
+                bind((PlayerListItemViewHolder) viewHolder, position);
+
+                viewHolder.itemView.setOnClickListener(v -> {
+                    Intent intent = new Intent(PlayersActivity.this, PlayerProfileActivity.class);
+                    startActivity(intent);
+                });
             }
 
             @Override

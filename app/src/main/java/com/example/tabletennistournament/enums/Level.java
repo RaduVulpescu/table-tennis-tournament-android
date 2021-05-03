@@ -2,6 +2,8 @@ package com.example.tabletennistournament.enums;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Arrays;
+
 public enum Level {
     @SerializedName("2")
     Beginner,
@@ -10,5 +12,10 @@ public enum Level {
     @SerializedName("4")
     Advanced,
     @SerializedName("5")
-    Open
+    Open;
+
+    public static String[] getValues() {
+        return Arrays.stream(Level.values()).map(Enum::name).toArray(String[]::new);
+    }
+
 }
