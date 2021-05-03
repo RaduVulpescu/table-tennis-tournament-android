@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">TableTennisTournament</string>
+
+    <string name="activity_next_fixtures_title">Upcoming Fixtures</string>
+    <string name="activity_players_title">Players</string>
+
+    <string name="navigation_next_fixtures">Upcoming</string>
+    <string name="navigation_ranking">Ranking</string>
+    <string name="navigation_players">Players</string>
+
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+    <string name="player_avatar">player_avatar</string>
+    <string name="players_fetching_error">Something went wrong. Please try again later.</string>
+    <string name="player_add_button">player_add_button</string>
+    <string name="player_level_icon">player_level_icon</string>
+    <string name="label_new_player">New Player</string>
+    <string name="hint_add_player_name">Name*</string>
+    <string name="hint_add_player_height">Height (Optional)</string>
+    <string name="hint_add_player_weight">Weight (Optional)</string>
+    <string name="hint_add_player_city">City*</string>
+    <string name="text_input_add_player_birth_year">Birth Year (Optional)</string>
+    <string name="text_input_add_player_level">Level*</string>
+    <string name="server_error">Something went wrong. Please try again later.</string>
+    <string name="text_layout_error_required">*Required</string>
+    <string name="text_layout_error_height">Between 20 and 250</string>
+    <string name="text_layout_error_weight">Between 10 and 200</string>
+</resources>

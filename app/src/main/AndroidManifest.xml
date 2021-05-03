@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.tabletennistournament">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Ranking"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TableTennisTournament">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".modules.upcoming.NextFixturesActivity"
+            android:label="@string/activity_next_fixtures_title" />
+        <activity
+            android:name=".modules.players.PlayersActivity"
+            android:label="@string/activity_players_title" />
+        <activity
+            android:name=".modules.players.AddPlayerActivity"
+            android:label="@string/label_new_player"
+            android:parentActivityName=".modules.players.PlayersActivity" />
+    </application>
+
+</manifest>
