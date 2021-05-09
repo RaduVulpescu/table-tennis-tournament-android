@@ -13,10 +13,11 @@ public class PlayerModel {
     public Integer Weight;
 
     public Double Quality;
+    public Level CurrentLevel;
+
     public Double BestScore;
     public Integer BestRanking;
     public Double BestTop4;
-    public Level CurrentLevel;
     public Level BestLevel;
 
     public int OpenCups;

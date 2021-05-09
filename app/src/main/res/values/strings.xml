@@ -14,7 +14,7 @@
     -->
     <string name="hello_world">Hello Square World!</string>
     <string name="player_avatar">player_avatar</string>
-    <string name="players_fetching_error">Something went wrong. Please try again later.</string>
+    <string name="server_error">Something went wrong. Please try again later.</string>
     <string name="player_add_button">player_add_button</string>
     <string name="player_level_icon">player_level_icon</string>
     <string name="label_new_player">New Player</string>
@@ -24,9 +24,20 @@
     <string name="hint_add_player_city">City*</string>
     <string name="text_input_add_player_birth_year">Birth Year (Optional)</string>
     <string name="text_input_add_player_level">Level*</string>
-    <string name="server_error">Something went wrong. Please try again later.</string>
     <string name="text_layout_error_required">*Required</string>
     <string name="text_layout_error_height">Between 20 and 250</string>
     <string name="text_layout_error_weight">Between 10 and 200</string>
     <string name="player_picture">player picture</string>
+    <string name="best_ranking">Best Ranking</string>
+    <string name="best_top_4">Best Top 4</string>
+    <string name="best_score">Best Score</string>
+    <string name="best_level">Best Level</string>
+    <string name="beginner_cups">Beginner Cups</string>
+    <string name="intermediate_cups">Intermediate Cups</string>
+    <string name="advanced_cups">Advanced Cups</string>
+    <string name="open_cups">Open Cups</string>
+    <string name="beginner_seasons">Beginner Seasons</string>
+    <string name="intermediate_seasons">Intermediate Seasons</string>
+    <string name="advanced_seasons">Advanced Seasons</string>
+    <string name="open_seasons">Open Seasons</string>
 </resources>

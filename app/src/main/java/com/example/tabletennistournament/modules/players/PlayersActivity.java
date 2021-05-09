@@ -20,7 +20,6 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.tabletennistournament.MainActivity;
 import com.example.tabletennistournament.R;
-import com.example.tabletennistournament.enums.Level;
 import com.example.tabletennistournament.models.PlayerModel;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -32,10 +31,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
+import static com.example.tabletennistournament.services.Common.getPlayerLevelIcon;
+
 public class PlayersActivity extends AppCompatActivity {
 
     Gson gson;
     RequestQueue requestQueue;
+
+    public static final String EXTRA_PLAYER_ID = "EXTRA_PLAYER_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +70,7 @@ public class PlayersActivity extends AppCompatActivity {
 
     private void showPlayerAddedSnackbar() {
         Intent intent = getIntent();
-        boolean playerAdded = intent.getBooleanExtra(AddPlayerActivity.PLAYER_ADDED, false);
+        boolean playerAdded = intent.getBooleanExtra(AddPlayerActivity.EXTRA_PLAYER_ADDED, false);
 
         if (playerAdded) {
             Snackbar snackbar = Snackbar.make(findViewById(R.id.recycler_view), "Player added", Snackbar.LENGTH_LONG);
@@ -89,7 +92,7 @@ public class PlayersActivity extends AppCompatActivity {
                 },
                 error -> {
                     TextView serverErrorTextView = findViewById(R.id.text_view_server_error);
-                    serverErrorTextView.setText(R.string.players_fetching_error);
+                    serverErrorTextView.setText(R.string.server_error);
                     progressIndicator.hide();
                 }
         );
@@ -114,6 +117,7 @@ public class PlayersActivity extends AppCompatActivity {
 
                 viewHolder.itemView.setOnClickListener(v -> {
                     Intent intent = new Intent(PlayersActivity.this, PlayerProfileActivity.class);
+                    intent.putExtra(EXTRA_PLAYER_ID, players.get(position).PlayerId.toString());
                     startActivity(intent);
                 });
             }
@@ -134,29 +138,10 @@ public class PlayersActivity extends AppCompatActivity {
         recyclerView.setAdapter(playerListAdapter);
     }
 
-    private int getPlayerLevelIcon(Level level) {
-        if (level == null) {
-            return 0;
-        }
-
-        switch (level) {
-            case Beginner:
-                return R.drawable.ic_outline_looks_two_24;
-            case Intermediate:
-                return R.drawable.ic_outline_looks_3_24;
-            case Advanced:
-                return R.drawable.ic_outline_looks_4_24;
-            case Open:
-                return R.drawable.ic_outline_looks_5_24;
-            default:
-                return 0;
-        }
-    }
-
     @NonNull
     private String getQualityOrDefault(Double quality) {
         if (quality == null) {
-            return "70.70";
+            return "N/A";
         }
 
         return String.format(Locale.getDefault(), "%.2f", quality);

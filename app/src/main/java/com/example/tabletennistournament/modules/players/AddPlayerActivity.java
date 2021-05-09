@@ -36,7 +36,7 @@ import java.util.List;
 
 public class AddPlayerActivity extends AppCompatActivity {
 
-    public static final String PLAYER_ADDED = "com.example.tabletennistournament.PLAYER_ADDED";
+    public static final String EXTRA_PLAYER_ADDED = "EXTRA_PLAYER_ADDED";
 
     TextInputLayout nameTextInputLayout;
     TextInputLayout cityTextInputLayout;
@@ -106,7 +106,7 @@ public class AddPlayerActivity extends AppCompatActivity {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, ApiRoutes.PLAYERS_ROUTE, new JSONObject(gson.toJson(newPlayer)),
                 response -> {
                     Intent intent = new Intent(this, PlayersActivity.class);
-                    intent.putExtra(PLAYER_ADDED, true);
+                    intent.putExtra(EXTRA_PLAYER_ADDED, true);
                     startActivity(intent);
                     finish();
                 },
