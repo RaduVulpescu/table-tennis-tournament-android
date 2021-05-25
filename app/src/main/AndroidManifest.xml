@@ -27,7 +27,8 @@
         <activity
             android:name=".modules.players.AddPlayerActivity"
             android:label="@string/label_new_player"
-            android:parentActivityName=".modules.players.PlayersActivity" />
+            android:parentActivityName=".modules.players.PlayersActivity"
+            android:theme="@style/Theme.MaterialComponents.Light" />
         <activity
             android:name=".modules.players.PlayerProfileActivity"
             android:label="Player Profile"

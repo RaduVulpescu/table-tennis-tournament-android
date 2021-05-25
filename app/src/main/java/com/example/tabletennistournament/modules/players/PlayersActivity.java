@@ -73,7 +73,7 @@ public class PlayersActivity extends AppCompatActivity {
         boolean playerAdded = intent.getBooleanExtra(AddPlayerActivity.EXTRA_PLAYER_ADDED, false);
 
         if (playerAdded) {
-            Snackbar snackbar = Snackbar.make(findViewById(R.id.recycler_view), "Player added", Snackbar.LENGTH_LONG);
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.recycler_view_player_list), "Player added", Snackbar.LENGTH_LONG);
             snackbar.setAnchorView(findViewById(R.id.floating_action_button_add_player));
             snackbar.show();
         }
@@ -101,7 +101,7 @@ public class PlayersActivity extends AppCompatActivity {
     }
 
     private void createPlayersRecyclerView(List<PlayerModel> players) {
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view_player_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         Adapter<ViewHolder> playerListAdapter = new Adapter<ViewHolder>() {
