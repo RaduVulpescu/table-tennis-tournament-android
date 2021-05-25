@@ -12,15 +12,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.tabletennistournament.MainActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.dto.NewPlayerDTO;
 import com.example.tabletennistournament.enums.Level;
 import com.example.tabletennistournament.modules.upcoming.NextFixturesActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
+import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.example.tabletennistournament.services.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
@@ -46,19 +45,15 @@ public class AddPlayerActivity extends AppCompatActivity {
     TextInputLayout birthYearTextInputLayout;
     TextInputLayout heightTextInputLayout;
     TextInputLayout weightTextInputLayout;
-    BottomNavigationView bottomNavigationView;
 
     Gson gson;
-    RequestQueue requestQueue;
+    RequestQueueSingleton requestQueue;
     int validationErrors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_player);
-
-        bottomNavigationView = findViewById(R.id.bottom_navigation_add_player);
-        bottomNavigationView.setSelectedItemId(R.id.navigation_button_players);
 
         nameTextInputLayout = findViewById(R.id.text_layout_add_player_name);
         cityTextInputLayout = findViewById(R.id.text_layout_add_player_city);
@@ -68,7 +63,7 @@ public class AddPlayerActivity extends AppCompatActivity {
         weightTextInputLayout = findViewById(R.id.text_layout_add_player_weight);
 
         gson = new Gson();
-        requestQueue = Volley.newRequestQueue(this);
+        requestQueue = RequestQueueSingleton.getInstance(this);
         validationErrors = 0;
 
         setBottomNavigationBar();
@@ -122,11 +117,12 @@ public class AddPlayerActivity extends AppCompatActivity {
 
     @SuppressLint("NonConstantResourceId")
     private void setBottomNavigationBar() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_add_player);
         bottomNavigationView.setSelectedItemId(R.id.bottom_navigation_add_player);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
-                case R.id.navigation_button_next_fixtures: {
+                case R.id.navigation_button_upcoming: {
                     Intent intent = new Intent(this, NextFixturesActivity.class);
                     startActivity(intent);
                     return true;
@@ -139,7 +135,7 @@ public class AddPlayerActivity extends AppCompatActivity {
                 case R.id.navigation_button_players: {
                     return true;
                 }
-                default:{
+                default: {
                     return false;
                 }
             }

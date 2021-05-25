@@ -41,4 +41,8 @@
     <string name="advanced_seasons">Advanced Seasons</string>
     <string name="open_seasons">Open Seasons</string>
     <string name="reload_button">Reload</string>
+    <string name="current_season_id">CURRENT_SEASON_ID</string>
+    <string name="label_add_fixture">Add Fixture</string>
+    <string name="label_player_profile">Player Profile</string>
+    <string name="shared_preferences">SHARED_PREFERENCES</string>
 </resources>

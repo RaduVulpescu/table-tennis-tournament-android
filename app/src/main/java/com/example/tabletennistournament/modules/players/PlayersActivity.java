@@ -80,7 +80,7 @@ public class PlayersActivity extends AppCompatActivity {
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
-                case R.id.navigation_button_next_fixtures: {
+                case R.id.navigation_button_upcoming: {
                     Intent intent = new Intent(this, NextFixturesActivity.class);
                     startActivity(intent);
                     return true;

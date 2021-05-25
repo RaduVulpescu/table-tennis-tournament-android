@@ -1,7 +1,9 @@
 package com.example.tabletennistournament;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -74,7 +76,14 @@ public class MainActivity extends AppCompatActivity {
                     }.getType());
                     seasonModels.sort(Comparator.comparing(SeasonModel::getNumber).reversed());
 
-                    getSeasonPlayers(seasonModels.get(0));
+                    SeasonModel currentSeason = seasonModels.get(0);
+
+                    SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.shared_preferences), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString(getString(R.string.current_season_id), currentSeason.SeasonId.toString());
+                    editor.apply();
+
+                    getSeasonPlayers(currentSeason);
                     setMenu(seasonModels);
                     progressIndicator.hide();
                 },
@@ -94,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
-                case R.id.navigation_button_next_fixtures: {
+                case R.id.navigation_button_upcoming: {
                     Intent intent = new Intent(this, NextFixturesActivity.class);
                     startActivity(intent);
                     return true;

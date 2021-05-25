@@ -30,7 +30,6 @@ public class PlayerProfileActivity extends AppCompatActivity {
     Gson gson;
     RequestQueueSingleton requestQueue;
     String playerId;
-    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +38,6 @@ public class PlayerProfileActivity extends AppCompatActivity {
 
         gson = new Gson();
         requestQueue = RequestQueueSingleton.getInstance(this);
-        bottomNavigationView = findViewById(R.id.bottom_navigation_player_profile);
 
         setBottomNavigationBar();
 
@@ -57,11 +55,12 @@ public class PlayerProfileActivity extends AppCompatActivity {
 
     @SuppressLint("NonConstantResourceId")
     private void setBottomNavigationBar() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_player_profile);
         bottomNavigationView.setSelectedItemId(R.id.navigation_button_players);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
-                case R.id.navigation_button_next_fixtures: {
+                case R.id.navigation_button_upcoming: {
                     Intent intent = new Intent(this, NextFixturesActivity.class);
                     startActivity(intent);
                     return true;
