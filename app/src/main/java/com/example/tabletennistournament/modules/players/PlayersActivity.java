@@ -23,6 +23,7 @@ import com.example.tabletennistournament.modules.upcoming.NextFixturesActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -101,14 +102,18 @@ public class PlayersActivity extends AppCompatActivity {
 
     private void initiatePlayersView() {
         CircularProgressIndicator progressIndicator = findViewById(R.id.circular_progress_indicator);
+        FloatingActionButton addPlayerButton = findViewById(R.id.floating_action_button_add_player);
 
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, ApiRoutes.PLAYERS_ROUTE, null,
                 response -> {
                     List<PlayerModel> players = gson.fromJson(response.toString(), new TypeToken<List<PlayerModel>>() {
                     }.getType());
                     players.sort(Comparator.comparing(PlayerModel::getName));
-                    createPlayersRecyclerView(players);
+
                     progressIndicator.hide();
+                    addPlayerButton.show();
+
+                    createPlayersRecyclerView(players);
                 },
                 error -> {
                     TextView serverErrorTextView = findViewById(R.id.text_view_server_error);
