@@ -2,7 +2,6 @@ package com.example.tabletennistournament.modules.players;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -19,8 +18,10 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.example.tabletennistournament.MainActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.PlayerModel;
+import com.example.tabletennistournament.modules.upcoming.NextFixturesActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -36,6 +37,7 @@ public class PlayersActivity extends AppCompatActivity {
 
     Gson gson;
     RequestQueueSingleton requestQueue;
+    BottomNavigationView bottomNavigationView;
 
     public static final String EXTRA_PLAYER_ID = "EXTRA_PLAYER_ID";
 
@@ -48,22 +50,14 @@ public class PlayersActivity extends AppCompatActivity {
 
         gson = new Gson();
         requestQueue = RequestQueueSingleton.getInstance(this);
+        bottomNavigationView = findViewById(R.id.bottom_navigation_players);
 
+        setBottomNavigationBar();
         initiatePlayersView();
     }
 
     public void onClickAddPlayer(View view) {
         Intent intent = new Intent(this, AddPlayerActivity.class);
-        startActivity(intent);
-    }
-
-    public void navigateToUpcomingFixturesActivity(@NonNull MenuItem item) {
-        Intent intent = new Intent(this, PlayersActivity.class);
-        startActivity(intent);
-    }
-
-    public void navigateToMainActivity(@NonNull MenuItem item) {
-        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
@@ -76,6 +70,31 @@ public class PlayersActivity extends AppCompatActivity {
             snackbar.setAnchorView(findViewById(R.id.floating_action_button_add_player));
             snackbar.show();
         }
+    }
+
+    private void setBottomNavigationBar() {
+        bottomNavigationView.setSelectedItemId(R.id.navigation_button_players);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_button_next_fixtures: {
+                    Intent intent = new Intent(this, NextFixturesActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+                case R.id.navigation_button_ranking: {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+                case R.id.navigation_button_players: {
+                    return true;
+                }
+                default:{
+                    return false;
+                }
+            }
+        });
     }
 
     private void initiatePlayersView() {

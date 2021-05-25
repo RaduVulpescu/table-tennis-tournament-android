@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_main"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_ranking"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/app_bar_layout_main" />
@@ -57,7 +57,7 @@
         android:layout_height="wrap_content"
         android:text="@string/server_error"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_main"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_ranking"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_reload_main" />
@@ -67,13 +67,13 @@
         android:name="com.example.tabletennistournament.RankingFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_main"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_ranking"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/app_bar_layout_main" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation_main"
+        android:id="@+id/bottom_navigation_ranking"
         style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

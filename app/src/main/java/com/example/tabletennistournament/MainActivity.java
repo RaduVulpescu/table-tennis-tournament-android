@@ -19,6 +19,7 @@ import com.example.tabletennistournament.modules.upcoming.NextFixturesActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     MaterialToolbar topBar;
     TextView serverErrorTextView;
     Button reloadButton;
+    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
         topBar = findViewById(R.id.topAppBar_main);
         serverErrorTextView = findViewById(R.id.text_view_server_error_main);
         reloadButton = findViewById(R.id.button_reload_main);
+        bottomNavigationView = findViewById(R.id.bottom_navigation_ranking);
+
+        setBottomNavigationBar();
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -90,6 +95,31 @@ public class MainActivity extends AppCompatActivity {
         );
 
         requestQueue.add(jsonArrayRequest);
+    }
+
+    private void setBottomNavigationBar() {
+        bottomNavigationView.setSelectedItemId(R.id.navigation_button_ranking);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_button_next_fixtures: {
+                    Intent intent = new Intent(this, NextFixturesActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+                case R.id.navigation_button_ranking: {
+                    return true;
+                }
+                case R.id.navigation_button_players: {
+                    Intent intent = new Intent(this, PlayersActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+                default:{
+                    return false;
+                }
+            }
+        });
     }
 
     private void setMenu(@NonNull List<SeasonModel> seasonModels) {

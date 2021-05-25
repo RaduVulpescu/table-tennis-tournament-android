@@ -4,12 +4,11 @@
         android:id="@+id/navigation_button_next_fixtures"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_calendar_today_24"
-        android:onClick="navigateToUpcomingFixturesActivity"
         android:title="@string/navigation_next_fixtures" />
 
     <item
         android:id="@+id/navigation_button_ranking"
-        android:enabled="false"
+        android:enabled="true"
         android:icon="@drawable/trophy"
         android:title="@string/navigation_cup" />
 
@@ -17,6 +16,5 @@
         android:id="@+id/navigation_button_players"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_groups_24"
-        android:onClick="navigateToPlayersActivity"
         android:title="@string/navigation_players" />
 </menu>

@@ -178,12 +178,14 @@
     </ScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView_add_player"
+        android:id="@+id/bottom_navigation_add_player"
         style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:itemBackground="@color/purple_500"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/menu_players" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/menu_main" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

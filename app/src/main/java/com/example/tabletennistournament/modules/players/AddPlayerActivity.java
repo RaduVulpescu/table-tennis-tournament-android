@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,8 +18,10 @@ import com.example.tabletennistournament.MainActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.dto.NewPlayerDTO;
 import com.example.tabletennistournament.enums.Level;
+import com.example.tabletennistournament.modules.upcoming.NextFixturesActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.Util;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -44,6 +45,7 @@ public class AddPlayerActivity extends AppCompatActivity {
     TextInputLayout birthYearTextInputLayout;
     TextInputLayout heightTextInputLayout;
     TextInputLayout weightTextInputLayout;
+    BottomNavigationView bottomNavigationView;
 
     Gson gson;
     RequestQueue requestQueue;
@@ -53,6 +55,9 @@ public class AddPlayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_player);
+
+        bottomNavigationView = findViewById(R.id.bottom_navigation_add_player);
+        bottomNavigationView.setSelectedItemId(R.id.navigation_button_players);
 
         nameTextInputLayout = findViewById(R.id.text_layout_add_player_name);
         cityTextInputLayout = findViewById(R.id.text_layout_add_player_city);
@@ -65,6 +70,7 @@ public class AddPlayerActivity extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this);
         validationErrors = 0;
 
+        setBottomNavigationBar();
         inflateLevelDropdown();
         inflateBirthYearDropdown();
     }
@@ -73,16 +79,6 @@ public class AddPlayerActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_add_player, menu);
         return true;
-    }
-
-    public void navigateToUpcomingFixturesActivity(@NonNull MenuItem item) {
-        Intent intent = new Intent(this, PlayersActivity.class);
-        startActivity(intent);
-    }
-
-    public void navigateToMainActivity(@NonNull MenuItem item) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
     }
 
     public void onClickSavePlayer(MenuItem item) throws JSONException {
@@ -115,12 +111,37 @@ public class AddPlayerActivity extends AppCompatActivity {
                     setUserInputEnabled(true);
 
                     Snackbar snackbar = Snackbar.make(findViewById(R.id.constraint_layout_add_player), R.string.server_error, Snackbar.LENGTH_LONG);
-                    snackbar.setAnchorView(findViewById(R.id.bottomNavigationView_add_player));
+                    snackbar.setAnchorView(findViewById(R.id.bottom_navigation_add_player));
                     snackbar.show();
                 }
         );
 
         requestQueue.add(jsonObjectRequest);
+    }
+
+    private void setBottomNavigationBar() {
+        bottomNavigationView.setSelectedItemId(R.id.bottom_navigation_add_player);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_button_next_fixtures: {
+                    Intent intent = new Intent(this, NextFixturesActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+                case R.id.navigation_button_ranking: {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+                case R.id.navigation_button_players: {
+                    return true;
+                }
+                default:{
+                    return false;
+                }
+            }
+        });
     }
 
     private void inflateLevelDropdown() {

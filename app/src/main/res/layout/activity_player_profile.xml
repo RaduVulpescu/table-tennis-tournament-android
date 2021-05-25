@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView_playerProfile"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_player_profile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,7 +24,7 @@
         android:layout_marginEnd="16dp"
         android:paddingBottom="16dp"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView_playerProfile"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_player_profile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -517,7 +517,7 @@
     </ScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView_playerProfile"
+        android:id="@+id/bottom_navigation_player_profile"
         style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -525,6 +525,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/menu_players" />
+        app:menu="@menu/menu_main" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
