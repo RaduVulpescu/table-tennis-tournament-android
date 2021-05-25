@@ -15,13 +15,12 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.tabletennistournament.MainActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.PlayerModel;
 import com.example.tabletennistournament.services.ApiRoutes;
+import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -36,7 +35,7 @@ import static com.example.tabletennistournament.services.Common.getPlayerLevelIc
 public class PlayersActivity extends AppCompatActivity {
 
     Gson gson;
-    RequestQueue requestQueue;
+    RequestQueueSingleton requestQueue;
 
     public static final String EXTRA_PLAYER_ID = "EXTRA_PLAYER_ID";
 
@@ -48,7 +47,7 @@ public class PlayersActivity extends AppCompatActivity {
         showPlayerAddedSnackbar();
 
         gson = new Gson();
-        requestQueue = Volley.newRequestQueue(this);
+        requestQueue = RequestQueueSingleton.getInstance(this);
 
         initiatePlayersView();
     }

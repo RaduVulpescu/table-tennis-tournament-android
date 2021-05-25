@@ -12,13 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.tabletennistournament.MainActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.PlayerModel;
 import com.example.tabletennistournament.services.ApiRoutes;
+import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 
@@ -27,7 +26,7 @@ import static com.example.tabletennistournament.services.Common.getPlayerLevelIc
 public class PlayerProfileActivity extends AppCompatActivity {
 
     Gson gson;
-    RequestQueue requestQueue;
+    RequestQueueSingleton requestQueue;
     String playerId;
 
     @Override
@@ -36,7 +35,7 @@ public class PlayerProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_player_profile);
 
         gson = new Gson();
-        requestQueue = Volley.newRequestQueue(this);
+        requestQueue = RequestQueueSingleton.getInstance(this);
 
         Intent intent = getIntent();
         playerId = intent.getStringExtra(PlayersActivity.EXTRA_PLAYER_ID);

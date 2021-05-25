@@ -40,4 +40,5 @@
     <string name="intermediate_seasons">Intermediate Seasons</string>
     <string name="advanced_seasons">Advanced Seasons</string>
     <string name="open_seasons">Open Seasons</string>
+    <string name="reload_button">Reload</string>
 </resources>
