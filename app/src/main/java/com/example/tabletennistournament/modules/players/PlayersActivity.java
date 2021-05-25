@@ -127,10 +127,12 @@ public class PlayersActivity extends AppCompatActivity {
             }
 
             private void bind(@NonNull PlayerListItemViewHolder vh, int position) {
+                PlayerModel player = players.get(position);
+
                 vh.profilePicture.setImageResource(R.drawable.logo_avatar_anonymous_40dp);
-                vh.playerName.setText(players.get(position).Name);
-                vh.playerLevelIcon.setImageResource(getPlayerLevelIcon(players.get(position).CurrentLevel));
-                vh.playerQuality.setText(getQualityOrDefault(players.get(position).Quality));
+                vh.playerName.setText(player.Name);
+                vh.playerLevelIcon.setImageResource(getPlayerLevelIcon(player.CurrentLevel));
+                vh.playerQuality.setText(getQualityOrDefault(player.Quality));
             }
         };
 

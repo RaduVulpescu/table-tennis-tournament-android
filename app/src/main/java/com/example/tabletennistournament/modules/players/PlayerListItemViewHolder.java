@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tabletennistournament.R;
 
-class PlayerListItemViewHolder extends RecyclerView.ViewHolder {
+public class PlayerListItemViewHolder extends RecyclerView.ViewHolder {
 
     public final ImageView profilePicture;
     public final TextView playerName;
