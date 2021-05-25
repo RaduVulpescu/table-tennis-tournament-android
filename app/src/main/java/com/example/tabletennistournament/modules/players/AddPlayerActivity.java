@@ -1,5 +1,6 @@
 package com.example.tabletennistournament.modules.players;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -119,6 +120,7 @@ public class AddPlayerActivity extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void setBottomNavigationBar() {
         bottomNavigationView.setSelectedItemId(R.id.bottom_navigation_add_player);
 

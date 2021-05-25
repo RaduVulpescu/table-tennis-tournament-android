@@ -1,5 +1,6 @@
 package com.example.tabletennistournament.modules.players;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -72,6 +73,7 @@ public class PlayersActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void setBottomNavigationBar() {
         bottomNavigationView.setSelectedItemId(R.id.navigation_button_players);
 

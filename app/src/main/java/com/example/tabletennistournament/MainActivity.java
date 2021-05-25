@@ -1,5 +1,6 @@
 package com.example.tabletennistournament;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -62,16 +63,6 @@ public class MainActivity extends AppCompatActivity {
         getSeasons(null);
     }
 
-    public void navigateToUpcomingFixturesActivity(@NonNull MenuItem item) {
-        Intent intent = new Intent(this, NextFixturesActivity.class);
-        startActivity(intent);
-    }
-
-    public void navigateToPlayersActivity(@NonNull MenuItem item) {
-        Intent intent = new Intent(this, PlayersActivity.class);
-        startActivity(intent);
-    }
-
     public void getSeasons(View view) {
         reloadButton.setVisibility(View.GONE);
         serverErrorTextView.setVisibility(View.GONE);
@@ -97,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(jsonArrayRequest);
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void setBottomNavigationBar() {
         bottomNavigationView.setSelectedItemId(R.id.navigation_button_ranking);
 
