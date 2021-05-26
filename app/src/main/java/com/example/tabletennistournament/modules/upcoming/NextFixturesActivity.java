@@ -12,13 +12,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.Request;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.example.tabletennistournament.MainActivity;
 import com.example.tabletennistournament.R;
+import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.modules.players.PlayersActivity;
+import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.List;
 
 public class NextFixturesActivity extends AppCompatActivity {
 
@@ -48,7 +55,7 @@ public class NextFixturesActivity extends AppCompatActivity {
         reloadButton = findViewById(R.id.button_reload_upcoming);
 
         setBottomNavigationBar();
-        getFixtures();
+        getFixtures(null);
     }
 
     public void onClickAddFixture(View view) {
@@ -57,37 +64,37 @@ public class NextFixturesActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void getFixtures() {
+    public void getFixtures(View view) {
 
-
-//        if (seasonId == null) {
-//            seasonId = getCurrentSeasonId();
+//        if (currentSeasonId == null) {
+//            currentSeasonId = getCurrentSeasonId();
 //        }
 
         reloadButton.setVisibility(View.GONE);
         serverErrorTextView.setVisibility(View.GONE);
         progressIndicator.show();
 
-//        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, ApiRoutes.FIXTURES_ROUTE(seasonId), null,
-//                response -> {
-//                    List<FixtureModel> fixtures = gson.fromJson(response.toString(), new TypeToken<List<FixtureModel>>() {
-//                    }.getType());
-//                    //fixtures.sort(Comparator.comparing(FixtureModel::getNumber).reversed());
-//
-//                    progressIndicator.hide();
-//                },
-//                error -> {
-//                    reloadButton.setVisibility(View.VISIBLE);
-//                    serverErrorTextView.setVisibility(View.VISIBLE);
-//                    progressIndicator.hide();
-//                }
-//        );
-//
-//        requestQueue.add(jsonArrayRequest);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, ApiRoutes.FIXTURES_ROUTE(currentSeasonId), null,
+                response -> {
+                    List<FixtureModel> fixtures = gson.fromJson(response.toString(), new TypeToken<List<FixtureModel>>() {
+                    }.getType());
+                    //fixtures.sort(Comparator.comparing(FixtureModel::getNumber).reversed());
+
+                    progressIndicator.hide();
+                },
+                error -> {
+                    reloadButton.setVisibility(View.VISIBLE);
+                    serverErrorTextView.setVisibility(View.VISIBLE);
+                    progressIndicator.hide();
+                }
+        );
+
+        requestQueue.add(jsonArrayRequest);
     }
 
     @NonNull
     private String getCurrentSeasonId() {
+        // TODO: complete
         return "";
     }
 

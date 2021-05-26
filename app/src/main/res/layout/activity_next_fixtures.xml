@@ -21,6 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
+        android:onClick="getFixtures"
         android:text="@string/reload_button"
         android:visibility="invisible"
         app:icon="@drawable/ic_baseline_refresh_24"
