@@ -100,7 +100,9 @@ public class NextFixturesActivity extends AppCompatActivity {
         serverErrorTextView.setVisibility(View.GONE);
         progressIndicator.show();
 
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, ApiRoutes.FIXTURES_ROUTE(currentSeasonId), null,
+        String url = ApiRoutes.FIXTURES_ROUTE(currentSeasonId) + "?state=0";
+
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 response -> {
                     List<FixtureModel> fixtures = gson.fromJson(response.toString(), new TypeToken<List<FixtureModel>>() {
                     }.getType());
@@ -149,6 +151,10 @@ public class NextFixturesActivity extends AppCompatActivity {
                 vh.fixtureQualityAvg.setText(String.format(Locale.getDefault(), "QAvg: %.2f", fixture.QualityAverage));
 
                 inflateRecyclerViewPlayers(vh.recyclerViewPlayers, fixture.Players);
+
+                if (fixture.Players.size() == 0) {
+                    vh.expandButton.setVisibility(View.GONE);
+                }
 
                 vh.expandButton.setOnClickListener(v -> {
                     v.setVisibility(View.GONE);
