@@ -176,37 +176,56 @@ public class MainActivity extends AppCompatActivity {
 
     private void populateTabLayout(@NonNull List<FixtureModel> fixtures) {
         fixturesTabLayout.removeAllTabs();
-        fixturesTabLayout.addTab(fixturesTabLayout.newTab().setText("Ranking"));
+        fixturesTabLayout.addTab(fixturesTabLayout.newTab().setText("Ranking").setTag("Ranking"));
 
-        for (FixtureModel fixture : fixtures) {
+        for (int i = 0, fixturesSize = fixtures.size(); i < fixturesSize; i++) {
+            FixtureModel fixture = fixtures.get(i);
             TabLayout.Tab tab = fixturesTabLayout.newTab()
-                    .setText(String.format(Locale.getDefault(), "F%d", fixture.Number));
+                    .setText(String.format(Locale.getDefault(), "F%d", fixture.Number))
+                    .setTag(i);
 
             fixturesTabLayout.addTab(tab);
-            fixturesTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                @Override
-                public void onTabSelected(TabLayout.Tab tab) {
-                    if (tab.getText() == "Ranking") {
-                        displayRanking(fixture.SeasonId);
-                    }
-                }
-
-                @Override
-                public void onTabUnselected(TabLayout.Tab tab) { }
-
-                @Override
-                public void onTabReselected(TabLayout.Tab tab) { }
-            });
         }
+
+        fixturesTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                if (tab.getTag().toString().equals("Ranking")) {
+                    displayRanking(fixtures.get(0).SeasonId);
+                } else {
+                    int fixtureIndex = Integer.parseInt(tab.getTag().toString());
+                    displayFixture(fixtures.get(fixtureIndex));
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
     }
 
-    private void displayRanking(UUID seasonId) {
+    private void displayRanking(@NonNull UUID seasonId) {
         Bundle bundle = new Bundle();
         bundle.putString(RankingFragment.BUNDLE_SEASON_ID, seasonId.toString());
 
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
                 .replace(R.id.fragment_container_view_cup, RankingFragment.class, bundle)
+                .commit();
+    }
+
+    private void displayFixture(FixtureModel fixture) {
+        Bundle bundle = new Bundle();
+        bundle.putString(FixtureFragment.FIXTURE_JSON, gson.toJson(fixture));
+
+        getSupportFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.fragment_container_view_cup, FixtureFragment.class, bundle)
                 .commit();
     }
 }

@@ -42,7 +42,7 @@ public class RankingFragment extends Fragment {
     public static final String BUNDLE_SEASON_ID = "BUNDLE_SEASON_ID";
 
     public RankingFragment() {
-        super(R.layout.fragment_ranking);
+        super(R.layout.fragment_main_ranking);
     }
 
     @Override

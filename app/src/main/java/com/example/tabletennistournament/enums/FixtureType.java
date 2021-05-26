@@ -3,12 +3,9 @@ package com.example.tabletennistournament.enums;
 import com.google.gson.annotations.SerializedName;
 
 public enum FixtureType {
-    @SerializedName("0")
-    Upcoming,
-    @SerializedName("1")
-    GroupsSelection,
-    @SerializedName("2")
-    PyramidsStage,
-    @SerializedName("3")
-    Finished
+    @SerializedName("0") Normal,
+    @SerializedName("1") BeginnerFinal,
+    @SerializedName("2") IntermediateFinal,
+    @SerializedName("3") AdvancedFinal,
+    @SerializedName("4") OpenFinal
 }
