@@ -6,26 +6,42 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.example.tabletennistournament.MainActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.FixtureModel;
+import com.example.tabletennistournament.models.FixturePlayer;
+import com.example.tabletennistournament.models.PlayerModel;
 import com.example.tabletennistournament.modules.players.PlayersActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
+import static com.example.tabletennistournament.services.Common.increaseTimeout;
 
 public class NextFixturesActivity extends AppCompatActivity {
 
@@ -35,9 +51,12 @@ public class NextFixturesActivity extends AppCompatActivity {
     CircularProgressIndicator progressIndicator;
     TextView serverErrorTextView;
     Button reloadButton;
+
     String currentSeasonId;
+    List<PlayerModel> allPlayers = null;
 
     public static final String EXTRA_CURRENT_SEASON_ID = "EXTRA_CURRENT_SEASON_ID";
+    public static final String EXTRA_FIXTURE_ID = "EXTRA_FIXTURE_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +97,10 @@ public class NextFixturesActivity extends AppCompatActivity {
                 response -> {
                     List<FixtureModel> fixtures = gson.fromJson(response.toString(), new TypeToken<List<FixtureModel>>() {
                     }.getType());
-                    //fixtures.sort(Comparator.comparing(FixtureModel::getNumber).reversed());
+                    fixtures.sort(Comparator.comparing(FixtureModel::getNumber));
 
                     progressIndicator.hide();
+                    createFixturesRecyclerView(fixtures);
                 },
                 error -> {
                     reloadButton.setVisibility(View.VISIBLE);
@@ -89,7 +109,185 @@ public class NextFixturesActivity extends AppCompatActivity {
                 }
         );
 
-        requestQueue.add(jsonArrayRequest);
+        requestQueue.add(increaseTimeout(jsonArrayRequest));
+
+        getAllPlayers();
+    }
+
+    private void createFixturesRecyclerView(List<FixtureModel> fixtures) {
+        RecyclerView recyclerView = findViewById(R.id.recycler_view_upcoming_fixtures);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        RecyclerView.Adapter<RecyclerView.ViewHolder> fixturesListAdapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                return UpcomingFixtureListItemViewHolder.create(parent);
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+                bind((UpcomingFixtureListItemViewHolder) viewHolder, position);
+            }
+
+            @Override
+            public int getItemCount() {
+                return fixtures.size();
+            }
+
+            private void bind(@NonNull UpcomingFixtureListItemViewHolder vh, int position) {
+                FixtureModel fixture = fixtures.get(position);
+
+                vh.fixtureDate.setText(extractDate(fixture.Date));
+                vh.fixtureTime.setText(extractTime(fixture.Date));
+                vh.fixtureLocation.setText(extractLocation(fixture.Location));
+                vh.fixtureQualityAvg.setText(String.format(Locale.getDefault(), "QAvg: %.2f", fixture.QualityAverage));
+
+                vh.expandButton.setOnClickListener(v -> {
+                    v.setVisibility(View.GONE);
+                    vh.linearLayoutUpcomingFixturePlayers.setVisibility(View.VISIBLE);
+                    vh.collapseButton.setVisibility(View.VISIBLE);
+                });
+
+                vh.collapseButton.setOnClickListener(v -> {
+                    v.setVisibility(View.GONE);
+                    vh.linearLayoutUpcomingFixturePlayers.setVisibility(View.GONE);
+                    vh.expandButton.setVisibility(View.VISIBLE);
+                });
+
+                vh.addPlayerButton.setOnClickListener(v -> openAddPlayersDialog(vh.recyclerView, fixture.Players));
+
+                vh.startFixtureButton.setOnClickListener(v -> {
+
+                });
+
+                vh.editFixtureButton.setOnClickListener(v -> {
+                    Intent intent = new Intent(getBaseContext(), EditFixtureActivity.class);
+                    intent.putExtra(EXTRA_CURRENT_SEASON_ID, currentSeasonId);
+                    intent.putExtra(EXTRA_FIXTURE_ID, fixture.FixtureId.toString());
+                    startActivity(intent);
+                });
+
+                vh.deleteFixtureButton.setOnClickListener(v -> {
+
+                });
+            }
+        };
+
+        recyclerView.setAdapter(fixturesListAdapter);
+    }
+
+    private void openAddPlayersDialog(RecyclerView playersRecyclerView, List<FixturePlayer> fixturePlayers) {
+        String[] items = allPlayers.stream().map(x -> String.format("%s (%s)", x.Name, getValueOrNA(x.Quality))).toArray(String[]::new);
+        List<Integer> selectedPlayers = new ArrayList<>();
+
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(NextFixturesActivity.this);
+        builder.setTitle("Select players to add");
+        builder.setMultiChoiceItems(items, null, (dialog, which, isChecked) -> {
+            if (isChecked) {
+                selectedPlayers.add(which);
+            } else if (selectedPlayers.contains(which)) {
+                selectedPlayers.remove(which);
+            }
+        });
+
+        builder.setPositiveButton("Add", (dialog, which) -> handleSelectedPayers(playersRecyclerView, fixturePlayers, selectedPlayers));
+        builder.setNeutralButton("Cancel", (dialog, which) -> {
+        });
+
+        builder.show();
+    }
+
+
+    private void handleSelectedPayers(RecyclerView playersRecyclerView, List<FixturePlayer> fixturePlayers, @NonNull List<Integer> selectedPlayers) {
+        for (Integer selectedPlayerIndex : selectedPlayers) {
+            PlayerModel selectedPlayer = allPlayers.get(selectedPlayerIndex);
+            FixturePlayer newFixturePlayer = new FixturePlayer(selectedPlayer.PlayerId, selectedPlayer.Name, selectedPlayer.Quality);
+            fixturePlayers.add(newFixturePlayer);
+        }
+
+        playersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        RecyclerView.Adapter<RecyclerView.ViewHolder> fixturePlayersListAdapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                return UpcomingFixturePlayerListItemViewHolder.create(parent);
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+                bind((UpcomingFixturePlayerListItemViewHolder) viewHolder, position);
+            }
+
+            @Override
+            public int getItemCount() {
+                return fixturePlayers.size();
+            }
+
+            private void bind(@NonNull UpcomingFixturePlayerListItemViewHolder vh, int position) {
+                FixturePlayer player = fixturePlayers.get(position);
+
+                vh.playerName.setText(player.Name);
+                vh.playerQuality.setText(getValueOrNA(player.Quality));
+            }
+        };
+
+        playersRecyclerView.setAdapter(fixturePlayersListAdapter);
+    }
+
+    @NonNull
+    private String getValueOrNA(@Nullable Double quality) {
+        if (quality == null) {
+            return "N/A";
+        }
+
+        return String.valueOf(quality);
+    }
+
+    private void getAllPlayers() {
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, ApiRoutes.PLAYERS_ROUTE, null,
+                response -> {
+                    List<PlayerModel> players = gson.fromJson(response.toString(), new TypeToken<List<PlayerModel>>() {
+                    }.getType());
+                    players.sort(Comparator.comparing(PlayerModel::getName));
+
+                    allPlayers = players;
+                },
+                error -> {
+                }
+        );
+
+        requestQueue.add(increaseTimeout(jsonArrayRequest));
+    }
+
+    @NonNull
+    private String extractDate(Date date) {
+        if (date == null) {
+            return "TBA";
+        }
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM", Locale.getDefault());
+        return formatter.format(date);
+    }
+
+    @NonNull
+    private String extractTime(Date date) {
+        if (date == null) {
+            return "TBA";
+        }
+
+        return String.format(Locale.getDefault(), "%d:%d", date.getHours(), date.getMinutes());
+    }
+
+
+    @NonNull
+    private String extractLocation(String location) {
+        if (location == null) {
+            return "Location: TBA";
+        }
+
+        return String.format("Location: %s", location);
     }
 
     @NonNull

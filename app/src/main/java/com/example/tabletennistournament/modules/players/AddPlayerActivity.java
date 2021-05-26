@@ -35,6 +35,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.tabletennistournament.services.Common.increaseTimeout;
+
 public class AddPlayerActivity extends AppCompatActivity {
 
     public static final String EXTRA_PLAYER_ADDED = "EXTRA_PLAYER_ADDED";
@@ -112,7 +114,7 @@ public class AddPlayerActivity extends AppCompatActivity {
                 }
         );
 
-        requestQueue.add(jsonObjectRequest);
+        requestQueue.add(increaseTimeout(jsonObjectRequest));
     }
 
     @SuppressLint("NonConstantResourceId")

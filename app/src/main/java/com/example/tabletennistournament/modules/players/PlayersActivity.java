@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.example.tabletennistournament.services.Common.getPlayerLevelIcon;
+import static com.example.tabletennistournament.services.Common.increaseTimeout;
 
 public class PlayersActivity extends AppCompatActivity {
 
@@ -122,7 +123,7 @@ public class PlayersActivity extends AppCompatActivity {
                 }
         );
 
-        requestQueue.add(jsonArrayRequest);
+        requestQueue.add(increaseTimeout(jsonArrayRequest));
     }
 
     private void createPlayersRecyclerView(List<PlayerModel> players) {

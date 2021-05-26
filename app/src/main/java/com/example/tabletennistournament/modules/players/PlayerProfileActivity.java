@@ -24,6 +24,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 
 import static com.example.tabletennistournament.services.Common.getPlayerLevelIcon;
+import static com.example.tabletennistournament.services.Common.increaseTimeout;
 
 public class PlayerProfileActivity extends AppCompatActivity {
 
@@ -94,7 +95,7 @@ public class PlayerProfileActivity extends AppCompatActivity {
                 error -> progressIndicator.hide()
         );
 
-        requestQueue.add(jsonArrayRequest);
+        requestQueue.add(increaseTimeout(jsonArrayRequest));
     }
 
     private void populateStatsValues(@NonNull PlayerModel player) {

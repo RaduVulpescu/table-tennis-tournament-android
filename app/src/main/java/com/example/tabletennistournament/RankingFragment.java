@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.example.tabletennistournament.services.Common.getPlayerLevelIcon;
+import static com.example.tabletennistournament.services.Common.increaseTimeout;
 
 public class RankingFragment extends Fragment {
 
@@ -41,7 +42,7 @@ public class RankingFragment extends Fragment {
     public static final String BUNDLE_SEASON_ID = "BUNDLE_SEASON_ID";
 
     public RankingFragment() {
-        super(R.layout.ranking_fragment);
+        super(R.layout.fragment_ranking);
     }
 
     @Override
@@ -86,7 +87,7 @@ public class RankingFragment extends Fragment {
                 }
         );
 
-        requestQueue.add(jsonArrayRequest);
+        requestQueue.add(increaseTimeout(jsonArrayRequest));
     }
 
     private void createRankingRecyclerView(List<SeasonPlayerModel> players) {

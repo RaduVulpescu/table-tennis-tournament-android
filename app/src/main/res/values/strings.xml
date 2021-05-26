@@ -45,4 +45,5 @@
     <string name="label_add_fixture">Add Fixture</string>
     <string name="label_player_profile">Player Profile</string>
     <string name="shared_preferences">SHARED_PREFERENCES</string>
+    <string name="volley_request_timeout">30000</string>
 </resources>

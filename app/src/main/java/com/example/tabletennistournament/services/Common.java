@@ -1,5 +1,9 @@
 package com.example.tabletennistournament.services;
 
+import androidx.annotation.NonNull;
+
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.enums.Level;
 
@@ -22,6 +26,13 @@ public class Common {
             default:
                 return 0;
         }
+    }
+
+    public static Request<?> increaseTimeout(@NonNull Request<?> request) {
+        return request.setRetryPolicy(new DefaultRetryPolicy(
+                Integer.parseInt("30000"),
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 
 }

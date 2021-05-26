@@ -10,7 +10,8 @@
         android:label="Ranking"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TableTennisTournament">
+        android:theme="@style/Theme.TableTennisTournament"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
@@ -27,7 +28,10 @@
             android:name=".modules.upcoming.AddFixtureActivity"
             android:label="@string/label_add_fixture"
             android:parentActivityName=".modules.upcoming.NextFixturesActivity" />
-
+        <activity
+            android:name=".modules.upcoming.EditFixtureActivity"
+            android:label="Edit Fixture"
+            android:parentActivityName=".modules.upcoming.NextFixturesActivity" />
         <activity
             android:name=".modules.players.PlayersActivity"
             android:label="@string/activity_players_title" />

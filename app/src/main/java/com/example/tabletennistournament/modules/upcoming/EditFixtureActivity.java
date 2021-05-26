@@ -3,6 +3,7 @@ package com.example.tabletennistournament.modules.upcoming;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,11 +12,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.tabletennistournament.MainActivity;
 import com.example.tabletennistournament.R;
-import com.example.tabletennistournament.dto.NewFixtureDTO;
+import com.example.tabletennistournament.dto.PutFixtureDTO;
 import com.example.tabletennistournament.modules.players.PlayersActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
@@ -33,19 +39,18 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 import static com.example.tabletennistournament.services.Common.increaseTimeout;
 
-public class AddFixtureActivity extends AppCompatActivity {
-
-    public static final String EXTRA_FIXTURE_ADDED = "EXTRA_FIXTURE_ADDED";
+public class EditFixtureActivity extends AppCompatActivity {
 
     Gson gson;
     RequestQueueSingleton requestQueue;
-    int validationErrors;
 
     TextInputLayout locationTextInputLayout;
     TextInputLayout dateTextInputLayout;
@@ -59,15 +64,14 @@ public class AddFixtureActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_fixture);
+        setContentView(R.layout.activity_edit_fixture);
 
         gson = new Gson();
         requestQueue = RequestQueueSingleton.getInstance(this);
-        validationErrors = 0;
 
-        locationTextInputLayout = findViewById(R.id.text_layout_add_fixture_location);
-        dateTextInputLayout = findViewById(R.id.text_layout_add_fixture_date);
-        timeTextInputLayout = findViewById(R.id.text_layout_add_fixture_time);
+        locationTextInputLayout = findViewById(R.id.text_layout_edit_fixture_location);
+        dateTextInputLayout = findViewById(R.id.text_layout_edit_fixture_date);
+        timeTextInputLayout = findViewById(R.id.text_layout_edit_fixture_time);
 
         createDatePicker();
         setBottomNavigationBar();
@@ -75,8 +79,66 @@ public class AddFixtureActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_add_fixture, menu);
+        getMenuInflater().inflate(R.menu.menu_edit_fixture, menu);
         return true;
+    }
+
+    public void onClickEditFixture(MenuItem item) throws JSONException {
+
+        PutFixtureDTO putFixtureDTO = new PutFixtureDTO(
+                getFixtureLocation(),
+                getFixtureDateTime(),
+                new ArrayList<>()
+        );
+
+        LinearProgressIndicator progressIndicator = findViewById(R.id.linear_progress_indicator_edit_fixture);
+        progressIndicator.show();
+        setUserInputEnabled(false);
+
+        Intent currentIntent = getIntent();
+        String currentSeasonId = currentIntent.getStringExtra(NextFixturesActivity.EXTRA_CURRENT_SEASON_ID);
+        String fixtureId = currentIntent.getStringExtra(NextFixturesActivity.EXTRA_FIXTURE_ID);
+        final String putFixtureUrl = String.format("%s/%s", ApiRoutes.FIXTURES_ROUTE(currentSeasonId), fixtureId);
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, putFixtureUrl, new JSONObject(gson.toJson(putFixtureDTO)),
+                response -> {
+                    Intent intent = new Intent(this, NextFixturesActivity.class);
+                    startActivity(intent);
+                    finish();
+                },
+                error -> {
+                    Log.e("CEVA", gson.toJson(error));
+
+                    progressIndicator.hide();
+                    setUserInputEnabled(true);
+
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.constraint_layout_edit_fixture), R.string.server_error, Snackbar.LENGTH_LONG);
+                    snackbar.setAnchorView(findViewById(R.id.bottom_navigation_edit_fixture));
+                    snackbar.show();
+                }
+        ) {
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(@NonNull NetworkResponse response) {
+                try {
+                    String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+
+                    JSONObject result = null;
+                    if (jsonString != null && jsonString.length() > 0)
+                        result = new JSONObject(jsonString);
+
+                    return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException | JSONException e) {
+                    return Response.error(new ParseError(e));
+                }
+            }
+        };
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                Integer.parseInt(getString(R.string.volley_request_timeout)),
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        requestQueue.add(increaseTimeout(jsonObjectRequest));
     }
 
     public void showDatePicker(View view) {
@@ -101,50 +163,13 @@ public class AddFixtureActivity extends AppCompatActivity {
         timePicker.show(getSupportFragmentManager(), "MATERIAL_TIME_PICKER");
     }
 
-    public void onClickSaveFixture(MenuItem item) throws JSONException {
-        clearValidations();
-
-        NewFixtureDTO newFixture = new NewFixtureDTO(
-                getFixtureLocation(),
-                getFixtureDateTime()
-        );
-
-        if (validationErrors > 0) return;
-
-        LinearProgressIndicator progressIndicator = findViewById(R.id.linear_progress_indicator_add_fixture);
-        progressIndicator.show();
-        setUserInputEnabled(false);
-
-        Intent currentIntent = getIntent();
-        String currentSeasonId = currentIntent.getStringExtra(NextFixturesActivity.EXTRA_CURRENT_SEASON_ID);
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, ApiRoutes.FIXTURES_ROUTE(currentSeasonId), new JSONObject(gson.toJson(newFixture)),
-                response -> {
-                    Intent intent = new Intent(this, NextFixturesActivity.class);
-                    intent.putExtra(EXTRA_FIXTURE_ADDED, true);
-                    startActivity(intent);
-                    finish();
-                },
-                error -> {
-                    progressIndicator.hide();
-                    setUserInputEnabled(true);
-
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.constraint_layout_add_fixture), R.string.server_error, Snackbar.LENGTH_LONG);
-                    snackbar.setAnchorView(findViewById(R.id.bottom_navigation_add_fixture));
-                    snackbar.show();
-                }
-        );
-
-        requestQueue.add(increaseTimeout(jsonObjectRequest));
-    }
 
     @Nullable
     private String getFixtureLocation() {
-        String location = getInputTextAsString(R.id.text_input_add_fixture_location);
+        String location = getInputTextAsString(R.id.text_input_edit_fixture_location);
 
         if (Util.isNullOrEmpty(location)) {
             locationTextInputLayout.setError(getString(R.string.text_layout_error_required));
-            validationErrors++;
             return null;
         }
 
@@ -156,26 +181,16 @@ public class AddFixtureActivity extends AppCompatActivity {
         if (selectedDate == null || selectedHour == null) {
             if (selectedDate == null) {
                 dateTextInputLayout.setError(getString(R.string.text_layout_error_required));
-                validationErrors++;
             }
 
             if (selectedHour == null) {
                 timeTextInputLayout.setError(getString(R.string.text_layout_error_required));
-                validationErrors++;
             }
 
             return null;
         }
 
         return new Date(selectedDate.getYear(), selectedDate.getMonth(), selectedDate.getDay(), selectedHour, selectedMinute);
-    }
-
-    private void clearValidations() {
-        locationTextInputLayout.setError(null);
-        dateTextInputLayout.setError(null);
-        timeTextInputLayout.setError(null);
-
-        validationErrors = 0;
     }
 
     private void createDatePicker() {
@@ -211,7 +226,7 @@ public class AddFixtureActivity extends AppCompatActivity {
 
     @SuppressLint("NonConstantResourceId")
     private void setBottomNavigationBar() {
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_add_fixture);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_edit_fixture);
         bottomNavigationView.setSelectedItemId(R.id.navigation_button_upcoming);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {

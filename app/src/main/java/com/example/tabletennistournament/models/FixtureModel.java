@@ -20,5 +20,9 @@ public class FixtureModel {
     public List<FixturePlayer> Players;
 
     public FixtureModel() { }
+
+    public int getNumber() {
+        return Number;
+    }
 }
 
