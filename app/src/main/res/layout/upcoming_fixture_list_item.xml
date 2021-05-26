@@ -111,7 +111,7 @@
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <View
                     android:layout_width="wrap_content"
@@ -145,14 +145,6 @@
                 android:layout_margin="8dp"
                 android:orientation="horizontal"
                 android:visibility="visible">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button_upcoming_add_player"
-                    style="?attr/borderlessButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="Add player" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_upcoming_start"

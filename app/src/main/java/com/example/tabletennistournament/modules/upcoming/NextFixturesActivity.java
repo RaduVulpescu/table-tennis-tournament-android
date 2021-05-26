@@ -5,13 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,13 +27,11 @@ import com.example.tabletennistournament.modules.players.PlayersActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -141,6 +139,8 @@ public class NextFixturesActivity extends AppCompatActivity {
                 vh.fixtureLocation.setText(extractLocation(fixture.Location));
                 vh.fixtureQualityAvg.setText(String.format(Locale.getDefault(), "QAvg: %.2f", fixture.QualityAverage));
 
+                inflateRecyclerViewPlayers(vh.recyclerViewPlayers, fixture.Players);
+
                 vh.expandButton.setOnClickListener(v -> {
                     v.setVisibility(View.GONE);
                     vh.linearLayoutUpcomingFixturePlayers.setVisibility(View.VISIBLE);
@@ -152,8 +152,6 @@ public class NextFixturesActivity extends AppCompatActivity {
                     vh.linearLayoutUpcomingFixturePlayers.setVisibility(View.GONE);
                     vh.expandButton.setVisibility(View.VISIBLE);
                 });
-
-                vh.addPlayerButton.setOnClickListener(v -> openAddPlayersDialog(vh.recyclerView, fixture.Players));
 
                 vh.startFixtureButton.setOnClickListener(v -> {
 
@@ -175,38 +173,10 @@ public class NextFixturesActivity extends AppCompatActivity {
         recyclerView.setAdapter(fixturesListAdapter);
     }
 
-    private void openAddPlayersDialog(RecyclerView playersRecyclerView, List<FixturePlayer> fixturePlayers) {
-        String[] items = allPlayers.stream().map(x -> String.format("%s (%s)", x.Name, getValueOrNA(x.Quality))).toArray(String[]::new);
-        List<Integer> selectedPlayers = new ArrayList<>();
+    private void inflateRecyclerViewPlayers(@NonNull RecyclerView recyclerViewPlayers, @NonNull List<FixturePlayer> players) {
+        recyclerViewPlayers.setLayoutManager(new LinearLayoutManager(this));
 
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(NextFixturesActivity.this);
-        builder.setTitle("Select players to add");
-        builder.setMultiChoiceItems(items, null, (dialog, which, isChecked) -> {
-            if (isChecked) {
-                selectedPlayers.add(which);
-            } else if (selectedPlayers.contains(which)) {
-                selectedPlayers.remove(which);
-            }
-        });
-
-        builder.setPositiveButton("Add", (dialog, which) -> handleSelectedPayers(playersRecyclerView, fixturePlayers, selectedPlayers));
-        builder.setNeutralButton("Cancel", (dialog, which) -> {
-        });
-
-        builder.show();
-    }
-
-
-    private void handleSelectedPayers(RecyclerView playersRecyclerView, List<FixturePlayer> fixturePlayers, @NonNull List<Integer> selectedPlayers) {
-        for (Integer selectedPlayerIndex : selectedPlayers) {
-            PlayerModel selectedPlayer = allPlayers.get(selectedPlayerIndex);
-            FixturePlayer newFixturePlayer = new FixturePlayer(selectedPlayer.PlayerId, selectedPlayer.Name, selectedPlayer.Quality);
-            fixturePlayers.add(newFixturePlayer);
-        }
-
-        playersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        RecyclerView.Adapter<RecyclerView.ViewHolder> fixturePlayersListAdapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        RecyclerView.Adapter<RecyclerView.ViewHolder> fixturePlayerListAdapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             @NonNull
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -220,27 +190,18 @@ public class NextFixturesActivity extends AppCompatActivity {
 
             @Override
             public int getItemCount() {
-                return fixturePlayers.size();
+                return players.size();
             }
 
             private void bind(@NonNull UpcomingFixturePlayerListItemViewHolder vh, int position) {
-                FixturePlayer player = fixturePlayers.get(position);
+                FixturePlayer player = players.get(position);
 
                 vh.playerName.setText(player.Name);
-                vh.playerQuality.setText(getValueOrNA(player.Quality));
+                vh.playerQuality.setText(String.format(Locale.getDefault(), "%.2f", player.Quality));
             }
         };
 
-        playersRecyclerView.setAdapter(fixturePlayersListAdapter);
-    }
-
-    @NonNull
-    private String getValueOrNA(@Nullable Double quality) {
-        if (quality == null) {
-            return "N/A";
-        }
-
-        return String.valueOf(quality);
+        recyclerViewPlayers.setAdapter(fixturePlayerListAdapter);
     }
 
     private void getAllPlayers() {
@@ -252,8 +213,7 @@ public class NextFixturesActivity extends AppCompatActivity {
 
                     allPlayers = players;
                 },
-                error -> {
-                }
+                error -> Log.e("REQUEST-GET-PLAYERS_ROUTE", gson.toJson(error))
         );
 
         requestQueue.add(increaseTimeout(jsonArrayRequest));
@@ -275,9 +235,29 @@ public class NextFixturesActivity extends AppCompatActivity {
             return "TBA";
         }
 
-        return String.format(Locale.getDefault(), "%d:%d", date.getHours(), date.getMinutes());
+        return formatTime(date.getHours(), date.getMinutes());
     }
 
+
+    @NonNull
+    private String formatTime(int hour, int minute) {
+        String hourAsText;
+        String minuteAsText;
+
+        if (hour < 10) {
+            hourAsText = String.format(Locale.getDefault(), "0%d", hour);
+        } else {
+            hourAsText = String.valueOf(hour);
+        }
+
+        if (minute < 10) {
+            minuteAsText = String.format(Locale.getDefault(), "0%d", minute);
+        } else {
+            minuteAsText = String.valueOf(minute);
+        }
+
+        return String.format("%s:%s", hourAsText, minuteAsText);
+    }
 
     @NonNull
     private String extractLocation(String location) {

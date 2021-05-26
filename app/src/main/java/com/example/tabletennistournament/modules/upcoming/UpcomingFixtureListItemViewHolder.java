@@ -23,9 +23,8 @@ public class UpcomingFixtureListItemViewHolder extends RecyclerView.ViewHolder {
     public final Button collapseButton;
 
     public final LinearLayout linearLayoutUpcomingFixturePlayers;
-    public final RecyclerView recyclerView;
+    public final RecyclerView recyclerViewPlayers;
 
-    public final Button addPlayerButton;
     public final Button startFixtureButton;
     public final Button editFixtureButton;
     public final Button deleteFixtureButton;
@@ -41,9 +40,8 @@ public class UpcomingFixtureListItemViewHolder extends RecyclerView.ViewHolder {
         this.collapseButton = itemView.findViewById(R.id.button_upcoming_collapse);
 
         this.linearLayoutUpcomingFixturePlayers = itemView.findViewById(R.id.linear_layout_upcoming_fixture_players);
-        this.recyclerView = itemView.findViewById(R.id.recycler_view_upcoming_fixture_players);
+        this.recyclerViewPlayers = itemView.findViewById(R.id.recycler_view_upcoming_fixture_players);
 
-        this.addPlayerButton = itemView.findViewById(R.id.button_upcoming_add_player);
         this.startFixtureButton = itemView.findViewById(R.id.button_upcoming_start);
         this.editFixtureButton = itemView.findViewById(R.id.button_upcoming_edit);
         this.deleteFixtureButton = itemView.findViewById(R.id.button_upcoming_delete);

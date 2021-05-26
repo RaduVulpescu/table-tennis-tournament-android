@@ -7,21 +7,25 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.tabletennistournament.MainActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.dto.PutFixtureDTO;
+import com.example.tabletennistournament.models.FixturePlayer;
+import com.example.tabletennistournament.models.PlayerModel;
 import com.example.tabletennistournament.modules.players.PlayersActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
@@ -35,6 +39,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,7 +47,9 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import static com.example.tabletennistournament.services.Common.increaseTimeout;
@@ -56,6 +63,24 @@ public class EditFixtureActivity extends AppCompatActivity {
     TextInputLayout dateTextInputLayout;
     TextInputLayout timeTextInputLayout;
     MaterialDatePicker<Long> datePicker;
+
+    TextInputLayout player1TextInputLayout;
+    TextInputLayout player2TextInputLayout;
+    TextInputLayout player3TextInputLayout;
+    TextInputLayout player4TextInputLayout;
+    TextInputLayout player5TextInputLayout;
+    TextInputLayout player6TextInputLayout;
+    TextInputLayout player7TextInputLayout;
+    TextInputLayout player8TextInputLayout;
+
+    AutoCompleteTextView player1DropDown;
+    AutoCompleteTextView player2DropDown;
+    AutoCompleteTextView player3DropDown;
+    AutoCompleteTextView player4DropDown;
+    AutoCompleteTextView player5DropDown;
+    AutoCompleteTextView player6DropDown;
+    AutoCompleteTextView player7DropDown;
+    AutoCompleteTextView player8DropDown;
 
     Date selectedDate = null;
     Integer selectedHour = null;
@@ -73,6 +98,16 @@ public class EditFixtureActivity extends AppCompatActivity {
         dateTextInputLayout = findViewById(R.id.text_layout_edit_fixture_date);
         timeTextInputLayout = findViewById(R.id.text_layout_edit_fixture_time);
 
+        player1TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player1);
+        player2TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player2);
+        player3TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player3);
+        player4TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player4);
+        player5TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player5);
+        player6TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player6);
+        player7TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player7);
+        player8TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player8);
+
+        getAllPlayers();
         createDatePicker();
         setBottomNavigationBar();
     }
@@ -88,7 +123,7 @@ public class EditFixtureActivity extends AppCompatActivity {
         PutFixtureDTO putFixtureDTO = new PutFixtureDTO(
                 getFixtureLocation(),
                 getFixtureDateTime(),
-                new ArrayList<>()
+                getFixturePlayers()
         );
 
         LinearProgressIndicator progressIndicator = findViewById(R.id.linear_progress_indicator_edit_fixture);
@@ -131,12 +166,40 @@ public class EditFixtureActivity extends AppCompatActivity {
             }
         };
 
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                Integer.parseInt(getString(R.string.volley_request_timeout)),
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
         requestQueue.add(increaseTimeout(jsonObjectRequest));
+    }
+
+    private void inflatePlayersDropdowns(@NonNull List<PlayerModel> allPlayers) {
+        String[] items = allPlayers.stream().map(x -> String.format("%s (%s)", x.Name, getValueOrNA(x.Quality))).toArray(String[]::new);
+
+        player1DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player1);
+        player2DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player2);
+        player3DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player3);
+        player4DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player4);
+        player5DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player5);
+        player6DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player6);
+        player7DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player7);
+        player8DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player8);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.dropdown_item, items);
+
+        player1DropDown.setAdapter(adapter);
+        player2DropDown.setAdapter(adapter);
+        player3DropDown.setAdapter(adapter);
+        player4DropDown.setAdapter(adapter);
+        player5DropDown.setAdapter(adapter);
+        player6DropDown.setAdapter(adapter);
+        player7DropDown.setAdapter(adapter);
+        player8DropDown.setAdapter(adapter);
+    }
+
+    @NonNull
+    private String getValueOrNA(@Nullable Double quality) {
+        if (quality == null) {
+            return "N/A";
+        }
+
+        return String.valueOf(quality);
     }
 
     public void showDatePicker(View view) {
@@ -191,6 +254,48 @@ public class EditFixtureActivity extends AppCompatActivity {
         return new Date(selectedDate.getYear(), selectedDate.getMonth(), selectedDate.getDay(), selectedHour, selectedMinute);
     }
 
+    @NonNull
+    private List<FixturePlayer> getFixturePlayers() {
+        String player1 = getInputFromDropDown(player1DropDown);
+        String player2 = getInputFromDropDown(player2DropDown);
+        String player3 = getInputFromDropDown(player3DropDown);
+        String player4 = getInputFromDropDown(player4DropDown);
+        String player5 = getInputFromDropDown(player5DropDown);
+        String player6 = getInputFromDropDown(player6DropDown);
+        String player7 = getInputFromDropDown(player7DropDown);
+        String player8 = getInputFromDropDown(player8DropDown);
+
+        List<FixturePlayer> list = new ArrayList<>();
+        addPlayer(list, player1);
+        addPlayer(list, player2);
+        addPlayer(list, player3);
+        addPlayer(list, player4);
+        addPlayer(list, player5);
+        addPlayer(list, player6);
+        addPlayer(list, player7);
+        addPlayer(list, player8);
+
+        return list;
+    }
+
+    private void addPlayer(List<FixturePlayer> players, String player) {
+        if (player == null) {
+            return;
+        }
+
+        String[] x = player.split("\\(");
+        String name = x[0].trim();
+        String quality = x[1].split("\\)")[0];
+        double qlt;
+        try {
+            qlt = Double.parseDouble(quality);
+        } catch (Exception e) {
+            qlt = 0d;
+        }
+
+        players.add(new FixturePlayer(null, name, qlt));
+    }
+
     private void createDatePicker() {
         datePicker = MaterialDatePicker.Builder.datePicker().setTitleText("Select Fixture date").build();
 
@@ -221,6 +326,22 @@ public class EditFixtureActivity extends AppCompatActivity {
 
         return String.format("%s:%s", hourAsText, minuteAsText);
     }
+
+    private void getAllPlayers() {
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, ApiRoutes.PLAYERS_ROUTE, null,
+                response -> {
+                    List<PlayerModel> players = gson.fromJson(response.toString(), new TypeToken<List<PlayerModel>>() {
+                    }.getType());
+                    players.sort(Comparator.comparing(PlayerModel::getName));
+
+                    inflatePlayersDropdowns(players);
+                },
+                error -> Log.e("REQUEST-GET-PLAYERS_ROUTE", gson.toJson(error))
+        );
+
+        requestQueue.add(increaseTimeout(jsonArrayRequest));
+    }
+
 
     @SuppressLint("NonConstantResourceId")
     private void setBottomNavigationBar() {
@@ -253,6 +374,14 @@ public class EditFixtureActivity extends AppCompatActivity {
         locationTextInputLayout.setEnabled(enabled);
         dateTextInputLayout.setEnabled(enabled);
         timeTextInputLayout.setEnabled(enabled);
+        player1TextInputLayout.setEnabled(enabled);
+        player2TextInputLayout.setEnabled(enabled);
+        player3TextInputLayout.setEnabled(enabled);
+        player4TextInputLayout.setEnabled(enabled);
+        player5TextInputLayout.setEnabled(enabled);
+        player6TextInputLayout.setEnabled(enabled);
+        player7TextInputLayout.setEnabled(enabled);
+        player8TextInputLayout.setEnabled(enabled);
     }
 
     @Nullable
@@ -264,4 +393,14 @@ public class EditFixtureActivity extends AppCompatActivity {
         return textInputEditText.getText().toString();
     }
 
+    @Nullable
+    private String getInputFromDropDown(AutoCompleteTextView textView) {
+        String result = textView.getText().toString();
+
+        if (Util.isNullOrEmpty(result)) {
+            return null;
+        }
+
+        return result;
+    }
 }
