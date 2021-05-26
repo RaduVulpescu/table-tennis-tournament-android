@@ -13,4 +13,9 @@ public class ApiRoutes {
     public static String FIXTURES_ROUTE(@NonNull String seasonId) {
         return String.format("%s/%s/fixtures", SEASONS_ROUTE, seasonId);
     }
+
+    @NonNull
+    public static String START_FIXTURE_ROUTE(@NonNull String seasonId, @NonNull String fixtureId) {
+        return String.format("%s/%s/fixtures/%s/start", SEASONS_ROUTE, seasonId, fixtureId);
+    }
 }

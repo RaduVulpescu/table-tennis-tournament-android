@@ -16,8 +16,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.tabletennistournament.MainActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.FixtureModel;
@@ -28,9 +33,14 @@ import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
@@ -70,6 +80,7 @@ public class NextFixturesActivity extends AppCompatActivity {
         reloadButton = findViewById(R.id.button_reload_upcoming);
 
         setBottomNavigationBar();
+        getAllPlayers();
         getFixtures(null);
     }
 
@@ -106,8 +117,6 @@ public class NextFixturesActivity extends AppCompatActivity {
         );
 
         requestQueue.add(increaseTimeout(jsonArrayRequest));
-
-        getAllPlayers();
     }
 
     private void createFixturesRecyclerView(List<FixtureModel> fixtures) {
@@ -154,7 +163,8 @@ public class NextFixturesActivity extends AppCompatActivity {
                 });
 
                 vh.startFixtureButton.setOnClickListener(v -> {
-
+                    startFixture(fixture);
+                    vh.setVisibilityOnGone();
                 });
 
                 vh.editFixtureButton.setOnClickListener(v -> {
@@ -217,6 +227,37 @@ public class NextFixturesActivity extends AppCompatActivity {
         );
 
         requestQueue.add(increaseTimeout(jsonArrayRequest));
+    }
+
+    private void startFixture(@NonNull FixtureModel fixture) {
+        String url = ApiRoutes.START_FIXTURE_ROUTE(fixture.SeasonId.toString(), fixture.FixtureId.toString());
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
+                response -> {
+                },
+                error -> {
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.recycler_view_upcoming_fixtures), R.string.server_error, Snackbar.LENGTH_LONG);
+                    snackbar.setAnchorView(findViewById(R.id.bottom_navigation_upcoming));
+                    snackbar.show();
+                }
+        ) {
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(@NonNull NetworkResponse response) {
+                try {
+                    String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+
+                    JSONObject result = null;
+                    if (jsonString != null && jsonString.length() > 0)
+                        result = new JSONObject(jsonString);
+
+                    return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException | JSONException e) {
+                    return Response.error(new ParseError(e));
+                }
+            }
+        };
+
+        requestQueue.add(increaseTimeout(jsonObjectRequest));
     }
 
     @NonNull

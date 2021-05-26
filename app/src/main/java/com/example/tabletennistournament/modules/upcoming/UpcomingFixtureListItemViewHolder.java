@@ -11,8 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tabletennistournament.R;
+import com.google.android.material.card.MaterialCardView;
 
 public class UpcomingFixtureListItemViewHolder extends RecyclerView.ViewHolder {
+
+    public final MaterialCardView card;
 
     public final TextView fixtureDate;
     public final TextView fixtureTime;
@@ -31,6 +34,8 @@ public class UpcomingFixtureListItemViewHolder extends RecyclerView.ViewHolder {
 
     public UpcomingFixtureListItemViewHolder(@NonNull View view) {
         super(view);
+        this.card = itemView.findViewById(R.id.material_card_view_upcoming_fixture);
+
         this.fixtureDate = itemView.findViewById(R.id.text_view_upcoming_date);
         this.fixtureTime = itemView.findViewById(R.id.text_view_upcoming_time);
         this.fixtureLocation = itemView.findViewById(R.id.text_view_upcoming_location);
@@ -51,6 +56,10 @@ public class UpcomingFixtureListItemViewHolder extends RecyclerView.ViewHolder {
     public static UpcomingFixtureListItemViewHolder create(@NonNull ViewGroup parent) {
         return new UpcomingFixtureListItemViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.upcoming_fixture_list_item, parent, false));
+    }
+
+    public void setVisibilityOnGone() {
+        this.card.setVisibility(View.GONE);
     }
 
 }
