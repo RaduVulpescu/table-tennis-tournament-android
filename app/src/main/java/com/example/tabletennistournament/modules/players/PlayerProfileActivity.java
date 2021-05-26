@@ -85,7 +85,7 @@ public class PlayerProfileActivity extends AppCompatActivity {
         CircularProgressIndicator progressIndicator = findViewById(R.id.circular_progress_indicator_player_profile);
         ScrollView scrollView = findViewById(R.id.scroll_view_player_profile);
 
-        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, String.format("%s/%s", ApiRoutes.PLAYERS_ROUTE, playerId), null,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, String.format("%s/%s", ApiRoutes.PLAYERS_ROUTE, playerId), null,
                 response -> {
                     PlayerModel player = gson.fromJson(response.toString(), PlayerModel.class);
                     populateStatsValues(player);
@@ -95,7 +95,7 @@ public class PlayerProfileActivity extends AppCompatActivity {
                 error -> progressIndicator.hide()
         );
 
-        requestQueue.add(increaseTimeout(jsonArrayRequest));
+        requestQueue.add(increaseTimeout(jsonObjectRequest));
     }
 
     private void populateStatsValues(@NonNull PlayerModel player) {

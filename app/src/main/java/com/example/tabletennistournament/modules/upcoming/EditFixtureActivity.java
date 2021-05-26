@@ -107,8 +107,6 @@ public class EditFixtureActivity extends AppCompatActivity {
                     finish();
                 },
                 error -> {
-                    Log.e("CEVA", gson.toJson(error));
-
                     progressIndicator.hide();
                     setUserInputEnabled(true);
 

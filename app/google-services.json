@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "766449790454",
+    "project_id": "cloudhomework3-200115",
+    "storage_bucket": "cloudhomework3-200115.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:766449790454:android:9f9424e3a2246b76262bd7",
+        "android_client_info": {
+          "package_name": "com.example.tabletennistournament"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "766449790454-5krcu2na6hejf5hb3au2e46i1vmlusek.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDo_IOSDqF_uo7c-Ab6GdD8rfys6wv-y_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "766449790454-5krcu2na6hejf5hb3au2e46i1vmlusek.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -9,6 +9,8 @@ import com.example.tabletennistournament.enums.Level;
 
 public class Common {
 
+    private final static String REQUEST_TIMEOUT = "30000";
+
     public static int getPlayerLevelIcon(Level level) {
         if (level == null) {
             return 0;
@@ -30,7 +32,7 @@ public class Common {
 
     public static Request<?> increaseTimeout(@NonNull Request<?> request) {
         return request.setRetryPolicy(new DefaultRetryPolicy(
-                Integer.parseInt("30000"),
+                Integer.parseInt(REQUEST_TIMEOUT),
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }

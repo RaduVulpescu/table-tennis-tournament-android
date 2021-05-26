@@ -14,7 +14,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.example.tabletennistournament.models.SeasonModel;
@@ -119,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                     return true;
                 }
-                default:{
+                default: {
                     return false;
                 }
             }
