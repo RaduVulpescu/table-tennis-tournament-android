@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                     }.getType());
                     fixtures.sort(Comparator.comparing(FixtureModel::getNumber).reversed());
 
-                    populateTabLayout(fixtures);
+                    populateTabLayout(seasonId, fixtures);
                     progressIndicator.hide();
                 },
                 error -> {
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(increaseTimeout(jsonArrayRequest));
     }
 
-    private void populateTabLayout(@NonNull List<FixtureModel> fixtures) {
+    private void populateTabLayout(String seasonId, @NonNull List<FixtureModel> fixtures) {
         fixturesTabLayout.removeAllTabs();
         fixturesTabLayout.addTab(fixturesTabLayout.newTab().setText("Ranking").setTag("Ranking"));
 
