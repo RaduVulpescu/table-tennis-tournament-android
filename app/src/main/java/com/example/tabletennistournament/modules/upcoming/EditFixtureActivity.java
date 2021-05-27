@@ -24,6 +24,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.tabletennistournament.MainActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.dto.PutFixtureDTO;
+import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.models.PlayerModel;
 import com.example.tabletennistournament.modules.players.PlayersActivity;
@@ -86,6 +87,9 @@ public class EditFixtureActivity extends AppCompatActivity {
     Integer selectedHour = null;
     Integer selectedMinute = null;
 
+    FixtureModel fixtureModel;
+    Intent currentIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,6 +111,11 @@ public class EditFixtureActivity extends AppCompatActivity {
         player7TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player7);
         player8TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player8);
 
+        currentIntent = getIntent();
+        String fixtureJson = currentIntent.getStringExtra(NextFixturesActivity.EXTRA_FIXTURE_JSON);
+        fixtureModel = gson.fromJson(fixtureJson, FixtureModel.class);
+
+        populateFields();
         getAllPlayers();
         createDatePicker();
         setBottomNavigationBar();
@@ -116,6 +125,10 @@ public class EditFixtureActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_edit_fixture, menu);
         return true;
+    }
+
+    private void populateFields() {
+        locationTextInputLayout.getEditText().setText(fixtureModel.Location);
     }
 
     public void onClickEditFixture(MenuItem item) throws JSONException {
@@ -130,11 +143,10 @@ public class EditFixtureActivity extends AppCompatActivity {
         progressIndicator.show();
         setUserInputEnabled(false);
 
-        Intent currentIntent = getIntent();
         String currentSeasonId = currentIntent.getStringExtra(NextFixturesActivity.EXTRA_CURRENT_SEASON_ID);
         String fixtureId = currentIntent.getStringExtra(NextFixturesActivity.EXTRA_FIXTURE_ID);
-        final String putFixtureUrl = String.format("%s/%s", ApiRoutes.FIXTURES_ROUTE(currentSeasonId), fixtureId);
 
+        final String putFixtureUrl = String.format("%s/%s", ApiRoutes.FIXTURES_ROUTE(currentSeasonId), fixtureId);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, putFixtureUrl, new JSONObject(gson.toJson(putFixtureDTO)),
                 response -> {
                     Intent intent = new Intent(this, NextFixturesActivity.class);

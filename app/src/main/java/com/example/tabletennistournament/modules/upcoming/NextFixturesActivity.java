@@ -63,6 +63,7 @@ public class NextFixturesActivity extends AppCompatActivity {
 
     public static final String EXTRA_CURRENT_SEASON_ID = "EXTRA_CURRENT_SEASON_ID";
     public static final String EXTRA_FIXTURE_ID = "EXTRA_FIXTURE_ID";
+    public static final String EXTRA_FIXTURE_JSON = "EXTRA_FIXTURE_JSON";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,14 +170,15 @@ public class NextFixturesActivity extends AppCompatActivity {
                 });
 
                 vh.startFixtureButton.setOnClickListener(v -> {
-                    startFixture(fixture);
-                    vh.setVisibilityOnGone();
+                    startFixture(vh, fixture);
                 });
 
                 vh.editFixtureButton.setOnClickListener(v -> {
                     Intent intent = new Intent(getBaseContext(), EditFixtureActivity.class);
                     intent.putExtra(EXTRA_CURRENT_SEASON_ID, currentSeasonId);
                     intent.putExtra(EXTRA_FIXTURE_ID, fixture.FixtureId.toString());
+                    intent.putExtra(EXTRA_FIXTURE_JSON, gson.toJson(fixture));
+
                     startActivity(intent);
                 });
 
@@ -213,7 +215,7 @@ public class NextFixturesActivity extends AppCompatActivity {
                 FixturePlayer player = players.get(position);
 
                 vh.playerName.setText(player.Name);
-                vh.playerQuality.setText(String.format(Locale.getDefault(), "%.2f", player.Quality));
+                vh.playerQuality.setText(String.format(Locale.getDefault(), "Q: %.2f", player.Quality));
             }
         };
 
@@ -235,11 +237,16 @@ public class NextFixturesActivity extends AppCompatActivity {
         requestQueue.add(increaseTimeout(jsonArrayRequest));
     }
 
-    private void startFixture(@NonNull FixtureModel fixture) {
+    private void startFixture(UpcomingFixtureListItemViewHolder vh, @NonNull FixtureModel fixture) {
         String url = ApiRoutes.START_FIXTURE_ROUTE(fixture.SeasonId.toString(), fixture.FixtureId.toString());
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
                 response -> {
+                    vh.setVisibilityOnGone();
+
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.recycler_view_upcoming_fixtures), "Fixture started!", Snackbar.LENGTH_LONG);
+                    snackbar.setAnchorView(findViewById(R.id.bottom_navigation_upcoming));
+                    snackbar.show();
                 },
                 error -> {
                     Snackbar snackbar = Snackbar.make(findViewById(R.id.recycler_view_upcoming_fixtures), R.string.server_error, Snackbar.LENGTH_LONG);
