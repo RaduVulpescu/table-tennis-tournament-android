@@ -1,1 +1,10 @@
-{}
+{
+  "auth": {
+    "tttandroid6e410087": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  }
+}

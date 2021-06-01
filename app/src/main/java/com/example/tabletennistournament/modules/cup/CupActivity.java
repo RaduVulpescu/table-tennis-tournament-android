@@ -1,4 +1,4 @@
-package com.example.tabletennistournament;
+package com.example.tabletennistournament.modules.cup;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.SeasonModel;
 import com.example.tabletennistournament.modules.players.PlayersActivity;
@@ -36,7 +37,7 @@ import java.util.UUID;
 
 import static com.example.tabletennistournament.services.Common.increaseTimeout;
 
-public class MainActivity extends AppCompatActivity {
+public class CupActivity extends AppCompatActivity {
 
     Gson gson;
     RequestQueueSingleton requestQueue;

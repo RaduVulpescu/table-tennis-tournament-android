@@ -1,4 +1,4 @@
-package com.example.tabletennistournament;
+package com.example.tabletennistournament.modules.cup;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.tabletennistournament.R;
 
 public class RankingItemViewHolder extends RecyclerView.ViewHolder {
 

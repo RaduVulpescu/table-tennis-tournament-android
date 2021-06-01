@@ -1,4 +1,4 @@
-package com.example.tabletennistournament;
+package com.example.tabletennistournament.modules.cup;
 
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.SeasonPlayerModel;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.RequestQueueSingleton;

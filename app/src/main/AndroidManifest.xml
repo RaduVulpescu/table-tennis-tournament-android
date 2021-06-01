@@ -3,24 +3,34 @@
     package="com.example.tabletennistournament">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".services.TTTAmplify"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="Ranking"
+        android:label="Table Tennis Tournament"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TableTennisTournament"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".MainActivity"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+            android:name=".ui.login.LoginActivity"
+            android:label="@string/title_activity_login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".modules.cup.CupActivity"
+            android:label="@string/activity_label_ranking"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
         <activity
             android:name=".modules.upcoming.NextFixturesActivity"
             android:label="@string/activity_next_fixtures_title" />
@@ -30,7 +40,7 @@
             android:parentActivityName=".modules.upcoming.NextFixturesActivity" />
         <activity
             android:name=".modules.upcoming.EditFixtureActivity"
-            android:label="Edit Fixture"
+            android:label="@string/activity_label_edit_fixture"
             android:parentActivityName=".modules.upcoming.NextFixturesActivity" />
         <activity
             android:name=".modules.players.PlayersActivity"
@@ -43,8 +53,9 @@
             android:name=".modules.players.PlayerProfileActivity"
             android:label="@string/label_player_profile"
             android:parentActivityName=".modules.players.PlayersActivity" />
+
         <service
-            android:name=".TTTMessagingService"
+            android:name=".services.TTTMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

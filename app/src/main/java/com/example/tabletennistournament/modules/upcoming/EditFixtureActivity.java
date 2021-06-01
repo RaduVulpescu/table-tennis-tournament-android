@@ -21,7 +21,7 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.tabletennistournament.MainActivity;
+import com.example.tabletennistournament.modules.cup.CupActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.dto.PutFixtureDTO;
 import com.example.tabletennistournament.models.FixtureModel;
@@ -366,7 +366,7 @@ public class EditFixtureActivity extends AppCompatActivity {
                     return true;
                 }
                 case R.id.navigation_button_ranking: {
-                    Intent intent = new Intent(this, MainActivity.class);
+                    Intent intent = new Intent(this, CupActivity.class);
                     startActivity(intent);
                     return true;
                 }

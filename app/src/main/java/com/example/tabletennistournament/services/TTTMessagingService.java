@@ -1,4 +1,4 @@
-package com.example.tabletennistournament;
+package com.example.tabletennistournament.services;
 
 import android.util.Log;
 

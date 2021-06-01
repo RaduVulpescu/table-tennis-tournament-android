@@ -46,4 +46,15 @@
     <string name="label_player_profile">Player Profile</string>
     <string name="shared_preferences">SHARED_PREFERENCES</string>
     <string name="volley_request_timeout">30000</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >=8 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="activity_label_edit_fixture">Edit Fixture</string>
+    <string name="activity_label_ranking">Ranking</string>
 </resources>

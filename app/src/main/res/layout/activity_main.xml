@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".modules.cup.CupActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout_main"
@@ -74,7 +74,6 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container_view_cup"
-        android:name="com.example.tabletennistournament.RankingFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_ranking"

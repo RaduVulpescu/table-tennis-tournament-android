@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.example.tabletennistournament.MainActivity;
+import com.example.tabletennistournament.modules.cup.CupActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.PlayerModel;
 import com.example.tabletennistournament.modules.upcoming.NextFixturesActivity;
@@ -87,7 +87,7 @@ public class PlayersActivity extends AppCompatActivity {
                     return true;
                 }
                 case R.id.navigation_button_ranking: {
-                    Intent intent = new Intent(this, MainActivity.class);
+                    Intent intent = new Intent(this, CupActivity.class);
                     startActivity(intent);
                     return true;
                 }

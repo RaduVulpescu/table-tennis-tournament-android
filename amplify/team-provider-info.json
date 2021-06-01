@@ -10,6 +10,11 @@
       "StackName": "amplify-tttandroid-dev-131255",
       "StackId": "arn:aws:cloudformation:eu-west-1:623072768925:stack/amplify-tttandroid-dev-131255/f311f890-c2c1-11eb-9a40-02d2dcfa6bf9",
       "AmplifyAppId": "d3hsde0qolhwa0"
+    },
+    "categories": {
+      "auth": {
+        "tttandroid6e410087": {}
+      }
     }
   }
 }
