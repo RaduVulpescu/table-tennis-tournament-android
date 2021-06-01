@@ -7,12 +7,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -21,12 +24,12 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.tabletennistournament.modules.cup.CupActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.dto.PutFixtureDTO;
 import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.models.PlayerModel;
+import com.example.tabletennistournament.modules.cup.CupActivity;
 import com.example.tabletennistournament.modules.players.PlayersActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
@@ -52,6 +55,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import static com.example.tabletennistournament.services.Common.increaseTimeout;
 
@@ -63,25 +67,8 @@ public class EditFixtureActivity extends AppCompatActivity {
     TextInputLayout locationTextInputLayout;
     TextInputLayout dateTextInputLayout;
     TextInputLayout timeTextInputLayout;
+    RecyclerView playersRecyclerView;
     MaterialDatePicker<Long> datePicker;
-
-    TextInputLayout player1TextInputLayout;
-    TextInputLayout player2TextInputLayout;
-    TextInputLayout player3TextInputLayout;
-    TextInputLayout player4TextInputLayout;
-    TextInputLayout player5TextInputLayout;
-    TextInputLayout player6TextInputLayout;
-    TextInputLayout player7TextInputLayout;
-    TextInputLayout player8TextInputLayout;
-
-    AutoCompleteTextView player1DropDown;
-    AutoCompleteTextView player2DropDown;
-    AutoCompleteTextView player3DropDown;
-    AutoCompleteTextView player4DropDown;
-    AutoCompleteTextView player5DropDown;
-    AutoCompleteTextView player6DropDown;
-    AutoCompleteTextView player7DropDown;
-    AutoCompleteTextView player8DropDown;
 
     Date selectedDate = null;
     Integer selectedHour = null;
@@ -89,6 +76,9 @@ public class EditFixtureActivity extends AppCompatActivity {
 
     FixtureModel fixtureModel;
     Intent currentIntent;
+
+    List<PlayerModel> allPlayers = null;
+    List<FixturePlayer> fixturePlayers = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,22 +90,15 @@ public class EditFixtureActivity extends AppCompatActivity {
 
         locationTextInputLayout = findViewById(R.id.text_layout_edit_fixture_location);
         dateTextInputLayout = findViewById(R.id.text_layout_edit_fixture_date);
+        playersRecyclerView = findViewById(R.id.recycler_view_edit_fixture_players);
+        playersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         timeTextInputLayout = findViewById(R.id.text_layout_edit_fixture_time);
-
-        player1TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player1);
-        player2TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player2);
-        player3TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player3);
-        player4TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player4);
-        player5TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player5);
-        player6TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player6);
-        player7TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player7);
-        player8TextInputLayout = findViewById(R.id.text_input_upcoming_edit_fixture_player8);
 
         currentIntent = getIntent();
         String fixtureJson = currentIntent.getStringExtra(NextFixturesActivity.EXTRA_FIXTURE_JSON);
         fixtureModel = gson.fromJson(fixtureJson, FixtureModel.class);
+        fixturePlayers = new ArrayList<>();
 
-        populateFields();
         getAllPlayers();
         createDatePicker();
         setBottomNavigationBar();
@@ -129,6 +112,9 @@ public class EditFixtureActivity extends AppCompatActivity {
 
     private void populateFields() {
         locationTextInputLayout.getEditText().setText(fixtureModel.Location);
+
+        fixturePlayers = fixtureModel.Players;
+        inflatePlayersRecyclerView();
     }
 
     public void onClickEditFixture(MenuItem item) throws JSONException {
@@ -136,7 +122,7 @@ public class EditFixtureActivity extends AppCompatActivity {
         PutFixtureDTO putFixtureDTO = new PutFixtureDTO(
                 getFixtureLocation(),
                 getFixtureDateTime(),
-                getFixturePlayers()
+                null
         );
 
         LinearProgressIndicator progressIndicator = findViewById(R.id.linear_progress_indicator_edit_fixture);
@@ -144,9 +130,8 @@ public class EditFixtureActivity extends AppCompatActivity {
         setUserInputEnabled(false);
 
         String currentSeasonId = currentIntent.getStringExtra(NextFixturesActivity.EXTRA_CURRENT_SEASON_ID);
-        String fixtureId = currentIntent.getStringExtra(NextFixturesActivity.EXTRA_FIXTURE_ID);
 
-        final String putFixtureUrl = String.format("%s/%s", ApiRoutes.FIXTURES_ROUTE(currentSeasonId), fixtureId);
+        final String putFixtureUrl = String.format("%s/%s", ApiRoutes.FIXTURES_ROUTE(currentSeasonId), fixtureModel.FixtureId);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, putFixtureUrl, new JSONObject(gson.toJson(putFixtureDTO)),
                 response -> {
                     Intent intent = new Intent(this, NextFixturesActivity.class);
@@ -181,28 +166,45 @@ public class EditFixtureActivity extends AppCompatActivity {
         requestQueue.add(increaseTimeout(jsonObjectRequest));
     }
 
-    private void inflatePlayersDropdowns(@NonNull List<PlayerModel> allPlayers) {
-        String[] items = allPlayers.stream().map(x -> String.format("%s (%s)", x.Name, getValueOrNA(x.Quality))).toArray(String[]::new);
+    public void onAddPlayer(View view) {
+        fixturePlayers.add(new FixturePlayer(null, "", null));
+        inflatePlayersRecyclerView();
+    }
 
-        player1DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player1);
-        player2DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player2);
-        player3DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player3);
-        player4DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player4);
-        player5DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player5);
-        player6DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player6);
-        player7DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player7);
-        player8DropDown = findViewById(R.id.auto_complete_text_view_edit_fixture_player8);
+    private void inflatePlayersRecyclerView() {
+        List<String> fixturePlayersNames = fixturePlayers.stream().map(fp -> fp.Name).collect(Collectors.toList());
+        List<PlayerModel> remainingPlayers = allPlayers.stream().filter(x -> !fixturePlayersNames.contains(x.getName())).collect(Collectors.toList());
 
+        String[] items = remainingPlayers.stream().map(x -> String.format("%s (%s)", x.Name, getValueOrNA(x.Quality))).toArray(String[]::new);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.dropdown_item, items);
 
-        player1DropDown.setAdapter(adapter);
-        player2DropDown.setAdapter(adapter);
-        player3DropDown.setAdapter(adapter);
-        player4DropDown.setAdapter(adapter);
-        player5DropDown.setAdapter(adapter);
-        player6DropDown.setAdapter(adapter);
-        player7DropDown.setAdapter(adapter);
-        player8DropDown.setAdapter(adapter);
+        RecyclerView.Adapter<RecyclerView.ViewHolder> playerListAdapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                return EditFixturePlayerListItemViewHolder.create(parent);
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+                bind((EditFixturePlayerListItemViewHolder) viewHolder, position);
+            }
+
+            @Override
+            public int getItemCount() {
+                return fixturePlayers.size();
+            }
+
+            private void bind(@NonNull EditFixturePlayerListItemViewHolder vh, int position) {
+                FixturePlayer player = fixturePlayers.get(position);
+
+                vh.autoCompleteTextViewPlayer.setText(player.PlayerId != null ? String.format("%s (%s)", player.Name, getValueOrNA(player.Quality)) : "");
+                vh.autoCompleteTextViewPlayer.setTag(player.PlayerId);
+                vh.autoCompleteTextViewPlayer.setAdapter(adapter);
+            }
+        };
+
+        playersRecyclerView.setAdapter(playerListAdapter);
     }
 
     @NonNull
@@ -266,48 +268,6 @@ public class EditFixtureActivity extends AppCompatActivity {
         return new Date(selectedDate.getYear(), selectedDate.getMonth(), selectedDate.getDay(), selectedHour, selectedMinute);
     }
 
-    @NonNull
-    private List<FixturePlayer> getFixturePlayers() {
-        String player1 = getInputFromDropDown(player1DropDown);
-        String player2 = getInputFromDropDown(player2DropDown);
-        String player3 = getInputFromDropDown(player3DropDown);
-        String player4 = getInputFromDropDown(player4DropDown);
-        String player5 = getInputFromDropDown(player5DropDown);
-        String player6 = getInputFromDropDown(player6DropDown);
-        String player7 = getInputFromDropDown(player7DropDown);
-        String player8 = getInputFromDropDown(player8DropDown);
-
-        List<FixturePlayer> list = new ArrayList<>();
-        addPlayer(list, player1);
-        addPlayer(list, player2);
-        addPlayer(list, player3);
-        addPlayer(list, player4);
-        addPlayer(list, player5);
-        addPlayer(list, player6);
-        addPlayer(list, player7);
-        addPlayer(list, player8);
-
-        return list;
-    }
-
-    private void addPlayer(List<FixturePlayer> players, String player) {
-        if (player == null) {
-            return;
-        }
-
-        String[] x = player.split("\\(");
-        String name = x[0].trim();
-        String quality = x[1].split("\\)")[0];
-        double qlt;
-        try {
-            qlt = Double.parseDouble(quality);
-        } catch (Exception e) {
-            qlt = 0d;
-        }
-
-        players.add(new FixturePlayer(null, name, qlt));
-    }
-
     private void createDatePicker() {
         datePicker = MaterialDatePicker.Builder.datePicker().setTitleText("Select Fixture date").build();
 
@@ -345,8 +305,8 @@ public class EditFixtureActivity extends AppCompatActivity {
                     List<PlayerModel> players = gson.fromJson(response.toString(), new TypeToken<List<PlayerModel>>() {
                     }.getType());
                     players.sort(Comparator.comparing(PlayerModel::getName));
-
-                    inflatePlayersDropdowns(players);
+                    allPlayers = players;
+                    populateFields();
                 },
                 error -> Log.e("REQUEST-GET-PLAYERS_ROUTE", gson.toJson(error))
         );
@@ -386,14 +346,6 @@ public class EditFixtureActivity extends AppCompatActivity {
         locationTextInputLayout.setEnabled(enabled);
         dateTextInputLayout.setEnabled(enabled);
         timeTextInputLayout.setEnabled(enabled);
-        player1TextInputLayout.setEnabled(enabled);
-        player2TextInputLayout.setEnabled(enabled);
-        player3TextInputLayout.setEnabled(enabled);
-        player4TextInputLayout.setEnabled(enabled);
-        player5TextInputLayout.setEnabled(enabled);
-        player6TextInputLayout.setEnabled(enabled);
-        player7TextInputLayout.setEnabled(enabled);
-        player8TextInputLayout.setEnabled(enabled);
     }
 
     @Nullable

@@ -62,10 +62,8 @@ public class NextFixturesActivity extends AppCompatActivity {
     Button reloadButton;
 
     String currentSeasonId;
-    List<PlayerModel> allPlayers = null;
 
     public static final String EXTRA_CURRENT_SEASON_ID = "EXTRA_CURRENT_SEASON_ID";
-    public static final String EXTRA_FIXTURE_ID = "EXTRA_FIXTURE_ID";
     public static final String EXTRA_FIXTURE_JSON = "EXTRA_FIXTURE_JSON";
 
     @Override
@@ -85,7 +83,6 @@ public class NextFixturesActivity extends AppCompatActivity {
         reloadButton = findViewById(R.id.button_reload_upcoming);
 
         setBottomNavigationBar();
-        getAllPlayers();
         getFixtures(null);
     }
 
@@ -96,10 +93,6 @@ public class NextFixturesActivity extends AppCompatActivity {
     }
 
     public void getFixtures(View view) {
-
-//        if (currentSeasonId == null) {
-//            currentSeasonId = getCurrentSeasonId();
-//        }
 
         FloatingActionButton addFixtureButton = findViewById(R.id.floating_action_button_add_fixture);
         reloadButton.setVisibility(View.GONE);
@@ -161,6 +154,7 @@ public class NextFixturesActivity extends AppCompatActivity {
                 vh.fixtureLocation.setText(extractLocation(fixture.Location));
                 vh.fixtureQualityAvg.setText(String.format(Locale.getDefault(), "QAvg: %.2f", fixture.QualityAverage));
 
+                fixture.Players.sort(Comparator.comparing(FixturePlayer::getQuality).reversed());
                 inflateRecyclerViewPlayers(vh.recyclerViewPlayers, fixture.Players);
 
                 if (fixture.Players.size() == 0) {
@@ -183,14 +177,11 @@ public class NextFixturesActivity extends AppCompatActivity {
                     vh.upcomingButtonsDelimiter.setVisibility(View.VISIBLE);
                     vh.upcomingButtonsLinearLayout.setVisibility(View.VISIBLE);
 
-                    vh.startFixtureButton.setOnClickListener(v -> {
-                        startFixture(vh, fixture);
-                    });
+                    vh.startFixtureButton.setOnClickListener(v -> startFixture(vh, fixture));
 
                     vh.editFixtureButton.setOnClickListener(v -> {
                         Intent intent = new Intent(getBaseContext(), EditFixtureActivity.class);
                         intent.putExtra(EXTRA_CURRENT_SEASON_ID, currentSeasonId);
-                        intent.putExtra(EXTRA_FIXTURE_ID, fixture.FixtureId.toString());
                         intent.putExtra(EXTRA_FIXTURE_JSON, gson.toJson(fixture));
 
                         startActivity(intent);
@@ -235,21 +226,6 @@ public class NextFixturesActivity extends AppCompatActivity {
         };
 
         recyclerViewPlayers.setAdapter(fixturePlayerListAdapter);
-    }
-
-    private void getAllPlayers() {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, ApiRoutes.PLAYERS_ROUTE, null,
-                response -> {
-                    List<PlayerModel> players = gson.fromJson(response.toString(), new TypeToken<List<PlayerModel>>() {
-                    }.getType());
-                    players.sort(Comparator.comparing(PlayerModel::getName));
-
-                    allPlayers = players;
-                },
-                error -> Log.e("REQUEST-GET-PLAYERS_ROUTE", gson.toJson(error))
-        );
-
-        requestQueue.add(increaseTimeout(jsonArrayRequest));
     }
 
     private void startFixture(UpcomingFixtureListItemViewHolder vh, @NonNull FixtureModel fixture) {
@@ -335,12 +311,6 @@ public class NextFixturesActivity extends AppCompatActivity {
         }
 
         return String.format("Location: %s", location);
-    }
-
-    @NonNull
-    private String getCurrentSeasonId() {
-        // TODO: complete
-        return "";
     }
 
     @SuppressLint("NonConstantResourceId")

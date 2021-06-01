@@ -73,7 +73,7 @@
         style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:itemBackground="@color/purple_500"
+        app:itemBackground="@color/design_default_color_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/menu_cup" />
 

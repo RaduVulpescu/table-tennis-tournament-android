@@ -14,4 +14,8 @@ public class FixturePlayer {
         Name = name;
         Quality = quality;
     }
+
+    public Double getQuality() {
+        return Quality;
+    }
 }

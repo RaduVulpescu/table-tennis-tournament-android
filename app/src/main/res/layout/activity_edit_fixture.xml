@@ -5,7 +5,7 @@
     android:id="@+id/constraint_layout_edit_fixture"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".modules.upcoming.AddFixtureActivity">
+    tools:context=".modules.upcoming.EditFixtureActivity">
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/linear_progress_indicator_edit_fixture"
@@ -18,17 +18,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_edit_fixture"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation_edit_fixture"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/text_layout_edit_fixture_location"
@@ -56,7 +55,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/text_layout_edit_fixture_date"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="Date*"
                 android:paddingStart="16dp"
@@ -64,9 +63,10 @@
                 app:endIconDrawable="@drawable/ic_baseline_calendar_today_24"
                 app:endIconMode="custom"
                 app:errorEnabled="true"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/text_layout_edit_fixture_time"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/text_layout_add_player_name">
+                app:layout_constraintTop_toBottomOf="@id/text_layout_edit_fixture_location">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/text_input_edit_fixture_date"
@@ -74,7 +74,6 @@
                     android:layout_height="wrap_content"
                     android:clickable="false"
                     android:cursorVisible="false"
-
                     android:focusable="false"
                     android:focusableInTouchMode="false"
                     android:inputType="text"
@@ -85,7 +84,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/text_layout_edit_fixture_time"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="Time*"
                 android:paddingStart="16dp"
@@ -94,8 +93,9 @@
                 app:endIconMode="custom"
                 app:errorEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/text_layout_add_player_name">
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/text_layout_edit_fixture_date"
+                app:layout_constraintTop_toBottomOf="@id/text_layout_edit_fixture_location">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/text_input_edit_fixture_time"
@@ -110,152 +110,28 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/text_input_upcoming_edit_fixture_player1"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_edit_fixture_players"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Player 1"
+                android:layout_height="0dp"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                app:errorEnabled="true">
+                android:paddingBottom="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_layout_edit_fixture_date" />
 
-                <AutoCompleteTextView
-                    android:id="@+id/auto_complete_text_view_edit_fixture_player1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    tools:ignore="LabelFor" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/text_input_upcoming_edit_fixture_player2"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
+            <Button
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="Player 2"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                app:errorEnabled="true">
+                android:layout_marginEnd="16dp"
+                android:onClick="onAddPlayer"
+                android:text="Add player"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/recycler_view_edit_fixture_players" />
 
-                <AutoCompleteTextView
-                    android:id="@+id/auto_complete_text_view_edit_fixture_player2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    tools:ignore="LabelFor" />
-            </com.google.android.material.textfield.TextInputLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/text_input_upcoming_edit_fixture_player3"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Player 3"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                app:errorEnabled="true">
-
-                <AutoCompleteTextView
-                    android:id="@+id/auto_complete_text_view_edit_fixture_player3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    tools:ignore="LabelFor" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/text_input_upcoming_edit_fixture_player4"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Player 4"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                app:errorEnabled="true">
-
-                <AutoCompleteTextView
-                    android:id="@+id/auto_complete_text_view_edit_fixture_player4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    tools:ignore="LabelFor" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/text_input_upcoming_edit_fixture_player5"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Player 5"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                app:errorEnabled="true">
-
-                <AutoCompleteTextView
-                    android:id="@+id/auto_complete_text_view_edit_fixture_player5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    tools:ignore="LabelFor" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/text_input_upcoming_edit_fixture_player6"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Player 6"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                app:errorEnabled="true">
-
-                <AutoCompleteTextView
-                    android:id="@+id/auto_complete_text_view_edit_fixture_player6"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    tools:ignore="LabelFor" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/text_input_upcoming_edit_fixture_player7"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Player 7"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                app:errorEnabled="true">
-
-                <AutoCompleteTextView
-                    android:id="@+id/auto_complete_text_view_edit_fixture_player7"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    tools:ignore="LabelFor" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/text_input_upcoming_edit_fixture_player8"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Player 8"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                app:errorEnabled="true">
-
-                <AutoCompleteTextView
-                    android:id="@+id/auto_complete_text_view_edit_fixture_player8"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    tools:ignore="LabelFor" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-        </LinearLayout>
     </ScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -263,11 +139,10 @@
         style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:itemBackground="@color/purple_500"
+        app:itemBackground="@color/design_default_color_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/menu_cup" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

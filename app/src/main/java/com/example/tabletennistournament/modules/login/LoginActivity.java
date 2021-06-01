@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.tabletennistournament.databinding.ActivityLoginBinding;
 import com.example.tabletennistournament.modules.cup.CupActivity;
+import com.example.tabletennistournament.services.LoginRepository;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -101,6 +102,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onContinueWithoutSignIn(View view) {
+        LoginRepository.getInstance().login("username");
         Intent intent = new Intent(this, CupActivity.class);
         startActivity(intent);
         finish();

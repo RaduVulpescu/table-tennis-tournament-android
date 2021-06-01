@@ -111,21 +111,19 @@
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <View
                     android:layout_width="wrap_content"
                     android:layout_height="1dp"
                     android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
                     android:background="@color/design_default_color_primary" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_view_upcoming_fixture_players"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                </androidx.recyclerview.widget.RecyclerView>
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp" />
 
             </LinearLayout>
 
@@ -138,7 +136,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="4dp"
                 android:background="@color/design_default_color_primary"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
             <LinearLayout
                 android:id="@+id/linear_layout_upcoming_buttons"
@@ -146,7 +144,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:orientation="horizontal"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_upcoming_start"
