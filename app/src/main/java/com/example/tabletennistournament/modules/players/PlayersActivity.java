@@ -21,6 +21,7 @@ import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.PlayerModel;
 import com.example.tabletennistournament.modules.upcoming.NextFixturesActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
+import com.example.tabletennistournament.services.LoginRepository;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -40,6 +41,8 @@ public class PlayersActivity extends AppCompatActivity {
 
     Gson gson;
     RequestQueueSingleton requestQueue;
+    LoginRepository loginRepository;
+
     BottomNavigationView bottomNavigationView;
 
     public static final String EXTRA_PLAYER_ID = "EXTRA_PLAYER_ID";
@@ -53,6 +56,7 @@ public class PlayersActivity extends AppCompatActivity {
 
         gson = new Gson();
         requestQueue = RequestQueueSingleton.getInstance(this);
+        loginRepository = LoginRepository.getInstance();
         bottomNavigationView = findViewById(R.id.bottom_navigation_players);
 
         setBottomNavigationBar();
@@ -112,7 +116,10 @@ public class PlayersActivity extends AppCompatActivity {
                     players.sort(Comparator.comparing(PlayerModel::getName));
 
                     progressIndicator.hide();
-                    addPlayerButton.show();
+
+                    if (loginRepository.isLoggedIn()) {
+                        addPlayerButton.show();
+                    }
 
                     createPlayersRecyclerView(players);
                 },

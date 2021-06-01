@@ -8,11 +8,6 @@
     <string name="navigation_cup">Cup</string>
     <string name="navigation_players">Players</string>
 
-    <!--
-    This string is used for square devices and overridden by hello_world in
-    values-round/strings.xml for round devices.
-    -->
-    <string name="hello_world">Hello Square World!</string>
     <string name="player_avatar">player_avatar</string>
     <string name="server_error">Something went wrong. Please try again later.</string>
     <string name="player_add_button">player_add_button</string>
@@ -57,4 +52,5 @@
     <string name="login_failed">"Login failed"</string>
     <string name="activity_label_edit_fixture">Edit Fixture</string>
     <string name="activity_label_ranking">Ranking</string>
+    <string name="continue_without_signing_in">Continue without signing in</string>
 </resources>

@@ -30,8 +30,10 @@ import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.models.PlayerModel;
 import com.example.tabletennistournament.modules.players.PlayersActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
+import com.example.tabletennistournament.services.LoginRepository;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -53,6 +55,7 @@ public class NextFixturesActivity extends AppCompatActivity {
 
     Gson gson;
     RequestQueueSingleton requestQueue;
+    LoginRepository loginRepository;
 
     CircularProgressIndicator progressIndicator;
     TextView serverErrorTextView;
@@ -75,6 +78,7 @@ public class NextFixturesActivity extends AppCompatActivity {
 
         gson = new Gson();
         requestQueue = RequestQueueSingleton.getInstance(this);
+        loginRepository = LoginRepository.getInstance();
 
         progressIndicator = findViewById(R.id.circular_progress_indicator_upcoming);
         serverErrorTextView = findViewById(R.id.text_view_server_error_upcoming);
@@ -97,6 +101,7 @@ public class NextFixturesActivity extends AppCompatActivity {
 //            currentSeasonId = getCurrentSeasonId();
 //        }
 
+        FloatingActionButton addFixtureButton = findViewById(R.id.floating_action_button_add_fixture);
         reloadButton.setVisibility(View.GONE);
         serverErrorTextView.setVisibility(View.GONE);
         progressIndicator.show();
@@ -110,6 +115,11 @@ public class NextFixturesActivity extends AppCompatActivity {
                     fixtures.sort(Comparator.comparing(FixtureModel::getNumber));
 
                     progressIndicator.hide();
+
+                    if (loginRepository.isLoggedIn()) {
+                        addFixtureButton.show();
+                    }
+
                     createFixturesRecyclerView(fixtures);
                 },
                 error -> {
@@ -169,22 +179,27 @@ public class NextFixturesActivity extends AppCompatActivity {
                     vh.expandButton.setVisibility(View.VISIBLE);
                 });
 
-                vh.startFixtureButton.setOnClickListener(v -> {
-                    startFixture(vh, fixture);
-                });
+                if (loginRepository.isLoggedIn()) {
+                    vh.upcomingButtonsDelimiter.setVisibility(View.VISIBLE);
+                    vh.upcomingButtonsLinearLayout.setVisibility(View.VISIBLE);
 
-                vh.editFixtureButton.setOnClickListener(v -> {
-                    Intent intent = new Intent(getBaseContext(), EditFixtureActivity.class);
-                    intent.putExtra(EXTRA_CURRENT_SEASON_ID, currentSeasonId);
-                    intent.putExtra(EXTRA_FIXTURE_ID, fixture.FixtureId.toString());
-                    intent.putExtra(EXTRA_FIXTURE_JSON, gson.toJson(fixture));
+                    vh.startFixtureButton.setOnClickListener(v -> {
+                        startFixture(vh, fixture);
+                    });
 
-                    startActivity(intent);
-                });
+                    vh.editFixtureButton.setOnClickListener(v -> {
+                        Intent intent = new Intent(getBaseContext(), EditFixtureActivity.class);
+                        intent.putExtra(EXTRA_CURRENT_SEASON_ID, currentSeasonId);
+                        intent.putExtra(EXTRA_FIXTURE_ID, fixture.FixtureId.toString());
+                        intent.putExtra(EXTRA_FIXTURE_JSON, gson.toJson(fixture));
 
-                vh.deleteFixtureButton.setOnClickListener(v -> {
+                        startActivity(intent);
+                    });
 
-                });
+                    vh.deleteFixtureButton.setOnClickListener(v -> {
+
+                    });
+                }
             }
         };
 
