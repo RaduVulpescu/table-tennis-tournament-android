@@ -1,4 +1,4 @@
-package com.example.tabletennistournament.ui.login;
+package com.example.tabletennistournament.modules.login;
 
 import android.util.Log;
 import android.util.Patterns;
@@ -70,6 +70,6 @@ public class LoginViewModel extends ViewModel {
 
     // A placeholder password validation check
     private boolean isPasswordValid(String password) {
-        return password != null && password.matches("^(?=.*?[A-Z])(?=(.*[a-z])+)(?=(.*[\\d])+)(?=(.*[\\W])+)(?!.*\\s).{8,}$");
+        return password != null && password.length() > 7;
     }
 }

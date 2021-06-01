@@ -56,6 +56,6 @@
         android:layout_height="wrap_content"
         app:itemBackground="@color/purple_500"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/menu_main" />
+        app:menu="@menu/menu_cup" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

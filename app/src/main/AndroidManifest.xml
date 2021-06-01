@@ -19,7 +19,7 @@
         android:theme="@style/Theme.TableTennisTournament"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.login.LoginActivity"
+            android:name=".modules.login.LoginActivity"
             android:label="@string/title_activity_login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.amplifyframework.core.Amplify;
 import com.example.tabletennistournament.models.LoggedInUser;
-import com.example.tabletennistournament.ui.login.LoginViewModel;
+import com.example.tabletennistournament.modules.login.LoginViewModel;
 
 public class LoginRepository {
 

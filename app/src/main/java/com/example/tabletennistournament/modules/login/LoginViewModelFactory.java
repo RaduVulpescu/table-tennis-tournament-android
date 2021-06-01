@@ -1,4 +1,4 @@
-package com.example.tabletennistournament.ui.login;
+package com.example.tabletennistournament.modules.login;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
