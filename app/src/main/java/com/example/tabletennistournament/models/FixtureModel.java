@@ -24,5 +24,9 @@ public class FixtureModel {
     public int getNumber() {
         return Number;
     }
+
+    public java.util.Date getDate() {
+        return Date;
+    }
 }
 

@@ -7,15 +7,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -35,6 +33,8 @@ import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.example.tabletennistournament.services.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
@@ -50,13 +50,14 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.example.tabletennistournament.services.Common.getValueOrNA;
 import static com.example.tabletennistournament.services.Common.increaseTimeout;
 
 public class EditFixtureActivity extends AppCompatActivity {
@@ -64,21 +65,27 @@ public class EditFixtureActivity extends AppCompatActivity {
     Gson gson;
     RequestQueueSingleton requestQueue;
 
+    LinearProgressIndicator progressIndicator;
     TextInputLayout locationTextInputLayout;
     TextInputLayout dateTextInputLayout;
     TextInputLayout timeTextInputLayout;
-    RecyclerView playersRecyclerView;
+    TextInputLayout playerTextInputLayout;
+    AutoCompleteTextView autoCompleteTextViewPlayer;
+    Button addPlayerButton;
+    ChipGroup playersChipGroup;
     MaterialDatePicker<Long> datePicker;
 
     Date selectedDate = null;
     Integer selectedHour = null;
     Integer selectedMinute = null;
+    DropDownItem selectedPlayer = null;
+    List<DropDownItem> playersDropDown;
 
     FixtureModel fixtureModel;
     Intent currentIntent;
 
-    List<PlayerModel> allPlayers = null;
-    List<FixturePlayer> fixturePlayers = null;
+    ArrayAdapter<DropDownItem> adapter;
+    List<FixturePlayer> fixturePlayers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,16 +95,19 @@ public class EditFixtureActivity extends AppCompatActivity {
         gson = new Gson();
         requestQueue = RequestQueueSingleton.getInstance(this);
 
+        progressIndicator = findViewById(R.id.linear_progress_indicator_edit_fixture);
         locationTextInputLayout = findViewById(R.id.text_layout_edit_fixture_location);
         dateTextInputLayout = findViewById(R.id.text_layout_edit_fixture_date);
-        playersRecyclerView = findViewById(R.id.recycler_view_edit_fixture_players);
-        playersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         timeTextInputLayout = findViewById(R.id.text_layout_edit_fixture_time);
+        playerTextInputLayout = findViewById(R.id.text_layout_edit_fixture_player);
+        autoCompleteTextViewPlayer = findViewById(R.id.auto_complete_text_view_edit_fixture_player);
+        addPlayerButton = findViewById(R.id.button_edit_fixture_add_player_button);
+        playersChipGroup = findViewById(R.id.chip_group_edit_fixture_players);
 
         currentIntent = getIntent();
         String fixtureJson = currentIntent.getStringExtra(NextFixturesActivity.EXTRA_FIXTURE_JSON);
         fixtureModel = gson.fromJson(fixtureJson, FixtureModel.class);
-        fixturePlayers = new ArrayList<>();
+        fixturePlayers = fixtureModel.Players;
 
         getAllPlayers();
         createDatePicker();
@@ -110,11 +120,10 @@ public class EditFixtureActivity extends AppCompatActivity {
         return true;
     }
 
-    private void populateFields() {
+    private void populateFields(List<PlayerModel> players) {
         locationTextInputLayout.getEditText().setText(fixtureModel.Location);
 
-        fixturePlayers = fixtureModel.Players;
-        inflatePlayersRecyclerView();
+        inflateChipGroup(players);
     }
 
     public void onClickEditFixture(MenuItem item) throws JSONException {
@@ -122,10 +131,9 @@ public class EditFixtureActivity extends AppCompatActivity {
         PutFixtureDTO putFixtureDTO = new PutFixtureDTO(
                 getFixtureLocation(),
                 getFixtureDateTime(),
-                null
+                fixturePlayers
         );
 
-        LinearProgressIndicator progressIndicator = findViewById(R.id.linear_progress_indicator_edit_fixture);
         progressIndicator.show();
         setUserInputEnabled(false);
 
@@ -167,53 +175,60 @@ public class EditFixtureActivity extends AppCompatActivity {
     }
 
     public void onAddPlayer(View view) {
-        fixturePlayers.add(new FixturePlayer(null, "", null));
-        inflatePlayersRecyclerView();
+        if (selectedPlayer == null) return;
+
+        playersDropDown.remove(selectedPlayer);
+        adapter = new ArrayAdapter<>(this, R.layout.dropdown_item, playersDropDown);
+        autoCompleteTextViewPlayer.setText(null);
+        autoCompleteTextViewPlayer.setAdapter(adapter);
+
+        Chip chip = new Chip(this);
+        chip.setText(selectedPlayer.name);
+        chip.setTag(selectedPlayer.playerId);
+        chip.setCloseIconVisible(true);
+
+        DropDownItem newDropDownItem = new DropDownItem(selectedPlayer.playerId, selectedPlayer.name, selectedPlayer.quality);
+        chip.setOnCloseIconClickListener(v -> {
+            v.setVisibility(View.GONE);
+            playersDropDown.add(newDropDownItem);
+            adapter = new ArrayAdapter<>(this, R.layout.dropdown_item, playersDropDown);
+            adapter.sort(Comparator.comparing(DropDownItem::getName));
+            autoCompleteTextViewPlayer.setAdapter(adapter);
+            fixturePlayers.removeIf(fp -> fp.PlayerId == newDropDownItem.playerId);
+        });
+
+        playersChipGroup.addView(chip);
+        fixturePlayers.add(new FixturePlayer(selectedPlayer.playerId, selectedPlayer.name, selectedPlayer.quality));
+        selectedPlayer = null;
     }
 
-    private void inflatePlayersRecyclerView() {
-        List<String> fixturePlayersNames = fixturePlayers.stream().map(fp -> fp.Name).collect(Collectors.toList());
-        List<PlayerModel> remainingPlayers = allPlayers.stream().filter(x -> !fixturePlayersNames.contains(x.getName())).collect(Collectors.toList());
+    private void inflateChipGroup(@NonNull List<PlayerModel> players) {
+        List<UUID> fixturePlayersIds = fixtureModel.Players.stream().map(fp -> fp.PlayerId).collect(Collectors.toList());
+        List<PlayerModel> remainingPlayers = players.stream().filter(x -> !fixturePlayersIds.contains(x.PlayerId)).collect(Collectors.toList());
+        playersDropDown = remainingPlayers.stream().map(x -> new DropDownItem(x.PlayerId, x.Name, x.Quality)).collect(Collectors.toList());
 
-        String[] items = remainingPlayers.stream().map(x -> String.format("%s (%s)", x.Name, getValueOrNA(x.Quality))).toArray(String[]::new);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.dropdown_item, items);
+        adapter = new ArrayAdapter<>(this, R.layout.dropdown_item, playersDropDown);
+        autoCompleteTextViewPlayer.setAdapter(adapter);
+        autoCompleteTextViewPlayer.setOnItemClickListener((parent, view, position, id) -> selectedPlayer = (DropDownItem) parent.getItemAtPosition(position));
 
-        RecyclerView.Adapter<RecyclerView.ViewHolder> playerListAdapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-            @NonNull
-            @Override
-            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                return EditFixturePlayerListItemViewHolder.create(parent);
-            }
+        for (FixturePlayer fixturePlayer : fixtureModel.Players) {
+            Chip chip = new Chip(this);
+            chip.setText(fixturePlayer.Name);
+            chip.setTag(fixturePlayer.PlayerId);
+            chip.setCloseIconVisible(true);
 
-            @Override
-            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-                bind((EditFixturePlayerListItemViewHolder) viewHolder, position);
-            }
+            DropDownItem newDropDownItem = new DropDownItem(fixturePlayer.PlayerId, fixturePlayer.Name, fixturePlayer.Quality);
+            chip.setOnCloseIconClickListener(v -> {
+                v.setVisibility(View.GONE);
+                playersDropDown.add(newDropDownItem);
+                adapter = new ArrayAdapter<>(this, R.layout.dropdown_item, playersDropDown);
+                adapter.sort(Comparator.comparing(DropDownItem::getName));
+                autoCompleteTextViewPlayer.setAdapter(adapter);
+                fixturePlayers.remove(fixturePlayer);
+            });
 
-            @Override
-            public int getItemCount() {
-                return fixturePlayers.size();
-            }
-
-            private void bind(@NonNull EditFixturePlayerListItemViewHolder vh, int position) {
-                FixturePlayer player = fixturePlayers.get(position);
-
-                vh.autoCompleteTextViewPlayer.setText(player.PlayerId != null ? String.format("%s (%s)", player.Name, getValueOrNA(player.Quality)) : "");
-                vh.autoCompleteTextViewPlayer.setTag(player.PlayerId);
-                vh.autoCompleteTextViewPlayer.setAdapter(adapter);
-            }
-        };
-
-        playersRecyclerView.setAdapter(playerListAdapter);
-    }
-
-    @NonNull
-    private String getValueOrNA(@Nullable Double quality) {
-        if (quality == null) {
-            return "N/A";
+            playersChipGroup.addView(chip);
         }
-
-        return String.valueOf(quality);
     }
 
     public void showDatePicker(View view) {
@@ -305,10 +320,17 @@ public class EditFixtureActivity extends AppCompatActivity {
                     List<PlayerModel> players = gson.fromJson(response.toString(), new TypeToken<List<PlayerModel>>() {
                     }.getType());
                     players.sort(Comparator.comparing(PlayerModel::getName));
-                    allPlayers = players;
-                    populateFields();
+
+                    progressIndicator.hide();
+                    playerTextInputLayout.setEnabled(true);
+                    addPlayerButton.setEnabled(true);
+
+                    populateFields(players);
                 },
-                error -> Log.e("REQUEST-GET-PLAYERS_ROUTE", gson.toJson(error))
+                error -> {
+                    progressIndicator.hide();
+                    Log.e("REQUEST-GET-PLAYERS_ROUTE", gson.toJson(error));
+                }
         );
 
         requestQueue.add(increaseTimeout(jsonArrayRequest));
@@ -346,6 +368,14 @@ public class EditFixtureActivity extends AppCompatActivity {
         locationTextInputLayout.setEnabled(enabled);
         dateTextInputLayout.setEnabled(enabled);
         timeTextInputLayout.setEnabled(enabled);
+        playerTextInputLayout.setEnabled(enabled);
+        addPlayerButton.setEnabled(enabled);
+        playersChipGroup.setEnabled(enabled);
+
+        for (int i = 0; i < playersChipGroup.getChildCount(); i++) {
+            Chip chip = (Chip) playersChipGroup.getChildAt(i);
+            chip.setEnabled(enabled);
+        }
     }
 
     @Nullable
@@ -357,14 +387,25 @@ public class EditFixtureActivity extends AppCompatActivity {
         return textInputEditText.getText().toString();
     }
 
-    @Nullable
-    private String getInputFromDropDown(AutoCompleteTextView textView) {
-        String result = textView.getText().toString();
+    private static class DropDownItem {
+        private final UUID playerId;
+        private final String name;
+        private final Double quality;
 
-        if (Util.isNullOrEmpty(result)) {
-            return null;
+        public DropDownItem(UUID playerId, String name, Double quality) {
+            this.playerId = playerId;
+            this.name = name;
+            this.quality = quality;
         }
 
-        return result;
+        public String getName() {
+            return name;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return String.format("%s (%s)", name, getValueOrNA(quality));
+        }
     }
 }

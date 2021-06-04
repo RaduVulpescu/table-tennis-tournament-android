@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -110,25 +110,56 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view_edit_fixture_players"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_layout_edit_fixture_player"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:focusedByDefault="true"
+                android:hint="Player"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toStartOf="@+id/button_edit_fixture_add_player_button"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_layout_edit_fixture_date">
+
+                <AutoCompleteTextView
+                    android:id="@+id/auto_complete_text_view_edit_fixture_player"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    tools:ignore="LabelFor" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_edit_fixture_players"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:paddingBottom="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_layout_edit_fixture_date" />
+                app:layout_constraintTop_toBottomOf="@+id/text_layout_edit_fixture_player">
+
+            </com.google.android.material.chip.ChipGroup>
 
             <Button
+                android:id="@+id/button_edit_fixture_add_player_button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
+                android:enabled="false"
                 android:onClick="onAddPlayer"
                 android:text="Add player"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/recycler_view_edit_fixture_players" />
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/text_layout_edit_fixture_player"
+                app:layout_constraintTop_toBottomOf="@+id/text_layout_edit_fixture_date" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

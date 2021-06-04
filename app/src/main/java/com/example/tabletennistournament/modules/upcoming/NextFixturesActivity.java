@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,11 +22,10 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.tabletennistournament.modules.cup.CupActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.FixturePlayer;
-import com.example.tabletennistournament.models.PlayerModel;
+import com.example.tabletennistournament.modules.cup.CupActivity;
 import com.example.tabletennistournament.modules.players.PlayersActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.LoginRepository;
@@ -49,6 +47,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static com.example.tabletennistournament.services.Common.getValueOrNA;
 import static com.example.tabletennistournament.services.Common.increaseTimeout;
 
 public class NextFixturesActivity extends AppCompatActivity {
@@ -105,7 +104,7 @@ public class NextFixturesActivity extends AppCompatActivity {
                 response -> {
                     List<FixtureModel> fixtures = gson.fromJson(response.toString(), new TypeToken<List<FixtureModel>>() {
                     }.getType());
-                    fixtures.sort(Comparator.comparing(FixtureModel::getNumber));
+                    fixtures.sort(Comparator.comparing(FixtureModel::getDate));
 
                     progressIndicator.hide();
 
@@ -221,7 +220,7 @@ public class NextFixturesActivity extends AppCompatActivity {
                 FixturePlayer player = players.get(position);
 
                 vh.playerName.setText(player.Name);
-                vh.playerQuality.setText(String.format(Locale.getDefault(), "Q: %.2f", player.Quality));
+                vh.playerQuality.setText(String.format("Q: %s", getValueOrNA(player.Quality)));
             }
         };
 

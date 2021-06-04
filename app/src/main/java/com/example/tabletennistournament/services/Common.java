@@ -1,11 +1,14 @@
 package com.example.tabletennistournament.services;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.enums.Level;
+
+import java.util.Locale;
 
 public class Common {
 
@@ -35,6 +38,15 @@ public class Common {
                 Integer.parseInt(REQUEST_TIMEOUT),
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+    }
+
+    @NonNull
+    public static String getValueOrNA(@Nullable Double quality) {
+        if (quality == null) {
+            return "N/A";
+        }
+
+        return String.format(Locale.getDefault(), "%.2f", quality);
     }
 
 }

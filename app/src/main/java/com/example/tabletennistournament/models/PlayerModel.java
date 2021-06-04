@@ -32,6 +32,12 @@ public class PlayerModel {
 
     public PlayerModel() { }
 
+    public PlayerModel(UUID playerId, String name, Double quality) {
+        PlayerId = playerId;
+        Name = name;
+        Quality = quality;
+    }
+
     public String getName() {
         return Name;
     }
