@@ -270,8 +270,7 @@ public class NextFixturesActivity extends AppCompatActivity {
             return "TBA";
         }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM");
-        return date.format(formatter);
+        return date.format(DateTimeFormatter.ofPattern("dd MMMM"));
     }
 
     @NonNull

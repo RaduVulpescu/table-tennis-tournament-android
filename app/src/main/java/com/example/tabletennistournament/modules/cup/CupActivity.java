@@ -31,9 +31,9 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 import static com.example.tabletennistournament.services.Common.increaseTimeout;
@@ -182,8 +182,12 @@ public class CupActivity extends AppCompatActivity {
 
         for (int i = 0, fixturesSize = fixtures.size(); i < fixturesSize; i++) {
             FixtureModel fixture = fixtures.get(i);
+
+            String tabTitle = fixture.Date.format(DateTimeFormatter.ofPattern("dd MMM"));
+            if (tabTitle.startsWith("0")) tabTitle = tabTitle.substring(1);
+
             TabLayout.Tab tab = fixturesTabLayout.newTab()
-                    .setText(String.format(Locale.getDefault(), "F%d", fixture.Number))
+                    .setText(tabTitle)
                     .setTag(i);
 
             fixturesTabLayout.addTab(tab);

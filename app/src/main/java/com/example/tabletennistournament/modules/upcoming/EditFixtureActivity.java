@@ -282,11 +282,9 @@ public class EditFixtureActivity extends AppCompatActivity {
     }
 
     private void populateFields() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
         locationTextInputLayout.getEditText().setText(fixtureModel.Location);
         timeTextInputLayout.getEditText().setText((formatTime(fixtureModel.Date.getHour(), fixtureModel.Date.getMinute())));
-        dateTextInputLayout.getEditText().setText(fixtureModel.Date.format(formatter));
+        dateTextInputLayout.getEditText().setText(fixtureModel.Date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
     }
 
     @Nullable

@@ -170,7 +170,7 @@ public class AddFixtureActivity extends AppCompatActivity {
             return null;
         }
 
-        return ZonedDateTime.of(selectedDate.get(Calendar.YEAR), selectedDate.get(Calendar.MONTH), selectedDate.get(Calendar.DAY_OF_MONTH),
+        return ZonedDateTime.of(selectedDate.get(Calendar.YEAR), selectedDate.get(Calendar.MONTH) + 1, selectedDate.get(Calendar.DAY_OF_MONTH),
                 selectedHour, selectedMinute, 0, 0, ZoneId.systemDefault());
     }
 
@@ -190,7 +190,7 @@ public class AddFixtureActivity extends AppCompatActivity {
             selectedDate.setTimeInMillis(selection);
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
-            dateTextInputLayout.getEditText().setText(formatter.format(selectedDate));
+            dateTextInputLayout.getEditText().setText(formatter.format(selectedDate.getTime()));
         });
     }
 

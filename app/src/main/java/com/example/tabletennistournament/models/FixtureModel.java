@@ -11,7 +11,6 @@ public class FixtureModel {
 
     public UUID SeasonId;
     public UUID FixtureId;
-    public int Number;
     public ZonedDateTime Date;
     public String Location;
     public double QualityAverage;
@@ -20,10 +19,6 @@ public class FixtureModel {
     public List<FixturePlayer> Players;
 
     public FixtureModel() { }
-
-    public int getNumber() {
-        return Number;
-    }
 
     public ZonedDateTime getDate() {
         return Date;

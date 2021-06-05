@@ -58,10 +58,8 @@ public class FixtureFragment extends Fragment {
         TextView qualityAverageTextView = view.findViewById(R.id.text_view_main_fixture_quality_average_placeholder);
         TextView stateTextView = view.findViewById(R.id.text_view_main_fixture_state_placeholder);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM HH:mm");
-
         locationTextView.setText(String.format("Location: %s", fixture.Location));
-        dateTextView.setText(String.format("Date: %s", fixture.Date.format(formatter)));
+        dateTextView.setText(String.format("Date: %s", fixture.Date.format(DateTimeFormatter.ofPattern("dd MMMM HH:mm"))));
         qualityAverageTextView.setText(String.format(Locale.getDefault(), "Quality Avg: %.2f", fixture.QualityAverage));
         stateTextView.setText(String.format("State: %s", fixture.State));
     }
