@@ -13,11 +13,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.tabletennistournament.modules.cup.CupActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.dto.NewFixtureDTO;
+import com.example.tabletennistournament.modules.cup.CupActivity;
 import com.example.tabletennistournament.modules.players.PlayersActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
+import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.example.tabletennistournament.services.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -34,7 +35,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.Locale;
 
 import static com.example.tabletennistournament.services.Common.increaseTimeout;
@@ -52,7 +55,7 @@ public class AddFixtureActivity extends AppCompatActivity {
     TextInputLayout timeTextInputLayout;
     MaterialDatePicker<Long> datePicker;
 
-    Date selectedDate = null;
+    Calendar selectedDate = null;
     Integer selectedHour = null;
     Integer selectedMinute = null;
 
@@ -61,7 +64,7 @@ public class AddFixtureActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_fixture);
 
-        gson = new Gson();
+        gson = GsonSingleton.getInstance();
         requestQueue = RequestQueueSingleton.getInstance(this);
         validationErrors = 0;
 
@@ -152,7 +155,7 @@ public class AddFixtureActivity extends AppCompatActivity {
     }
 
     @Nullable
-    private Date getFixtureDateTime() {
+    private ZonedDateTime getFixtureDateTime() {
         if (selectedDate == null || selectedHour == null) {
             if (selectedDate == null) {
                 dateTextInputLayout.setError(getString(R.string.text_layout_error_required));
@@ -167,7 +170,8 @@ public class AddFixtureActivity extends AppCompatActivity {
             return null;
         }
 
-        return new Date(selectedDate.getYear(), selectedDate.getMonth(), selectedDate.getDay(), selectedHour, selectedMinute);
+        return ZonedDateTime.of(selectedDate.get(Calendar.YEAR), selectedDate.get(Calendar.MONTH), selectedDate.get(Calendar.DAY_OF_MONTH),
+                selectedHour, selectedMinute, 0, 0, ZoneId.systemDefault());
     }
 
     private void clearValidations() {
@@ -182,7 +186,8 @@ public class AddFixtureActivity extends AppCompatActivity {
         datePicker = MaterialDatePicker.Builder.datePicker().setTitleText("Select Fixture date").build();
 
         datePicker.addOnPositiveButtonClickListener(selection -> {
-            selectedDate = new Date(selection);
+            selectedDate = Calendar.getInstance();
+            selectedDate.setTimeInMillis(selection);
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
             dateTextInputLayout.getEditText().setText(formatter.format(selectedDate));

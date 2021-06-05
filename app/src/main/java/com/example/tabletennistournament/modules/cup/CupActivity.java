@@ -22,6 +22,7 @@ import com.example.tabletennistournament.models.SeasonModel;
 import com.example.tabletennistournament.modules.players.PlayersActivity;
 import com.example.tabletennistournament.modules.upcoming.NextFixturesActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
+import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -53,7 +54,7 @@ public class CupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cup);
 
-        gson = new Gson();
+        gson = GsonSingleton.getInstance();
         requestQueue = RequestQueueSingleton.getInstance(this);
         progressIndicator = findViewById(R.id.circular_progress_indicator_main);
         topBar = findViewById(R.id.toolbar_main);
@@ -160,7 +161,7 @@ public class CupActivity extends AppCompatActivity {
                 response -> {
                     List<FixtureModel> fixtures = gson.fromJson(response.toString(), new TypeToken<List<FixtureModel>>() {
                     }.getType());
-                    fixtures.sort(Comparator.comparing(FixtureModel::getNumber).reversed());
+                    fixtures.sort(Comparator.comparing(FixtureModel::getDate).reversed());
 
                     populateTabLayout(seasonId, fixtures);
                     progressIndicator.hide();

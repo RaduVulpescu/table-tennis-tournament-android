@@ -18,6 +18,7 @@ import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.PlayerModel;
 import com.example.tabletennistournament.modules.upcoming.NextFixturesActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
+import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -37,7 +38,7 @@ public class PlayerProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_profile);
 
-        gson = new Gson();
+        gson = GsonSingleton.getInstance();
         requestQueue = RequestQueueSingleton.getInstance(this);
 
         setBottomNavigationBar();

@@ -16,6 +16,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.SeasonPlayerModel;
 import com.example.tabletennistournament.services.ApiRoutes;
+import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
@@ -53,7 +54,7 @@ public class RankingFragment extends Fragment {
         Bundle argumentsBundle = getArguments();
         if (argumentsBundle == null) return;
 
-        gson = new Gson();
+        gson = GsonSingleton.getInstance();
         requestQueue = RequestQueueSingleton.getInstance(getActivity().getBaseContext());
         progressIndicator = view.findViewById(R.id.circular_progress_indicator_ranking);
         serverErrorTextView = view.findViewById(R.id.text_view_server_error_ranking);

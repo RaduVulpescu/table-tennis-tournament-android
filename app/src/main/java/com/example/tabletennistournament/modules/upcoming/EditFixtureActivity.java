@@ -30,6 +30,7 @@ import com.example.tabletennistournament.models.PlayerModel;
 import com.example.tabletennistournament.modules.cup.CupActivity;
 import com.example.tabletennistournament.modules.players.PlayersActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
+import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.example.tabletennistournament.services.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -50,6 +51,9 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -61,6 +65,8 @@ import static com.example.tabletennistournament.services.Common.getValueOrNA;
 import static com.example.tabletennistournament.services.Common.increaseTimeout;
 
 public class EditFixtureActivity extends AppCompatActivity {
+
+    int validationErrors = 0;
 
     Gson gson;
     RequestQueueSingleton requestQueue;
@@ -92,7 +98,9 @@ public class EditFixtureActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_fixture);
 
-        gson = new Gson();
+        validationErrors = 0;
+
+        gson = GsonSingleton.getInstance();
         requestQueue = RequestQueueSingleton.getInstance(this);
 
         progressIndicator = findViewById(R.id.linear_progress_indicator_edit_fixture);
@@ -109,8 +117,9 @@ public class EditFixtureActivity extends AppCompatActivity {
         fixtureModel = gson.fromJson(fixtureJson, FixtureModel.class);
         fixturePlayers = fixtureModel.Players;
 
-        getAllPlayers();
+        populateFields();
         createDatePicker();
+        getAllPlayers();
         setBottomNavigationBar();
     }
 
@@ -120,19 +129,16 @@ public class EditFixtureActivity extends AppCompatActivity {
         return true;
     }
 
-    private void populateFields(List<PlayerModel> players) {
-        locationTextInputLayout.getEditText().setText(fixtureModel.Location);
-
-        inflateChipGroup(players);
-    }
-
     public void onClickEditFixture(MenuItem item) throws JSONException {
+        clearValidations();
 
         PutFixtureDTO putFixtureDTO = new PutFixtureDTO(
                 getFixtureLocation(),
                 getFixtureDateTime(),
                 fixturePlayers
         );
+
+        if (validationErrors > 0) return;
 
         progressIndicator.show();
         setUserInputEnabled(false);
@@ -253,6 +259,35 @@ public class EditFixtureActivity extends AppCompatActivity {
         timePicker.show(getSupportFragmentManager(), "MATERIAL_TIME_PICKER");
     }
 
+    private void getAllPlayers() {
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, ApiRoutes.PLAYERS_ROUTE, null,
+                response -> {
+                    List<PlayerModel> players = gson.fromJson(response.toString(), new TypeToken<List<PlayerModel>>() {
+                    }.getType());
+                    players.sort(Comparator.comparing(PlayerModel::getName));
+
+                    progressIndicator.hide();
+                    playerTextInputLayout.setEnabled(true);
+                    addPlayerButton.setEnabled(true);
+
+                    inflateChipGroup(players);
+                },
+                error -> {
+                    progressIndicator.hide();
+                    Log.e("REQUEST-GET-PLAYERS_ROUTE", gson.toJson(error));
+                }
+        );
+
+        requestQueue.add(increaseTimeout(jsonArrayRequest));
+    }
+
+    private void populateFields() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        locationTextInputLayout.getEditText().setText(fixtureModel.Location);
+        timeTextInputLayout.getEditText().setText((formatTime(fixtureModel.Date.getHour(), fixtureModel.Date.getMinute())));
+        dateTextInputLayout.getEditText().setText(fixtureModel.Date.format(formatter));
+    }
 
     @Nullable
     private String getFixtureLocation() {
@@ -260,6 +295,7 @@ public class EditFixtureActivity extends AppCompatActivity {
 
         if (Util.isNullOrEmpty(location)) {
             locationTextInputLayout.setError(getString(R.string.text_layout_error_required));
+            validationErrors++;
             return null;
         }
 
@@ -267,20 +303,45 @@ public class EditFixtureActivity extends AppCompatActivity {
     }
 
     @Nullable
-    private Date getFixtureDateTime() {
-        if (selectedDate == null || selectedHour == null) {
-            if (selectedDate == null) {
+    private ZonedDateTime getFixtureDateTime() {
+        String dateString = dateTextInputLayout.getEditText().getText().toString();
+        String timeString = timeTextInputLayout.getEditText().getText().toString();
+
+        boolean dateIsEmpty = Util.isNullOrEmpty(dateString);
+        boolean timeIsEmpty = Util.isNullOrEmpty(timeString);
+
+        if (dateIsEmpty || timeIsEmpty) {
+            if (dateIsEmpty) {
                 dateTextInputLayout.setError(getString(R.string.text_layout_error_required));
+                validationErrors++;
             }
 
-            if (selectedHour == null) {
+            if (timeIsEmpty) {
                 timeTextInputLayout.setError(getString(R.string.text_layout_error_required));
+                validationErrors++;
             }
 
             return null;
         }
 
-        return new Date(selectedDate.getYear(), selectedDate.getMonth(), selectedDate.getDay(), selectedHour, selectedMinute);
+        String[] dateComponents = dateString.split("/");
+        int day = Integer.parseInt(dateComponents[0]);
+        int month = Integer.parseInt(dateComponents[1]);
+        int year = Integer.parseInt(dateComponents[2]);
+
+        String[] timeComponents = timeString.split(":");
+        int hour = Integer.parseInt(timeComponents[0]);
+        int minute = Integer.parseInt(timeComponents[1]);
+
+        return ZonedDateTime.of(year, month, day, hour, minute, 0, 0, ZoneId.systemDefault());
+    }
+
+    private void clearValidations() {
+        locationTextInputLayout.setError(null);
+        dateTextInputLayout.setError(null);
+        timeTextInputLayout.setError(null);
+
+        validationErrors = 0;
     }
 
     private void createDatePicker() {
@@ -313,29 +374,6 @@ public class EditFixtureActivity extends AppCompatActivity {
 
         return String.format("%s:%s", hourAsText, minuteAsText);
     }
-
-    private void getAllPlayers() {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, ApiRoutes.PLAYERS_ROUTE, null,
-                response -> {
-                    List<PlayerModel> players = gson.fromJson(response.toString(), new TypeToken<List<PlayerModel>>() {
-                    }.getType());
-                    players.sort(Comparator.comparing(PlayerModel::getName));
-
-                    progressIndicator.hide();
-                    playerTextInputLayout.setEnabled(true);
-                    addPlayerButton.setEnabled(true);
-
-                    populateFields(players);
-                },
-                error -> {
-                    progressIndicator.hide();
-                    Log.e("REQUEST-GET-PLAYERS_ROUTE", gson.toJson(error));
-                }
-        );
-
-        requestQueue.add(increaseTimeout(jsonArrayRequest));
-    }
-
 
     @SuppressLint("NonConstantResourceId")
     private void setBottomNavigationBar() {

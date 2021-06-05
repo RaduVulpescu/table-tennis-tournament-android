@@ -28,6 +28,7 @@ import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.modules.cup.CupActivity;
 import com.example.tabletennistournament.modules.players.PlayersActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
+import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.LoginRepository;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -41,9 +42,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -73,7 +74,7 @@ public class NextFixturesActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.shared_preferences), Context.MODE_PRIVATE);
         currentSeasonId = sharedPref.getString(getString(R.string.current_season_id), null);
 
-        gson = new Gson();
+        gson = GsonSingleton.getInstance();
         requestQueue = RequestQueueSingleton.getInstance(this);
         loginRepository = LoginRepository.getInstance();
 
@@ -264,22 +265,22 @@ public class NextFixturesActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private String extractDate(Date date) {
+    private String extractDate(ZonedDateTime date) {
         if (date == null) {
             return "TBA";
         }
 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM", Locale.getDefault());
-        return formatter.format(date);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM");
+        return date.format(formatter);
     }
 
     @NonNull
-    private String extractTime(Date date) {
+    private String extractTime(ZonedDateTime date) {
         if (date == null) {
             return "TBA";
         }
 
-        return formatTime(date.getHours(), date.getMinutes());
+        return formatTime(date.getHour(), date.getMinute());
     }
 
 

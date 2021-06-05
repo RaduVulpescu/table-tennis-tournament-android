@@ -13,10 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.FixturePlayer;
+import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.gson.Gson;
 
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
@@ -40,7 +41,7 @@ public class FixtureFragment extends Fragment {
         Bundle argumentsBundle = getArguments();
         if (argumentsBundle == null) return;
 
-        gson = new Gson();
+        gson = GsonSingleton.getInstance();
         requestQueue = RequestQueueSingleton.getInstance(getActivity().getBaseContext());
 
         String fixtureJson = argumentsBundle.getString(FIXTURE_JSON);
@@ -57,10 +58,10 @@ public class FixtureFragment extends Fragment {
         TextView qualityAverageTextView = view.findViewById(R.id.text_view_main_fixture_quality_average_placeholder);
         TextView stateTextView = view.findViewById(R.id.text_view_main_fixture_state_placeholder);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM HH:mm", Locale.getDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM HH:mm");
 
         locationTextView.setText(String.format("Location: %s", fixture.Location));
-        dateTextView.setText(String.format("Date: %s", formatter.format(fixture.Date)));
+        dateTextView.setText(String.format("Date: %s", fixture.Date.format(formatter)));
         qualityAverageTextView.setText(String.format(Locale.getDefault(), "Quality Avg: %.2f", fixture.QualityAverage));
         stateTextView.setText(String.format("State: %s", fixture.State));
     }

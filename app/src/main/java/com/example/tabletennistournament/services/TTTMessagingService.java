@@ -7,8 +7,6 @@ import androidx.annotation.NonNull;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.tabletennistournament.models.DeviceInformationModel;
-import com.example.tabletennistournament.services.ApiRoutes;
-import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.gson.Gson;
 
@@ -27,7 +25,7 @@ public class TTTMessagingService extends FirebaseMessagingService {
     }
 
     private void registerDeviceForPushNotifications(String token) {
-        Gson gson = new Gson();
+        Gson gson = GsonSingleton.getInstance();
         JSONObject obj = null;
 
         try {

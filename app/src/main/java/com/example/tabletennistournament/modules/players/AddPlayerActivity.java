@@ -19,6 +19,7 @@ import com.example.tabletennistournament.dto.NewPlayerDTO;
 import com.example.tabletennistournament.enums.Level;
 import com.example.tabletennistournament.modules.upcoming.NextFixturesActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
+import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.example.tabletennistournament.services.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -64,7 +65,7 @@ public class AddPlayerActivity extends AppCompatActivity {
         heightTextInputLayout = findViewById(R.id.text_layout_add_player_height);
         weightTextInputLayout = findViewById(R.id.text_layout_add_player_weight);
 
-        gson = new Gson();
+        gson = GsonSingleton.getInstance();
         requestQueue = RequestQueueSingleton.getInstance(this);
         validationErrors = 0;
 

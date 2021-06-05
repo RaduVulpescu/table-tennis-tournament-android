@@ -21,6 +21,7 @@ import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.PlayerModel;
 import com.example.tabletennistournament.modules.upcoming.NextFixturesActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
+import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.LoginRepository;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -54,7 +55,7 @@ public class PlayersActivity extends AppCompatActivity {
 
         showPlayerAddedSnackbar();
 
-        gson = new Gson();
+        gson = GsonSingleton.getInstance();
         requestQueue = RequestQueueSingleton.getInstance(this);
         loginRepository = LoginRepository.getInstance();
         bottomNavigationView = findViewById(R.id.bottom_navigation_players);
