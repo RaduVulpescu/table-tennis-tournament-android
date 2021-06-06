@@ -13,9 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.tabletennistournament.modules.cup.CupActivity;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.PlayerModel;
+import com.example.tabletennistournament.modules.cup.CupActivity;
 import com.example.tabletennistournament.modules.upcoming.NextFixturesActivity;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.GsonSingleton;
@@ -23,6 +23,7 @@ import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 
 import static com.example.tabletennistournament.services.Common.getPlayerLevelIcon;
 import static com.example.tabletennistournament.services.Common.increaseTimeout;
@@ -75,7 +76,7 @@ public class PlayerProfileActivity extends AppCompatActivity {
                 case R.id.navigation_button_players: {
                     return true;
                 }
-                default:{
+                default: {
                     return false;
                 }
             }
@@ -103,6 +104,7 @@ public class PlayerProfileActivity extends AppCompatActivity {
         TextView currentRankingTextView = findViewById(R.id.text_view_player_profile_current_ranking);
         TextView playerNameTextView = findViewById(R.id.text_view_player_profile_name);
         ImageView playerLevelImageView = findViewById(R.id.image_view_player_profile_level);
+        ImageView playerPictureImageView = findViewById(R.id.image_view_player_picture);
 
         TextView bestScoreTextView = findViewById(R.id.text_view_player_profile_best_score);
         TextView bestRankingTextView = findViewById(R.id.text_view_player_profile_best_ranking);
@@ -121,6 +123,12 @@ public class PlayerProfileActivity extends AppCompatActivity {
 
         playerNameTextView.setText(player.Name);
         playerLevelImageView.setImageResource(getPlayerLevelIcon(player.CurrentLevel));
+
+        Picasso.get()
+                .load("https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account-male-user-icon.png")
+                .resize(playerPictureImageView.getWidth(), playerPictureImageView.getHeight())
+                .centerCrop()
+                .into(playerPictureImageView);
 
         bestScoreTextView.setText(getValueOrNa(String.valueOf(player.BestScore)));
         bestRankingTextView.setText(getValueOrNa(String.valueOf(player.BestRanking)));
@@ -145,4 +153,5 @@ public class PlayerProfileActivity extends AppCompatActivity {
 
         return string;
     }
+
 }
