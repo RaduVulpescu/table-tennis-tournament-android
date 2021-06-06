@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.example.tabletennistournament.R;
-import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.SeasonModel;
 import com.example.tabletennistournament.modules.players.PlayersActivity;
 import com.example.tabletennistournament.modules.upcoming.NextFixturesActivity;
@@ -27,14 +26,11 @@ import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
-import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 import static com.example.tabletennistournament.services.Common.increaseTimeout;
 
@@ -47,7 +43,6 @@ public class CupActivity extends AppCompatActivity {
     TextView serverErrorTextView;
     Button reloadButton;
     BottomNavigationView bottomNavigationView;
-    TabLayout fixturesTabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,17 +56,8 @@ public class CupActivity extends AppCompatActivity {
         serverErrorTextView = findViewById(R.id.text_view_server_error_main);
         reloadButton = findViewById(R.id.button_reload_main);
         bottomNavigationView = findViewById(R.id.bottom_navigation_ranking);
-        fixturesTabLayout = findViewById(R.id.tab_layout_main);
 
         setBottomNavigationBar();
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .add(R.id.fragment_container_view_cup, RankingFragment.class, null)
-                    .commit();
-        }
-
         getSeasons(null);
     }
 
@@ -87,13 +73,18 @@ public class CupActivity extends AppCompatActivity {
                     seasonModels.sort(Comparator.comparing(SeasonModel::getNumber).reversed());
 
                     SeasonModel currentSeason = seasonModels.get(0);
+                    topBar.setTitle("Season " + currentSeason.Number);
 
                     SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.shared_preferences), Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString(getString(R.string.current_season_id), currentSeason.SeasonId.toString());
                     editor.apply();
 
-                    getSeasonPlayers(currentSeason);
+                    getSupportFragmentManager().beginTransaction()
+                            .setReorderingAllowed(true)
+                            .add(R.id.fragment_container_view_cup, SeasonContentFragment.newInstance(gson.toJson(currentSeason)))
+                            .commit();
+
                     setMenu(seasonModels);
                     progressIndicator.hide();
                 },
@@ -136,102 +127,17 @@ public class CupActivity extends AppCompatActivity {
     private void setMenu(@NonNull List<SeasonModel> seasonModels) {
         Menu menu = topBar.getMenu();
 
-        if (menu.size() == 0) {
-            for (SeasonModel seasonModel : seasonModels) {
-                menu.add(Menu.NONE, seasonModel.getNumber(), Menu.NONE, "Season " + seasonModel.getNumber());
-                MenuItem menuItem = menu.findItem(seasonModel.getNumber());
-                menuItem.setOnMenuItemClickListener(item -> {
-                    getSeasonPlayers(seasonModel);
-                    return true;
-                });
-            }
+        for (SeasonModel seasonModel : seasonModels) {
+            menu.add(Menu.NONE, seasonModel.getNumber(), Menu.NONE, "Season " + seasonModel.getNumber());
+            MenuItem menuItem = menu.findItem(seasonModel.getNumber());
+            menuItem.setOnMenuItemClickListener(item -> {
+                topBar.setTitle("Season " + seasonModel.Number);
+                getSupportFragmentManager().beginTransaction()
+                        .setReorderingAllowed(true)
+                        .add(R.id.fragment_container_view_cup, SeasonContentFragment.newInstance(gson.toJson(seasonModel)))
+                        .commit();
+                return true;
+            });
         }
-    }
-
-    private void getSeasonPlayers(@NonNull SeasonModel seasonModel) {
-        topBar.setTitle("Season " + seasonModel.Number);
-
-        displayRanking(seasonModel.SeasonId);
-
-        getFixtures(seasonModel.SeasonId.toString());
-    }
-
-    private void getFixtures(String seasonId) {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, ApiRoutes.FIXTURES_ROUTE(seasonId), null,
-                response -> {
-                    List<FixtureModel> fixtures = gson.fromJson(response.toString(), new TypeToken<List<FixtureModel>>() {
-                    }.getType());
-                    fixtures.sort(Comparator.comparing(FixtureModel::getDate).reversed());
-
-                    populateTabLayout(seasonId, fixtures);
-                    progressIndicator.hide();
-                },
-                error -> {
-                    reloadButton.setVisibility(View.VISIBLE);
-                    serverErrorTextView.setVisibility(View.VISIBLE);
-                    progressIndicator.hide();
-                }
-        );
-
-        requestQueue.add(increaseTimeout(jsonArrayRequest));
-    }
-
-    private void populateTabLayout(String seasonId, @NonNull List<FixtureModel> fixtures) {
-        fixturesTabLayout.removeAllTabs();
-        fixturesTabLayout.addTab(fixturesTabLayout.newTab().setText("Ranking").setTag("Ranking"));
-
-        for (int i = 0, fixturesSize = fixtures.size(); i < fixturesSize; i++) {
-            FixtureModel fixture = fixtures.get(i);
-
-            String tabTitle = fixture.Date.format(DateTimeFormatter.ofPattern("dd MMM"));
-            if (tabTitle.startsWith("0")) tabTitle = tabTitle.substring(1);
-
-            TabLayout.Tab tab = fixturesTabLayout.newTab()
-                    .setText(tabTitle)
-                    .setTag(i);
-
-            fixturesTabLayout.addTab(tab);
-        }
-
-        fixturesTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-
-                if (tab.getTag().toString().equals("Ranking")) {
-                    displayRanking(fixtures.get(0).SeasonId);
-                } else {
-                    int fixtureIndex = Integer.parseInt(tab.getTag().toString());
-                    displayFixture(fixtures.get(fixtureIndex));
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
-        });
-    }
-
-    private void displayRanking(@NonNull UUID seasonId) {
-        Bundle bundle = new Bundle();
-        bundle.putString(RankingFragment.BUNDLE_SEASON_ID, seasonId.toString());
-
-        getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowed(true)
-                .replace(R.id.fragment_container_view_cup, RankingFragment.class, bundle)
-                .commit();
-    }
-
-    private void displayFixture(FixtureModel fixture) {
-        Bundle bundle = new Bundle();
-        bundle.putString(FixtureFragment.FIXTURE_JSON, gson.toJson(fixture));
-
-        getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowed(true)
-                .replace(R.id.fragment_container_view_cup, FixtureFragment.class, bundle)
-                .commit();
     }
 }

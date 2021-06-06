@@ -1,6 +1,7 @@
 package com.example.tabletennistournament.modules.cup;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -23,40 +24,58 @@ import java.util.Locale;
 
 public class FixtureFragment extends Fragment {
 
+    private static final String ARG_FIXTURE_JSON = "FIXTURE_JSON";
+
     Gson gson;
     RequestQueueSingleton requestQueue;
     FixtureModel fixture;
-    View view;
-
-    public static final String FIXTURE_JSON = "FIXTURE_JSON";
+    View fragmentView;
 
     public FixtureFragment() {
-        super(R.layout.fragment_main_fixture);
+    }
+
+    @NonNull
+    public static FixtureFragment newInstance(String fixtureJson) {
+        FixtureFragment fragment = new FixtureFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_FIXTURE_JSON, fixtureJson);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() == null) return;
+
+        gson = GsonSingleton.getInstance();
+        requestQueue = RequestQueueSingleton.getInstance(getActivity().getBaseContext());
+
+        String fixtureJson = getArguments().getString(ARG_FIXTURE_JSON);
+        fixture = gson.fromJson(fixtureJson, FixtureModel.class);
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_main_fixture, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Bundle argumentsBundle = getArguments();
-        if (argumentsBundle == null) return;
-
-        gson = GsonSingleton.getInstance();
-        requestQueue = RequestQueueSingleton.getInstance(getActivity().getBaseContext());
-
-        String fixtureJson = argumentsBundle.getString(FIXTURE_JSON);
-        fixture = gson.fromJson(fixtureJson, FixtureModel.class);
-        this.view = view;
+        fragmentView = view;
 
         populateFixtureData(fixture);
         populateParticipantsList(fixture.Players);
     }
 
     private void populateFixtureData(@NonNull FixtureModel fixture) {
-        TextView locationTextView = view.findViewById(R.id.text_view_main_fixture_location_placeholder);
-        TextView dateTextView = view.findViewById(R.id.text_view_main_fixture_date_placeholder);
-        TextView qualityAverageTextView = view.findViewById(R.id.text_view_main_fixture_quality_average_placeholder);
-        TextView stateTextView = view.findViewById(R.id.text_view_main_fixture_state_placeholder);
+        TextView locationTextView = fragmentView.findViewById(R.id.text_view_main_fixture_location_placeholder);
+        TextView dateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_date_placeholder);
+        TextView qualityAverageTextView = fragmentView.findViewById(R.id.text_view_main_fixture_quality_average_placeholder);
+        TextView stateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_state_placeholder);
 
         locationTextView.setText(String.format("Location: %s", fixture.Location));
         dateTextView.setText(String.format("Date: %s", fixture.Date.format(DateTimeFormatter.ofPattern("dd MMMM HH:mm"))));
@@ -65,8 +84,8 @@ public class FixtureFragment extends Fragment {
     }
 
     private void populateParticipantsList(List<FixturePlayer> players) {
-        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_main_participants);
-        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        RecyclerView recyclerView = fragmentView.findViewById(R.id.recycler_view_main_participants);
+        recyclerView.setLayoutManager(new LinearLayoutManager(fragmentView.getContext()));
 
         RecyclerView.Adapter<RecyclerView.ViewHolder> participantsListAdapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             @NonNull

@@ -1,6 +1,7 @@
 package com.example.tabletennistournament.modules.cup;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -32,36 +33,56 @@ import static com.example.tabletennistournament.services.Common.increaseTimeout;
 
 public class RankingFragment extends Fragment {
 
-    Gson gson;
-    RequestQueueSingleton requestQueue;
-    CircularProgressIndicator progressIndicator;
-    TextView serverErrorTextView;
-    Button reloadButton;
-    View view;
+    private static final String ARG_SEASON_ID = "ARG_SEASON_ID";
 
     String seasonId;
 
-    public static final String BUNDLE_SEASON_ID = "BUNDLE_SEASON_ID";
+    Gson gson;
+    RequestQueueSingleton requestQueue;
+
+    View fragmentView;
+    CircularProgressIndicator progressIndicator;
+    TextView serverErrorTextView;
+    Button reloadButton;
 
     public RankingFragment() {
-        super(R.layout.fragment_main_ranking);
+    }
+
+    @NonNull
+    public static RankingFragment newInstance(String seasonId) {
+        RankingFragment fragment = new RankingFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_SEASON_ID, seasonId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() == null) return;
+
+        seasonId = getArguments().getString(ARG_SEASON_ID);
+
+        gson = GsonSingleton.getInstance();
+        requestQueue = RequestQueueSingleton.getInstance(getActivity().getBaseContext());
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_main_ranking, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        fragmentView = view;
 
-        Bundle argumentsBundle = getArguments();
-        if (argumentsBundle == null) return;
-
-        gson = GsonSingleton.getInstance();
-        requestQueue = RequestQueueSingleton.getInstance(getActivity().getBaseContext());
         progressIndicator = view.findViewById(R.id.circular_progress_indicator_ranking);
         serverErrorTextView = view.findViewById(R.id.text_view_server_error_ranking);
         reloadButton = view.findViewById(R.id.button_reload_ranking);
         reloadButton.setOnClickListener(v -> getPlayers());
-        seasonId = argumentsBundle.getString(BUNDLE_SEASON_ID);
-        this.view = view;
 
         getPlayers();
     }
@@ -93,7 +114,7 @@ public class RankingFragment extends Fragment {
     }
 
     private void createRankingRecyclerView(List<SeasonPlayerModel> players) {
-        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_ranking);
+        RecyclerView recyclerView = fragmentView.findViewById(R.id.recycler_view_ranking);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         RecyclerView.Adapter<RecyclerView.ViewHolder> rankingAdapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
