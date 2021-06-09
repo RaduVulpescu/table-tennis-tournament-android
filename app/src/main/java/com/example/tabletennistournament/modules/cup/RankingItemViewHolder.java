@@ -3,7 +3,7 @@ package com.example.tabletennistournament.modules.cup;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -12,8 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tabletennistournament.R;
+import com.google.android.material.card.MaterialCardView;
 
 public class RankingItemViewHolder extends RecyclerView.ViewHolder {
+
+    public final MaterialCardView cardView;
 
     public final TextView playerRank;
     public final TextView playerName;
@@ -28,11 +31,14 @@ public class RankingItemViewHolder extends RecyclerView.ViewHolder {
     public final TextView playerShape;
 
     public final LinearLayout linearLayoutExtraStats;
-    public final Button expandButton;
-    public final Button collapseButton;
+    public final ImageButton expandButton;
+
+    public boolean isExpanded = false;
 
     public RankingItemViewHolder(@NonNull View view) {
         super(view);
+        this.cardView =  itemView.findViewById(R.id.card);
+
         this.playerRank = itemView.findViewById(R.id.text_view_ranking_rank);
         this.playerName = itemView.findViewById(R.id.text_view_ranking_name);
         this.playerLevelIcon = itemView.findViewById(R.id.text_view_ranking_level);
@@ -46,8 +52,7 @@ public class RankingItemViewHolder extends RecyclerView.ViewHolder {
         this.playerShape = itemView.findViewById(R.id.text_view_ranking_shape);
 
         this.linearLayoutExtraStats = itemView.findViewById(R.id.linear_layout_ranking_extra_stats);
-        this.expandButton = itemView.findViewById(R.id.button_ranking_expand);
-        this.collapseButton = itemView.findViewById(R.id.button_ranking_collapse);
+        this.expandButton = itemView.findViewById(R.id.button_ranking_expand_collapse);
     }
 
     @NonNull

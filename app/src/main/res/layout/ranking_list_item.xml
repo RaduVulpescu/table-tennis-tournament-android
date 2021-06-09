@@ -75,23 +75,13 @@
                     app:layout_constraintStart_toEndOf="@+id/text_view_ranking_quality" />
 
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button_ranking_expand"
-                    style="@style/IconOnlyButton"
-                    android:layout_width="36dp"
-                    android:layout_height="match_parent"
-                    app:icon="@drawable/ic_baseline_keyboard_arrow_down_24"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button_ranking_collapse"
-                    style="@style/IconOnlyButton"
-                    android:layout_width="36dp"
-                    android:layout_height="match_parent"
-                    android:visibility="gone"
-                    app:icon="@drawable/ic_baseline_keyboard_arrow_up_24"
+                <ImageButton
+                    android:id="@+id/button_ranking_expand_collapse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_baseline_keyboard_arrow_down_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -110,7 +100,7 @@
 
                 <View
                     android:layout_width="wrap_content"
-                    android:layout_height="1dp"
+                    android:layout_height="1px"
                     android:background="@color/design_default_color_primary"
                     android:padding="4dp" />
 

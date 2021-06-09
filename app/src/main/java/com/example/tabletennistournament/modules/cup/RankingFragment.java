@@ -1,6 +1,8 @@
 package com.example.tabletennistournament.modules.cup;
 
 import android.os.Bundle;
+import android.transition.AutoTransition;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +46,7 @@ public class RankingFragment extends Fragment {
     CircularProgressIndicator progressIndicator;
     TextView serverErrorTextView;
     Button reloadButton;
+
 
     public RankingFragment() {
     }
@@ -152,15 +155,17 @@ public class RankingFragment extends Fragment {
                 vh.playerShape.setText(String.format("Shape:   %s", decimalFormat.format(player.Shape)));
 
                 vh.expandButton.setOnClickListener(v -> {
-                    v.setVisibility(View.GONE);
-                    vh.linearLayoutExtraStats.setVisibility(View.VISIBLE);
-                    vh.collapseButton.setVisibility(View.VISIBLE);
-                });
+                    TransitionManager.beginDelayedTransition(vh.cardView, new AutoTransition());
 
-                vh.collapseButton.setOnClickListener(v -> {
-                    v.setVisibility(View.GONE);
-                    vh.linearLayoutExtraStats.setVisibility(View.GONE);
-                    vh.expandButton.setVisibility(View.VISIBLE);
+                    if (vh.isExpanded) {
+                        vh.linearLayoutExtraStats.setVisibility(View.GONE);
+                        vh.expandButton.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24);
+                    } else {
+                        vh.linearLayoutExtraStats.setVisibility(View.VISIBLE);
+                        vh.expandButton.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24);
+                    }
+
+                    vh.isExpanded = !vh.isExpanded;
                 });
             }
         };

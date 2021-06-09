@@ -53,4 +53,6 @@
     <string name="activity_label_edit_fixture">Edit Fixture</string>
     <string name="activity_label_ranking">Ranking</string>
     <string name="continue_without_signing_in">Continue without signing in</string>
+    <string name="fixture_content_information">Information</string>
+    <string name="expand_information_button_description">Expand Information</string>
 </resources>

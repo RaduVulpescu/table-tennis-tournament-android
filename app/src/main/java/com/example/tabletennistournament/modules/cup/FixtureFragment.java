@@ -85,7 +85,12 @@ public class FixtureFragment extends Fragment {
 
     private void populateParticipantsList(List<FixturePlayer> players) {
         RecyclerView recyclerView = fragmentView.findViewById(R.id.recycler_view_main_participants);
-        recyclerView.setLayoutManager(new LinearLayoutManager(fragmentView.getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(fragmentView.getContext()) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        });
 
         RecyclerView.Adapter<RecyclerView.ViewHolder> participantsListAdapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             @NonNull
