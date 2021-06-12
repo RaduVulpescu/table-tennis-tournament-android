@@ -30,7 +30,7 @@
         <activity
             android:name=".modules.cup.CupActivity"
             android:label="@string/activity_label_ranking"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
+            android:theme="@style/Theme.TableTennisTournament.NoActionBar" />
         <activity
             android:name=".modules.upcoming.NextFixturesActivity"
             android:label="@string/activity_next_fixtures_title" />

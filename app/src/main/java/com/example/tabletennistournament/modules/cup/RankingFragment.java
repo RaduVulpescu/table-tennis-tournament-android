@@ -139,19 +139,19 @@ public class RankingFragment extends Fragment {
             private void bind(@NonNull RankingItemViewHolder vh, int position) {
                 SeasonPlayerModel player = players.get(position);
 
-                vh.playerRank.setText(String.valueOf(player.Rank));
-                vh.playerName.setText(player.Name);
-                vh.playerLevelIcon.setImageResource(getPlayerLevelIcon(player.Level));
-                vh.playerQuality.setText(String.format(Locale.getDefault(), "Q: %.2f", player.Quality));
-                vh.playerTop4.setText(String.format(Locale.getDefault(), "Top 4: %.2f", player.Top4));
+                vh.playerRank.setText(String.valueOf(player.rank));
+                vh.playerName.setText(player.name);
+                vh.playerLevelIcon.setImageResource(getPlayerLevelIcon(player.level));
+                vh.playerQuality.setText(String.format(Locale.getDefault(), "Q: %.2f", player.quality));
+                vh.playerTop4.setText(String.format(Locale.getDefault(), "Top 4: %.2f", player.top4));
 
-                vh.playerScore1.setText(String.format("Score 1: %s", player.Score1));
-                vh.playerScore2.setText(String.format("Score 2: %s", player.Score2));
-                vh.playerScore3.setText(String.format("Score 3: %s", player.Score3));
-                vh.playerScore4.setText(String.format("Score 4: %s", player.Score4));
+                vh.playerScore1.setText(String.format("Score 1: %s", player.score1));
+                vh.playerScore2.setText(String.format("Score 2: %s", player.score2));
+                vh.playerScore3.setText(String.format("Score 3: %s", player.score3));
+                vh.playerScore4.setText(String.format("Score 4: %s", player.score4));
 
                 DecimalFormat decimalFormat = new DecimalFormat("+#,##0.0000;-#");
-                vh.playerShape.setText(String.format("Shape:   %s", decimalFormat.format(player.Shape)));
+                vh.playerShape.setText(String.format("Shape:   %s", decimalFormat.format(player.shape)));
 
                 vh.expandButton.setOnClickListener(v -> {
                     TransitionManager.beginDelayedTransition(vh.cardView, new AutoTransition());

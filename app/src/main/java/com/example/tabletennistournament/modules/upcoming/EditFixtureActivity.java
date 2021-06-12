@@ -115,7 +115,7 @@ public class EditFixtureActivity extends AppCompatActivity {
         currentIntent = getIntent();
         String fixtureJson = currentIntent.getStringExtra(NextFixturesActivity.EXTRA_FIXTURE_JSON);
         fixtureModel = gson.fromJson(fixtureJson, FixtureModel.class);
-        fixturePlayers = fixtureModel.Players;
+        fixturePlayers = fixtureModel.players;
 
         populateFields();
         createDatePicker();
@@ -145,7 +145,7 @@ public class EditFixtureActivity extends AppCompatActivity {
 
         String currentSeasonId = currentIntent.getStringExtra(NextFixturesActivity.EXTRA_CURRENT_SEASON_ID);
 
-        final String putFixtureUrl = String.format("%s/%s", ApiRoutes.FIXTURES_ROUTE(currentSeasonId), fixtureModel.FixtureId);
+        final String putFixtureUrl = String.format("%s/%s", ApiRoutes.FIXTURES_ROUTE(currentSeasonId), fixtureModel.fixtureId);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, putFixtureUrl, new JSONObject(gson.toJson(putFixtureDTO)),
                 response -> {
                     Intent intent = new Intent(this, NextFixturesActivity.class);
@@ -200,7 +200,7 @@ public class EditFixtureActivity extends AppCompatActivity {
             adapter = new ArrayAdapter<>(this, R.layout.dropdown_item, playersDropDown);
             adapter.sort(Comparator.comparing(DropDownItem::getName));
             autoCompleteTextViewPlayer.setAdapter(adapter);
-            fixturePlayers.removeIf(fp -> fp.PlayerId == newDropDownItem.playerId);
+            fixturePlayers.removeIf(fp -> fp.playerId == newDropDownItem.playerId);
         });
 
         playersChipGroup.addView(chip);
@@ -209,21 +209,21 @@ public class EditFixtureActivity extends AppCompatActivity {
     }
 
     private void inflateChipGroup(@NonNull List<PlayerModel> players) {
-        List<UUID> fixturePlayersIds = fixtureModel.Players.stream().map(fp -> fp.PlayerId).collect(Collectors.toList());
-        List<PlayerModel> remainingPlayers = players.stream().filter(x -> !fixturePlayersIds.contains(x.PlayerId)).collect(Collectors.toList());
-        playersDropDown = remainingPlayers.stream().map(x -> new DropDownItem(x.PlayerId, x.Name, x.Quality)).collect(Collectors.toList());
+        List<UUID> fixturePlayersIds = fixtureModel.players.stream().map(fp -> fp.playerId).collect(Collectors.toList());
+        List<PlayerModel> remainingPlayers = players.stream().filter(x -> !fixturePlayersIds.contains(x.playerId)).collect(Collectors.toList());
+        playersDropDown = remainingPlayers.stream().map(x -> new DropDownItem(x.playerId, x.name, x.quality)).collect(Collectors.toList());
 
         adapter = new ArrayAdapter<>(this, R.layout.dropdown_item, playersDropDown);
         autoCompleteTextViewPlayer.setAdapter(adapter);
         autoCompleteTextViewPlayer.setOnItemClickListener((parent, view, position, id) -> selectedPlayer = (DropDownItem) parent.getItemAtPosition(position));
 
-        for (FixturePlayer fixturePlayer : fixtureModel.Players) {
+        for (FixturePlayer fixturePlayer : fixtureModel.players) {
             Chip chip = new Chip(this);
-            chip.setText(fixturePlayer.Name);
-            chip.setTag(fixturePlayer.PlayerId);
+            chip.setText(fixturePlayer.name);
+            chip.setTag(fixturePlayer.playerId);
             chip.setCloseIconVisible(true);
 
-            DropDownItem newDropDownItem = new DropDownItem(fixturePlayer.PlayerId, fixturePlayer.Name, fixturePlayer.Quality);
+            DropDownItem newDropDownItem = new DropDownItem(fixturePlayer.playerId, fixturePlayer.name, fixturePlayer.quality);
             chip.setOnCloseIconClickListener(v -> {
                 v.setVisibility(View.GONE);
                 playersDropDown.add(newDropDownItem);
@@ -282,9 +282,9 @@ public class EditFixtureActivity extends AppCompatActivity {
     }
 
     private void populateFields() {
-        locationTextInputLayout.getEditText().setText(fixtureModel.Location);
-        timeTextInputLayout.getEditText().setText((formatTime(fixtureModel.Date.getHour(), fixtureModel.Date.getMinute())));
-        dateTextInputLayout.getEditText().setText(fixtureModel.Date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        locationTextInputLayout.getEditText().setText(fixtureModel.location);
+        timeTextInputLayout.getEditText().setText((formatTime(fixtureModel.date.getHour(), fixtureModel.date.getMinute())));
+        dateTextInputLayout.getEditText().setText(fixtureModel.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
     }
 
     @Nullable

@@ -5,40 +5,40 @@ import com.example.tabletennistournament.enums.Level;
 import java.util.UUID;
 
 public class PlayerModel {
-    public UUID PlayerId;
-    public String Name;
-    public String City;
-    public Integer BirthYear;
-    public Integer Height;
-    public Integer Weight;
+    public UUID playerId;
+    public String name;
+    public String city;
+    public Integer birthYear;
+    public Integer height;
+    public Integer weight;
 
-    public Double Quality;
-    public Level CurrentLevel;
+    public Double quality;
+    public Level currentLevel;
 
-    public Double BestScore;
-    public Integer BestRanking;
-    public Double BestTop4;
-    public Level BestLevel;
+    public Double bestScore;
+    public Integer bestRanking;
+    public Double bestTop4;
+    public Level bestLevel;
 
-    public int OpenCups;
-    public int AdvancedCups;
-    public int IntermediateCups;
-    public int BeginnerCups;
+    public int openCups;
+    public int advancedCups;
+    public int intermediateCups;
+    public int beginnerCups;
 
-    public int OpenSeasons;
-    public int AdvancedSeasons;
-    public int IntermediateSeasons;
-    public int BeginnerSeasons;
+    public int openSeasons;
+    public int advancedSeasons;
+    public int intermediateSeasons;
+    public int beginnerSeasons;
 
     public PlayerModel() { }
 
     public PlayerModel(UUID playerId, String name, Double quality) {
-        PlayerId = playerId;
-        Name = name;
-        Quality = quality;
+        this.playerId = playerId;
+        this.name = name;
+        this.quality = quality;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 }

@@ -1,9 +1,9 @@
 package com.example.tabletennistournament.models;
 
 public class DeviceInformationModel {
-    public String Token;
+    public String token;
 
     public DeviceInformationModel(String token) {
-        Token = token;
+        this.token = token;
     }
 }

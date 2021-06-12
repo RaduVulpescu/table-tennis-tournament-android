@@ -9,19 +9,19 @@ import java.util.UUID;
 
 public class FixtureModel {
 
-    public UUID SeasonId;
-    public UUID FixtureId;
-    public ZonedDateTime Date;
-    public String Location;
-    public double QualityAverage;
-    public FixtureState State;
-    public FixtureType Type;
-    public List<FixturePlayer> Players;
+    public UUID seasonId;
+    public UUID fixtureId;
+    public ZonedDateTime date;
+    public String location;
+    public double qualityAverage;
+    public FixtureState state;
+    public FixtureType type;
+    public List<FixturePlayer> players;
 
     public FixtureModel() { }
 
     public ZonedDateTime getDate() {
-        return Date;
+        return date;
     }
 }
 

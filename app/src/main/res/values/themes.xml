@@ -41,6 +41,21 @@
         <item name="textAppearanceOverline">@style/TextAppearance.MaterialComponents.Overline</item>
     </style>
 
+    <style name="Theme.TableTennisTournament.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#0D46A0</item>
+        <item name="colorPrimaryVariant">#5471D2</item>
+        <item name="colorOnPrimary">@color/design_default_color_on_primary</item>
+
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">#4DD0E1</item>
+        <item name="colorSecondaryVariant">#88FFFF</item>
+        <item name="colorOnSecondary">@color/design_default_color_on_secondary</item>
+
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+    </style>
+
     <style name="IconOnlyButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="iconPadding">0dp</item>
         <item name="iconGravity">textStart</item>

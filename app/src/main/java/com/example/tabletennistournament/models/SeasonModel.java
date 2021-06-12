@@ -4,14 +4,14 @@ import java.util.Date;
 import java.util.UUID;
 
 public class SeasonModel {
-    public UUID SeasonId;
-    public int Number;
-    public Date StartDate;
-    public Date EndDate;
+    public UUID seasonId;
+    public int number;
+    public Date startDate;
+    public Date endDate;
 
     public SeasonModel() { }
 
     public int getNumber() {
-        return Number;
+        return number;
     }
 }

@@ -149,15 +149,15 @@ public class NextFixturesActivity extends AppCompatActivity {
             private void bind(@NonNull UpcomingFixtureListItemViewHolder vh, int position) {
                 FixtureModel fixture = fixtures.get(position);
 
-                vh.fixtureDate.setText(extractDate(fixture.Date));
-                vh.fixtureTime.setText(extractTime(fixture.Date));
-                vh.fixtureLocation.setText(extractLocation(fixture.Location));
-                vh.fixtureQualityAvg.setText(String.format(Locale.getDefault(), "QAvg: %.2f", fixture.QualityAverage));
+                vh.fixtureDate.setText(extractDate(fixture.date));
+                vh.fixtureTime.setText(extractTime(fixture.date));
+                vh.fixtureLocation.setText(extractLocation(fixture.location));
+                vh.fixtureQualityAvg.setText(String.format(Locale.getDefault(), "QAvg: %.2f", fixture.qualityAverage));
 
-                fixture.Players.sort(Comparator.comparing(FixturePlayer::getQuality).reversed());
-                inflateRecyclerViewPlayers(vh.recyclerViewPlayers, fixture.Players);
+                fixture.players.sort(Comparator.comparing(FixturePlayer::getQuality).reversed());
+                inflateRecyclerViewPlayers(vh.recyclerViewPlayers, fixture.players);
 
-                if (fixture.Players.size() == 0) {
+                if (fixture.players.size() == 0) {
                     vh.expandButton.setVisibility(View.GONE);
                 }
 
@@ -220,8 +220,8 @@ public class NextFixturesActivity extends AppCompatActivity {
             private void bind(@NonNull UpcomingFixturePlayerListItemViewHolder vh, int position) {
                 FixturePlayer player = players.get(position);
 
-                vh.playerName.setText(player.Name);
-                vh.playerQuality.setText(String.format("Q: %s", getValueOrNA(player.Quality)));
+                vh.playerName.setText(player.name);
+                vh.playerQuality.setText(String.format("Q: %s", getValueOrNA(player.quality)));
             }
         };
 
@@ -229,7 +229,7 @@ public class NextFixturesActivity extends AppCompatActivity {
     }
 
     private void startFixture(UpcomingFixtureListItemViewHolder vh, @NonNull FixtureModel fixture) {
-        String url = ApiRoutes.START_FIXTURE_ROUTE(fixture.SeasonId.toString(), fixture.FixtureId.toString());
+        String url = ApiRoutes.START_FIXTURE_ROUTE(fixture.seasonId.toString(), fixture.fixtureId.toString());
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
                 response -> {

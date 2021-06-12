@@ -121,8 +121,8 @@ public class PlayerProfileActivity extends AppCompatActivity {
         TextView advancedSeasonsTextView = findViewById(R.id.text_view_player_profile_advanced_seasons);
         TextView openSeasonsTextView = findViewById(R.id.text_view_player_profile_open_seasons);
 
-        playerNameTextView.setText(player.Name);
-        playerLevelImageView.setImageResource(getPlayerLevelIcon(player.CurrentLevel));
+        playerNameTextView.setText(player.name);
+        playerLevelImageView.setImageResource(getPlayerLevelIcon(player.currentLevel));
 
         Picasso.get()
                 .load("https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account-male-user-icon.png")
@@ -130,20 +130,20 @@ public class PlayerProfileActivity extends AppCompatActivity {
                 .centerCrop()
                 .into(playerPictureImageView);
 
-        bestScoreTextView.setText(getValueOrNa(String.valueOf(player.BestScore)));
-        bestRankingTextView.setText(getValueOrNa(String.valueOf(player.BestRanking)));
-        bestTop4TextView.setText(getValueOrNa(String.valueOf(player.BestTop4)));
-        bestLevelTextView.setText(getValueOrNa(String.valueOf(player.BestLevel)));
+        bestScoreTextView.setText(getValueOrNa(String.valueOf(player.bestScore)));
+        bestRankingTextView.setText(getValueOrNa(String.valueOf(player.bestRanking)));
+        bestTop4TextView.setText(getValueOrNa(String.valueOf(player.bestTop4)));
+        bestLevelTextView.setText(getValueOrNa(String.valueOf(player.bestLevel)));
 
-        beginnerCupsTextView.setText(String.valueOf(player.BeginnerCups));
-        intermediateCupsTextView.setText(String.valueOf(player.IntermediateCups));
-        advancedCupsTextView.setText(String.valueOf(player.AdvancedCups));
-        openCupsTextView.setText(String.valueOf(player.OpenCups));
+        beginnerCupsTextView.setText(String.valueOf(player.beginnerCups));
+        intermediateCupsTextView.setText(String.valueOf(player.intermediateCups));
+        advancedCupsTextView.setText(String.valueOf(player.advancedCups));
+        openCupsTextView.setText(String.valueOf(player.openCups));
 
-        beginnerSeasonsTextView.setText(String.valueOf(player.BeginnerSeasons));
-        intermediateSeasonsTextView.setText(String.valueOf(player.IntermediateSeasons));
-        advancedSeasonsTextView.setText(String.valueOf(player.AdvancedSeasons));
-        openSeasonsTextView.setText(String.valueOf(player.OpenSeasons));
+        beginnerSeasonsTextView.setText(String.valueOf(player.beginnerSeasons));
+        intermediateSeasonsTextView.setText(String.valueOf(player.intermediateSeasons));
+        advancedSeasonsTextView.setText(String.valueOf(player.advancedSeasons));
+        openSeasonsTextView.setText(String.valueOf(player.openSeasons));
     }
 
     public String getValueOrNa(@NonNull String string) {
