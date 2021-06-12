@@ -74,7 +74,6 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/text_view_ranking_quality" />
 
-
                 <ImageButton
                     android:id="@+id/button_ranking_expand_collapse"
                     android:layout_width="wrap_content"
@@ -100,7 +99,7 @@
 
                 <View
                     android:layout_width="wrap_content"
-                    android:layout_height="1px"
+                    android:layout_height="1dp"
                     android:background="@color/colorPrimary"
                     android:padding="4dp" />
 

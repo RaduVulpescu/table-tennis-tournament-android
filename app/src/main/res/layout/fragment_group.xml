@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<com.evrencoskun.tableview.TableView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/table_view_group"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:allow_click_inside_cell="true"
-    tools:context=".modules.cup.fixture.GroupFragment" />

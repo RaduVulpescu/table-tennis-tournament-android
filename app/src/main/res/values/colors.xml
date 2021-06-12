@@ -10,15 +10,15 @@
     <color name="grey">#B8B8B8</color>
 
     <color name="colorPrimary">#0D46A0</color>
-    <color name="colorPrimaryVariant">#5471d2</color>
+    <color name="colorPrimaryVariant">#5471D2</color>
     <color name="colorOnPrimary">@color/design_default_color_on_primary</color>
 
     <!-- Secondary brand color. -->
-    <color name="colorSecondary">#4dd0e1</color>
-    <color name="colorSecondaryVariant">#88ffff</color>
+    <color name="colorSecondary">#4DD0E1</color>
+    <color name="colorSecondaryVariant">#88FFFF</color>
     <color name="colorOnSecondary">@color/design_default_color_on_secondary</color>
 
-    <color name="cell_background_color">#ffffff</color>
-    <color name="header_line_color">#0a0a0a</color>
-    <color name="table_view_default_text_color">#0a0a0a</color>
+    <color name="cell_background_color">#FFFFFFFF</color>
+    <color name="header_line_color">#0A0A0A</color>
+    <color name="table_view_default_text_color">#0A0A0A</color>
 </resources>

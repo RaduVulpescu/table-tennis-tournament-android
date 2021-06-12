@@ -15,6 +15,8 @@ import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.modules.cup.fixture.models.Cell;
 import com.example.tabletennistournament.modules.cup.fixture.models.ColumnHeader;
 import com.example.tabletennistournament.modules.cup.fixture.models.RowHeader;
+import com.example.tabletennistournament.modules.cup.fixture.models.ScoreCell;
+import com.example.tabletennistournament.modules.cup.fixture.models.ScoreData;
 import com.example.tabletennistournament.modules.cup.fixture.services.GroupTableViewAdapter;
 import com.example.tabletennistournament.modules.cup.fixture.services.GroupTableViewClickListener;
 import com.example.tabletennistournament.services.GsonSingleton;
@@ -68,7 +70,7 @@ public class GroupFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_group, container, false);
+        return inflater.inflate(R.layout.fragment_group_table, container, false);
     }
 
     @Override
@@ -85,6 +87,8 @@ public class GroupFragment extends Fragment {
     }
 
     private void inflateTableView(@NonNull List<FixturePlayer> players) {
+        tableView.setMinimumHeight(R.dimen.default_column_header_height * players.size() * 2);
+
         for (FixturePlayer player : players) {
             mColumnHeaderList.add(new ColumnHeader(player.Name));
             mRowHeaderList.add(new RowHeader(player.Name));
@@ -97,7 +101,9 @@ public class GroupFragment extends Fragment {
                 if (i == j) {
                     row.add(new Cell(""));
                 } else {
-                    row.add(new Cell("3 - 0"));
+                    ScoreData scoreData = new ScoreData(players.get(i).Name, players.get(j).Name, 3, 0);
+
+                    row.add(new ScoreCell(scoreData));
                 }
             }
 
@@ -105,6 +111,10 @@ public class GroupFragment extends Fragment {
         }
 
         adapter.setAllItems(mColumnHeaderList, mRowHeaderList, mCellList);
-        tableView.setTableViewListener(new GroupTableViewClickListener());
+        tableView.setTableViewListener(new GroupTableViewClickListener(tableView));
+
+        final float scale = getContext().getResources().getDisplayMetrics().density;
+        int dps = 40 * (players.size() + 1) + 10;
+        tableView.getLayoutParams().height = (int) (dps * scale + 0.5f);
     }
 }

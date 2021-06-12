@@ -1,5 +1,6 @@
 package com.example.tabletennistournament.modules.cup.fixture.services;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ public class GroupTableViewAdapter extends AbstractTableAdapter<ColumnHeader, Ro
     public AbstractViewHolder onCreateCellViewHolder(@NonNull ViewGroup parent, int viewType) {
         View layout = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.table_view_cell_layout, parent, false);
+
         return new CellViewHolder(layout);
     }
 
@@ -42,10 +44,12 @@ public class GroupTableViewAdapter extends AbstractTableAdapter<ColumnHeader, Ro
         CellViewHolder viewHolder = (CellViewHolder) holder;
         viewHolder.cell_textview.setText(((Cell) cellItemModel).getData().toString());
 
-//        viewHolder.cell_container.setOnLongClickListener(v -> {
-//            viewHolder.cell_textview.setText("0");
-//            return false;
-//        });
+        if (columnPosition == rowPosition) {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            params.setMargins(0,0,0,0);
+            viewHolder.cell_container.setLayoutParams(params);
+            viewHolder.cell_textview.setBackgroundColor(Color.GRAY);
+        }
 
         viewHolder.cell_container.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
         viewHolder.cell_textview.requestLayout();
@@ -77,8 +81,7 @@ public class GroupTableViewAdapter extends AbstractTableAdapter<ColumnHeader, Ro
         ColumnHeaderViewHolder columnHeaderViewHolder = (ColumnHeaderViewHolder) holder;
         columnHeaderViewHolder.column_header_textView.setText(((ColumnHeader) columnHeaderItemModel).getData().toString());
 
-        columnHeaderViewHolder.column_header_container.getLayoutParams().width = LinearLayout
-                .LayoutParams.WRAP_CONTENT;
+        columnHeaderViewHolder.column_header_container.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
         columnHeaderViewHolder.column_header_textView.requestLayout();
     }
 
@@ -112,20 +115,5 @@ public class GroupTableViewAdapter extends AbstractTableAdapter<ColumnHeader, Ro
     public View onCreateCornerView(@NonNull ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.table_view_corner_layout, parent, false);
-    }
-
-    @Override
-    public int getColumnHeaderItemViewType(int columnPosition) {
-        return 0;
-    }
-
-    @Override
-    public int getRowHeaderItemViewType(int rowPosition) {
-        return 0;
-    }
-
-    @Override
-    public int getCellItemViewType(int columnPosition) {
-        return 0;
     }
 }

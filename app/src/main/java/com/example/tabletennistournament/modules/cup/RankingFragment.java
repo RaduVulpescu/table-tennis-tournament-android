@@ -47,7 +47,6 @@ public class RankingFragment extends Fragment {
     TextView serverErrorTextView;
     Button reloadButton;
 
-
     public RankingFragment() {
     }
 

@@ -7,12 +7,13 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:id="@+id/linear_layout_fixture_content_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -35,25 +36,28 @@
                     android:textColor="@color/white" />
 
                 <ImageButton
+                    android:id="@+id/button_fixture_information_expand_collapse"
                     android:layout_width="48dp"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/expand_information_button_description"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
-                    android:src="@drawable/ic_baseline_keyboard_arrow_down_24"
+                    android:src="@drawable/ic_baseline_keyboard_arrow_up_24"
                     app:tint="@color/white" />
 
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1px"
+                android:layout_height="1dp"
                 android:background="@color/white" />
 
             <LinearLayout
+                android:id="@+id/linear_layout_information_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
                 android:orientation="horizontal"
                 android:paddingStart="8dp"
                 android:paddingTop="4dp"
@@ -61,7 +65,6 @@
                 android:paddingBottom="4dp">
 
                 <LinearLayout
-                    android:id="@+id/linearLayout2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -146,6 +149,7 @@
                     android:textColor="@color/white" />
 
                 <ImageButton
+                    android:id="@+id/button_fixture_groups_expand_collapse"
                     android:layout_width="48dp"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
@@ -164,7 +168,8 @@
                 android:paddingStart="8dp"
                 android:paddingTop="4dp"
                 android:paddingEnd="8dp"
-                android:paddingBottom="4dp">
+                android:paddingBottom="4dp"
+                android:visibility="gone">
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_group_groups_navigation"
@@ -188,7 +193,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1px"
+                android:layout_height="1dp"
                 android:background="@color/white" />
 
             <LinearLayout
@@ -209,6 +214,7 @@
                     android:textColor="@color/white" />
 
                 <ImageButton
+                    android:id="@+id/button_fixture_pyramids_expand_collapse"
                     android:layout_width="48dp"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
@@ -221,7 +227,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1px"
+                android:layout_height="1dp"
                 android:background="@color/white" />
 
             <LinearLayout
@@ -242,6 +248,7 @@
                     android:textColor="@color/white" />
 
                 <ImageButton
+                    android:id="@+id/button_fixture_ranking_expand_collapse"
                     android:layout_width="48dp"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"

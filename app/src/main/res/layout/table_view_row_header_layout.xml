@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/row_root"
     android:layout_width="@dimen/default_row_header_width"
-    android:maxWidth="80dp"
     android:layout_height="@dimen/cell_height"
     android:background="@color/cell_background_color">
 
@@ -18,8 +17,8 @@
             android:id="@+id/row_header_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
             android:gravity="center"
-            android:maxLines="1"
             android:textColor="@color/table_view_default_text_color"
             android:textSize="@dimen/text_size"
             android:textStyle="bold"
