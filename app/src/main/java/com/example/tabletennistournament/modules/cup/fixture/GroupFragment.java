@@ -90,8 +90,8 @@ public class GroupFragment extends Fragment {
         tableView.setMinimumHeight(R.dimen.default_column_header_height * players.size() * 2);
 
         for (FixturePlayer player : players) {
-            mColumnHeaderList.add(new ColumnHeader(player.name));
-            mRowHeaderList.add(new RowHeader(player.name));
+            mColumnHeaderList.add(new ColumnHeader(player.Name));
+            mRowHeaderList.add(new RowHeader(player.Name));
         }
 
         for (int i = 0; i < players.size(); i++) {
@@ -101,7 +101,7 @@ public class GroupFragment extends Fragment {
                 if (i == j) {
                     row.add(new Cell(""));
                 } else {
-                    ScoreData scoreData = new ScoreData(players.get(i).name, players.get(j).name, 3, 0);
+                    ScoreData scoreData = new ScoreData(players.get(i).Name, players.get(j).Name, 3, 0);
 
                     row.add(new ScoreCell(scoreData));
                 }

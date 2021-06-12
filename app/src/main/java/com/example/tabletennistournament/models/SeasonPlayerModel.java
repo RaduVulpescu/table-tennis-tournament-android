@@ -5,24 +5,24 @@ import com.example.tabletennistournament.enums.Level;
 import java.util.UUID;
 
 public class SeasonPlayerModel {
-    public UUID seasonId;
-    public UUID playerId;
+    public UUID SeasonId;
+    public UUID PlayerId;
 
-    public int rank;
-    public String name;
-    public Level level;
-    public double quality;
-    public double top4;
-    public double score1;
-    public double score2;
-    public double score3;
-    public double score4;
-    public double shape;
+    public int Rank;
+    public String Name;
+    public Level Level;
+    public double Quality;
+    public double Top4;
+    public double Score1;
+    public double Score2;
+    public double Score3;
+    public double Score4;
+    public double Shape;
 
     public SeasonPlayerModel() {
     }
 
     public int getRank() {
-        return rank;
+        return Rank;
     }
 }

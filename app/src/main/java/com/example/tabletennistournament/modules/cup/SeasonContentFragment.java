@@ -74,8 +74,8 @@ public class SeasonContentFragment extends Fragment {
         String seasonJson = getArguments().getString(ARG_SEASON_JSON);
         SeasonModel season = gson.fromJson(seasonJson, SeasonModel.class);
 
-        getFixtures(season.seasonId.toString());
-        displayRanking(season.seasonId);
+        getFixtures(season.SeasonId.toString());
+        displayRanking(season.SeasonId);
     }
 
     @Override
@@ -116,7 +116,7 @@ public class SeasonContentFragment extends Fragment {
         for (int i = 0, fixturesSize = fixtures.size(); i < fixturesSize; i++) {
             FixtureModel fixture = fixtures.get(i);
 
-            String tabTitle = fixture.date.format(DateTimeFormatter.ofPattern("dd MMM"));
+            String tabTitle = fixture.Date.format(DateTimeFormatter.ofPattern("dd MMM"));
             if (tabTitle.startsWith("0")) tabTitle = tabTitle.substring(1);
 
             TabLayout.Tab tab = fixturesTabLayout.newTab()
@@ -131,7 +131,7 @@ public class SeasonContentFragment extends Fragment {
             public void onTabSelected(TabLayout.Tab tab) {
 
                 if (tab.getTag().toString().equals("Ranking")) {
-                    displayRanking(fixtures.get(0).seasonId);
+                    displayRanking(fixtures.get(0).SeasonId);
                 } else {
                     int fixtureIndex = Integer.parseInt(tab.getTag().toString());
                     displayFixture(fixtures.get(fixtureIndex));

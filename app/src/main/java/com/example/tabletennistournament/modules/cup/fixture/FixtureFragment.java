@@ -104,8 +104,8 @@ public class FixtureFragment extends Fragment {
 
         setOnClickToExpandButtons();
         populateFixtureData(fixture);
-        populateParticipantsList(fixture.players);
-        populateGroups(fixture.players);
+        populateParticipantsList(fixture.Players);
+        populateGroups(fixture.Players);
     }
 
     private void setOnClickToExpandButtons() {
@@ -169,10 +169,10 @@ public class FixtureFragment extends Fragment {
         TextView qualityAverageTextView = fragmentView.findViewById(R.id.text_view_main_fixture_quality_average_placeholder);
         TextView stateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_state_placeholder);
 
-        locationTextView.setText(String.format("Location: %s", fixture.location));
-        dateTextView.setText(String.format("Date: %s", fixture.date.format(DateTimeFormatter.ofPattern("dd MMMM HH:mm"))));
-        qualityAverageTextView.setText(String.format(Locale.getDefault(), "Quality Avg: %.2f", fixture.qualityAverage));
-        stateTextView.setText(String.format("State: %s", fixture.state));
+        locationTextView.setText(String.format("Location: %s", fixture.Location));
+        dateTextView.setText(String.format("Date: %s", fixture.Date.format(DateTimeFormatter.ofPattern("dd MMMM HH:mm"))));
+        qualityAverageTextView.setText(String.format(Locale.getDefault(), "Quality Avg: %.2f", fixture.QualityAverage));
+        stateTextView.setText(String.format("State: %s", fixture.State));
     }
 
     private void populateParticipantsList(List<FixturePlayer> players) {
@@ -204,8 +204,8 @@ public class FixtureFragment extends Fragment {
             private void bind(@NonNull FixturePlayerListItemViewHolder vh, int position) {
                 FixturePlayer player = players.get(position);
 
-                vh.playerName.setText(player.name);
-                vh.playerQuality.setText(String.format(Locale.getDefault(), "Q: %.2f", player.quality));
+                vh.playerName.setText(player.Name);
+                vh.playerQuality.setText(String.format(Locale.getDefault(), "Q: %.2f", player.Quality));
             }
         };
 

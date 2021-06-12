@@ -73,11 +73,11 @@ public class CupActivity extends AppCompatActivity {
                     seasonModels.sort(Comparator.comparing(SeasonModel::getNumber).reversed());
 
                     SeasonModel currentSeason = seasonModels.get(0);
-                    topBar.setTitle("Season " + currentSeason.number);
+                    topBar.setTitle("Season " + currentSeason.Number);
 
                     SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.shared_preferences), Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putString(getString(R.string.current_season_id), currentSeason.seasonId.toString());
+                    editor.putString(getString(R.string.current_season_id), currentSeason.SeasonId.toString());
                     editor.apply();
 
                     getSupportFragmentManager().beginTransaction()
@@ -131,7 +131,7 @@ public class CupActivity extends AppCompatActivity {
             menu.add(Menu.NONE, seasonModel.getNumber(), Menu.NONE, "Season " + seasonModel.getNumber());
             MenuItem menuItem = menu.findItem(seasonModel.getNumber());
             menuItem.setOnMenuItemClickListener(item -> {
-                topBar.setTitle("Season " + seasonModel.number);
+                topBar.setTitle("Season " + seasonModel.Number);
                 getSupportFragmentManager().beginTransaction()
                         .setReorderingAllowed(true)
                         .add(R.id.fragment_container_view_cup, SeasonContentFragment.newInstance(gson.toJson(seasonModel)))

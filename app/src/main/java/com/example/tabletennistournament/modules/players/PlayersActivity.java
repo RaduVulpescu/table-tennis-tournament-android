@@ -151,7 +151,7 @@ public class PlayersActivity extends AppCompatActivity {
 
                 viewHolder.itemView.setOnClickListener(v -> {
                     Intent intent = new Intent(PlayersActivity.this, PlayerProfileActivity.class);
-                    intent.putExtra(EXTRA_PLAYER_ID, players.get(position).playerId.toString());
+                    intent.putExtra(EXTRA_PLAYER_ID, players.get(position).PlayerId.toString());
                     startActivity(intent);
                 });
             }
@@ -165,9 +165,9 @@ public class PlayersActivity extends AppCompatActivity {
                 PlayerModel player = players.get(position);
 
                 vh.profilePicture.setImageResource(R.drawable.logo_avatar_anonymous_40dp);
-                vh.playerName.setText(player.name);
-                vh.playerLevelIcon.setImageResource(getPlayerLevelIcon(player.currentLevel));
-                vh.playerQuality.setText(getQualityOrDefault(player.quality));
+                vh.playerName.setText(player.Name);
+                vh.playerLevelIcon.setImageResource(getPlayerLevelIcon(player.CurrentLevel));
+                vh.playerQuality.setText(getQualityOrDefault(player.Quality));
             }
         };
 
