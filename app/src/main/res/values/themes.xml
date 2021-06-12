@@ -2,21 +2,21 @@
     <!-- Base application theme. -->
     <style name="Theme.TableTennisTournament" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/design_default_color_primary</item>
-        <item name="colorPrimaryVariant">@color/design_default_color_primary_variant</item>
+        <item name="colorPrimary">#0D46A0</item>
+        <item name="colorPrimaryVariant">#5471d2</item>
         <item name="colorOnPrimary">@color/design_default_color_on_primary</item>
 
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/design_default_color_secondary</item>
-        <item name="colorSecondaryVariant">@color/design_default_color_secondary_variant</item>
+        <item name="colorSecondary">#4dd0e1</item>
+        <item name="colorSecondaryVariant">#88ffff</item>
         <item name="colorOnSecondary">@color/design_default_color_on_secondary</item>
 
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
 
         <!-- Customize your theme here. -->
-        <item name="android:colorBackground">@color/design_default_color_background</item>
-        <item name="colorError">@color/design_default_color_error</item>
+        <!--        <item name="android:colorBackground">@color/design_default_color_background</item>-->
+        <!--        <item name="colorError">@color/design_default_color_error</item>-->
 
         <item name="textAppearanceHeadline1">@style/TextAppearance.MaterialComponents.Headline1
         </item>
@@ -40,6 +40,7 @@
         <item name="textAppearanceButton">@style/TextAppearance.MaterialComponents.Button</item>
         <item name="textAppearanceOverline">@style/TextAppearance.MaterialComponents.Overline</item>
     </style>
+
     <style name="IconOnlyButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="iconPadding">0dp</item>
         <item name="iconGravity">textStart</item>

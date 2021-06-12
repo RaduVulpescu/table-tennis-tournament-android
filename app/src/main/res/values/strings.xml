@@ -1,13 +1,10 @@
 <resources>
     <string name="app_name">TableTennisTournament</string>
-
     <string name="activity_next_fixtures_title">Upcoming Fixtures</string>
     <string name="activity_players_title">Players</string>
-
     <string name="navigation_next_fixtures">Upcoming</string>
     <string name="navigation_cup">Cup</string>
     <string name="navigation_players">Players</string>
-
     <string name="player_avatar">player_avatar</string>
     <string name="server_error">Something went wrong. Please try again later.</string>
     <string name="player_add_button">player_add_button</string>
@@ -46,8 +43,7 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
-    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_username">Not a valid email.</string>
     <string name="invalid_password">Password must at least 8 characters.</string>
     <string name="login_failed">"Login failed"</string>
     <string name="activity_label_edit_fixture">Edit Fixture</string>

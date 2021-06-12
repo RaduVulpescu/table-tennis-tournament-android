@@ -1,4 +1,4 @@
-package com.example.tabletennistournament.modules.cup;
+package com.example.tabletennistournament.modules.cup.fixture;
 
 import android.view.LayoutInflater;
 import android.view.View;

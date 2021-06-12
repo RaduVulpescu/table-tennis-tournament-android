@@ -117,7 +117,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="1px"
                     android:layout_marginTop="4dp"
-                    android:background="@color/design_default_color_primary" />
+                    android:background="@color/colorPrimary" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_view_upcoming_fixture_players"
@@ -135,7 +135,7 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="4dp"
-                android:background="@color/design_default_color_primary"
+                android:background="@color/colorPrimary"
                 android:visibility="visible" />
 
             <LinearLayout

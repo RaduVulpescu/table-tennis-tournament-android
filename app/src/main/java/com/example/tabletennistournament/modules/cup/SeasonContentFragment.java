@@ -16,6 +16,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.SeasonModel;
+import com.example.tabletennistournament.modules.cup.fixture.FixtureFragment;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;

@@ -1,4 +1,4 @@
-package com.example.tabletennistournament.modules.cup;
+package com.example.tabletennistournament.modules.cup.fixture;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -69,6 +69,7 @@ public class FixtureFragment extends Fragment {
 
         populateFixtureData(fixture);
         populateParticipantsList(fixture.Players);
+        populateGroups(fixture.Players);
     }
 
     private void populateFixtureData(@NonNull FixtureModel fixture) {
@@ -120,4 +121,10 @@ public class FixtureFragment extends Fragment {
         recyclerView.setAdapter(participantsListAdapter);
     }
 
+    private void populateGroups(List<FixturePlayer> players) {
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.fragment_container_view_group, GroupFragment.newInstance(gson.toJson(players)))
+                .commit();
+    }
 }
