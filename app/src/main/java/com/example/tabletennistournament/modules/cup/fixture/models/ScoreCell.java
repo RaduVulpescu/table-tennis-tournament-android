@@ -16,4 +16,12 @@ public class ScoreCell extends Cell {
         this.data.playerOneScore = playerOneScore;
         this.data.playerTwoScore = playerTwoScore;
     }
+
+    public String getPlayerOneName() {
+        return data.playerOne;
+    }
+
+    public String getPlayerTwoName() {
+        return data.playerTwo;
+    }
 }

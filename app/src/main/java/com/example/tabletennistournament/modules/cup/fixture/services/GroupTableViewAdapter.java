@@ -45,7 +45,7 @@ public class GroupTableViewAdapter extends AbstractTableAdapter<ColumnHeader, Ro
         viewHolder.cell_textview.setText(((Cell) cellItemModel).getData().toString());
 
         if (columnPosition == rowPosition) {
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             params.setMargins(0, 0, 0, 0);
             viewHolder.cell_container.setLayoutParams(params);
             viewHolder.cell_textview.setBackgroundColor(Color.LTGRAY);

@@ -3,23 +3,32 @@ package com.example.tabletennistournament.modules.cup.fixture.models;
 import androidx.annotation.NonNull;
 
 import java.util.Locale;
+import java.util.UUID;
 
 public class ScoreData {
+    UUID matchId;
     String playerOne;
     String playerTwo;
-    int playerOneScore;
-    int playerTwoScore;
+    Integer playerOneScore;
+    Integer playerTwoScore;
+    boolean displayPlayerOneScoreFirst;
 
-    public ScoreData(String playerOne, String playerTwo, int playerOneScore, int playerTwoScore) {
+    public ScoreData(UUID matchId, String playerOne, String playerTwo, Integer playerOneScore, Integer playerTwoScore, boolean displayPlayerOneScoreFirst) {
+        this.matchId = matchId;
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
         this.playerOneScore = playerOneScore;
         this.playerTwoScore = playerTwoScore;
+        this.displayPlayerOneScoreFirst = displayPlayerOneScoreFirst;
     }
 
     @NonNull
     @Override
     public String toString() {
-        return String.format(Locale.getDefault(), "%d - %d", playerOneScore, playerTwoScore);
+        if (playerOneScore == null && playerTwoScore == null) return "";
+
+        return displayPlayerOneScoreFirst ?
+                String.format(Locale.getDefault(), "%d - %d", playerOneScore, playerTwoScore) :
+                String.format(Locale.getDefault(), "%d - %d", playerTwoScore, playerOneScore);
     }
 }

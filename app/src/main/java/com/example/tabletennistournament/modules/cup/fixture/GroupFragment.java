@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.evrencoskun.tableview.TableView;
 import com.example.tabletennistournament.R;
+import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.models.GroupMatch;
 import com.example.tabletennistournament.modules.cup.fixture.models.Cell;
 import com.example.tabletennistournament.modules.cup.fixture.models.ColumnHeader;
@@ -28,13 +29,15 @@ import java.util.List;
 
 public class GroupFragment extends Fragment {
 
-    private static final String ARG_FIXTURE_GROUP_MATCHES_JSON = "ARG_FIXTURE_GROUP_MATCHES_JSON";
+    private static final String ARG_FIXTURE_PLAYERS_JSON = "ARG_FIXTURE_PLAYERS_JSON";
+    private static final String ARG_GROUP_MATCHES_JSON = "ARG_GROUP_MATCHES_JSON";
 
     Gson gson;
 
     View fragmentView;
     TableView tableView;
     GroupTableViewAdapter adapter;
+    List<FixturePlayer> fixturePlayers;
     List<GroupMatch> groupMatches;
     List<RowHeader> mRowHeaderList;
     List<ColumnHeader> mColumnHeaderList;
@@ -44,10 +47,11 @@ public class GroupFragment extends Fragment {
     }
 
     @NonNull
-    public static GroupFragment newInstance(String fixturePlayersJson) {
+    public static GroupFragment newInstance(String groupMatchesJson, String playersJson) {
         GroupFragment fragment = new GroupFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_FIXTURE_GROUP_MATCHES_JSON, fixturePlayersJson);
+        args.putString(ARG_GROUP_MATCHES_JSON, groupMatchesJson);
+        args.putString(ARG_FIXTURE_PLAYERS_JSON, playersJson);
         fragment.setArguments(args);
         return fragment;
     }
@@ -59,7 +63,10 @@ public class GroupFragment extends Fragment {
 
         gson = GsonSingleton.getInstance();
 
-        String groupMatchesJson = getArguments().getString(ARG_FIXTURE_GROUP_MATCHES_JSON);
+        String playersJson = getArguments().getString(ARG_GROUP_MATCHES_JSON);
+        String groupMatchesJson = getArguments().getString(ARG_GROUP_MATCHES_JSON);
+        fixturePlayers = gson.fromJson(playersJson, new TypeToken<List<FixturePlayer>>() {
+        }.getType());
         groupMatches = gson.fromJson(groupMatchesJson, new TypeToken<List<GroupMatch>>() {
         }.getType());
 
@@ -83,38 +90,65 @@ public class GroupFragment extends Fragment {
         adapter = new GroupTableViewAdapter();
         tableView.setAdapter(adapter);
 
-       // inflateTableView(groupMatches);
+        inflateTableView();
     }
 
-//    private void inflateTableView(@NonNull List<GroupMatch> groupMatches) {
-//        tableView.setMinimumHeight(R.dimen.default_column_header_height * players.size() * 2);
-//
-//        for (FixturePlayer player : players) {
-//            mColumnHeaderList.add(new ColumnHeader(player.Name));
-//            mRowHeaderList.add(new RowHeader(player.Name));
-//        }
-//
-//        for (int i = 0; i < players.size(); i++) {
-//            List<Cell> row = new ArrayList<>();
-//            for (int j = 0; j < players.size(); j++) {
-//
-//                if (i == j) {
-//                    row.add(new Cell(""));
-//                } else {
-//                    ScoreData scoreData = new ScoreData(players.get(i).Name, players.get(j).Name, 3, 0);
-//
-//                    row.add(new ScoreCell(scoreData));
-//                }
-//            }
-//
-//            mCellList.add(row);
-//        }
-//
-//        adapter.setAllItems(mColumnHeaderList, mRowHeaderList, mCellList);
-//        tableView.setTableViewListener(new GroupTableViewClickListener(tableView));
-//
-//        final float scale = getContext().getResources().getDisplayMetrics().density;
-//        int dps = 40 * (players.size() + 1) + 10;
-//        tableView.getLayoutParams().height = (int) (dps * scale + 0.5f);
-//    }
+    private void inflateTableView() {
+        List<String> playerNames = new ArrayList<>();
+        for (GroupMatch match : groupMatches) {
+            if (!playerNames.contains(match.PlayerOneStats.PlayerName)) {
+                playerNames.add(match.PlayerOneStats.PlayerName);
+            }
+        }
+        playerNames.add(groupMatches.get(groupMatches.size() - 1).PlayerTwoStats.PlayerName);
+
+        for (String name : playerNames) {
+            mColumnHeaderList.add(new ColumnHeader(name));
+            mRowHeaderList.add(new RowHeader(name));
+        }
+
+        mColumnHeaderList.add(new ColumnHeader("Victories"));
+        mColumnHeaderList.add(new ColumnHeader("Rank"));
+
+        for (int i = 0; i < playerNames.size(); i++) {
+            List<Cell> row = new ArrayList<>();
+            for (int j = 0; j < playerNames.size(); j++) {
+                if (i == j) {
+                    row.add(new Cell(""));
+                } else {
+                    int finalI = i;
+                    int finalJ = j;
+                    GroupMatch groupMatch = groupMatches.stream().filter(x ->
+                            (x.PlayerOneStats.PlayerName.equals(playerNames.get(finalI)) ||
+                                    x.PlayerOneStats.PlayerName.equals(playerNames.get(finalJ))) &&
+                                    (x.PlayerTwoStats.PlayerName.equals(playerNames.get(finalI)) ||
+                                            x.PlayerTwoStats.PlayerName.equals(playerNames.get(finalJ)))
+                    ).findFirst().orElseGet(null);
+
+                    ScoreData scoreData = new ScoreData(
+                            groupMatch.MatchId,
+                            groupMatch.PlayerOneStats.PlayerName,
+                            groupMatch.PlayerTwoStats.PlayerName,
+                            groupMatch.PlayerOneStats.SetsWon,
+                            groupMatch.PlayerTwoStats.SetsWon,
+                            i < j
+                    );
+
+                    row.add(new ScoreCell(scoreData));
+                }
+            }
+
+            row.add(new Cell("")); // Victories
+            row.add(new Cell("")); // Rank
+
+            mCellList.add(row);
+        }
+
+        adapter.setAllItems(mColumnHeaderList, mRowHeaderList, mCellList);
+        tableView.setTableViewListener(new GroupTableViewClickListener(tableView, getLayoutInflater(), groupMatches));
+
+        final float scale = getContext().getResources().getDisplayMetrics().density;
+        int dps = 40 * (playerNames.size() + 1) + 10;
+        tableView.getLayoutParams().height = (int) (dps * scale + 0.5f);
+    }
 }

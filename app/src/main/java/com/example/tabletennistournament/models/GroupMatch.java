@@ -2,10 +2,11 @@ package com.example.tabletennistournament.models;
 
 import com.example.tabletennistournament.enums.Group;
 
+import java.util.UUID;
+
 public class GroupMatch {
+    public UUID MatchId;
     public Group Group;
-    public String PlayerOneName;
-    public String PlayerTwoName;
-    public Integer SetsWonByPlayerOne;
-    public Integer SetsWonByPlayerTwo;
+    public PlayerMatchStats PlayerOneStats;
+    public PlayerMatchStats PlayerTwoStats;
 }

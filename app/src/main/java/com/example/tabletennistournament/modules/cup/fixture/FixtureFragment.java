@@ -252,7 +252,7 @@ public class FixtureFragment extends Fragment {
     private void populateGroups(List<GroupMatch> groupMatches) {
         getActivity().getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
-                .replace(R.id.fragment_container_view_group, GroupFragment.newInstance(gson.toJson(groupMatches)))
+                .replace(R.id.fragment_container_view_group, GroupFragment.newInstance(gson.toJson(groupMatches), gson.toJson(fixture.Players)))
                 .commit();
     }
 }
