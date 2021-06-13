@@ -3,6 +3,7 @@ package com.example.tabletennistournament.modules.cup.fixture;
 import android.os.Bundle;
 import android.transition.AutoTransition;
 import android.transition.Slide;
+import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -17,18 +18,22 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.transition.Transition;
-
 import com.example.tabletennistournament.R;
+import com.example.tabletennistournament.enums.Group;
 import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.FixturePlayer;
+import com.example.tabletennistournament.models.GroupMatch;
 import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipDrawable;
+import com.google.android.material.chip.ChipGroup;
 import com.google.gson.Gson;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class FixtureFragment extends Fragment {
 
@@ -105,7 +110,8 @@ public class FixtureFragment extends Fragment {
         setOnClickToExpandButtons();
         populateFixtureData(fixture);
         populateParticipantsList(fixture.Players);
-        populateGroups(fixture.Players);
+        populateChipGroup(fixture.GroupMatches);
+        //populateGroups(fixture.GroupMatches);
     }
 
     private void setOnClickToExpandButtons() {
@@ -212,10 +218,41 @@ public class FixtureFragment extends Fragment {
         recyclerView.setAdapter(participantsListAdapter);
     }
 
-    private void populateGroups(List<FixturePlayer> players) {
+    private void populateChipGroup(@NonNull List<GroupMatch> groupMatches) {
+        ChipGroup chipGroup = fragmentView.findViewById(R.id.chip_group_groups_list);
+
+        List<Group> groups = groupMatches.stream().map(x -> x.Group).distinct().collect(Collectors.toList());
+
+        for (int i = 0, groupsSize = groups.size(); i < groupsSize; i++) {
+            Group group = groups.get(i);
+            Chip chip = new Chip(this.getActivity());
+            ChipDrawable drawable = ChipDrawable.createFromAttributes(this.getActivity(), null,
+                    0, R.style.Widget_MaterialComponents_Chip_Choice);
+            chip.setChipDrawable(drawable);
+            chip.setText(String.format("Group %s", group));
+
+            List<GroupMatch> groupMatchesForGroup = groupMatches.stream().filter(x -> x.Group == group).collect(Collectors.toList());
+
+            chip.setOnClickListener(v -> {
+                chipGroup.clearCheck();
+                ((Chip) v).setChecked(true);
+
+                populateGroups(groupMatchesForGroup);
+            });
+
+            if (i == 0) {
+                chip.setChecked(true);
+                populateGroups(groupMatchesForGroup);
+            }
+
+            chipGroup.addView(chip);
+        }
+    }
+
+    private void populateGroups(List<GroupMatch> groupMatches) {
         getActivity().getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
-                .replace(R.id.fragment_container_view_group, GroupFragment.newInstance(gson.toJson(players)))
+                .replace(R.id.fragment_container_view_group, GroupFragment.newInstance(gson.toJson(groupMatches)))
                 .commit();
     }
 }

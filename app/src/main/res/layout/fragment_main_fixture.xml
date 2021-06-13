@@ -171,17 +171,16 @@
                 android:paddingBottom="4dp"
                 android:visibility="gone">
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chip_group_groups_navigation"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal">
 
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip"
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chip_group_groups_list"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Group A" />
-                </com.google.android.material.chip.ChipGroup>
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/fragment_container_view_group"
