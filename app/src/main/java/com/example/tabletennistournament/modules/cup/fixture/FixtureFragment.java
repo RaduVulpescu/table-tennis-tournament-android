@@ -111,7 +111,6 @@ public class FixtureFragment extends Fragment {
         populateFixtureData(fixture);
         populateParticipantsList(fixture.Players);
         populateChipGroup(fixture.GroupMatches);
-        //populateGroups(fixture.GroupMatches);
     }
 
     private void setOnClickToExpandButtons() {
@@ -252,7 +251,8 @@ public class FixtureFragment extends Fragment {
     private void populateGroups(List<GroupMatch> groupMatches) {
         getActivity().getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
-                .replace(R.id.fragment_container_view_group, GroupFragment.newInstance(gson.toJson(groupMatches), gson.toJson(fixture.Players)))
+                .replace(R.id.fragment_container_view_group, GroupFragment.newInstance
+                        (gson.toJson(groupMatches), fixture.SeasonId.toString(), fixture.FixtureId.toString()))
                 .commit();
     }
 }

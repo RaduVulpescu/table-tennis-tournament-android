@@ -2,6 +2,7 @@ package com.example.tabletennistournament.modules.cup.fixture.services;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -12,31 +13,64 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.evrencoskun.tableview.ITableView;
 import com.evrencoskun.tableview.listener.ITableViewListener;
 import com.example.tabletennistournament.R;
-import com.example.tabletennistournament.models.GroupMatch;
+import com.example.tabletennistournament.dto.MatchPutDTO;
 import com.example.tabletennistournament.modules.cup.fixture.models.Cell;
 import com.example.tabletennistournament.modules.cup.fixture.models.ScoreCell;
+import com.example.tabletennistournament.services.ApiRoutes;
+import com.example.tabletennistournament.services.GsonSingleton;
+import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.example.tabletennistournament.services.Util;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.gson.Gson;
 
-import java.util.List;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.UUID;
+
+import static com.example.tabletennistournament.services.Common.increaseTimeout;
 
 public class GroupTableViewClickListener implements ITableViewListener {
 
+    Gson gson;
+    RequestQueueSingleton requestQueue;
+
     private final ITableView tableView;
     private final LayoutInflater layoutInflater;
-    private List<GroupMatch> groupMatches;
+    private final String seasonId;
+    private final String fixtureId;
 
-    public GroupTableViewClickListener(ITableView tableView, LayoutInflater layoutInflater, List<GroupMatch> groupMatches) {
+    public GroupTableViewClickListener(ITableView tableView, LayoutInflater layoutInflater,
+                                       String seasonId, String fixtureId) {
         this.tableView = tableView;
         this.layoutInflater = layoutInflater;
-        this.groupMatches = groupMatches;
+        this.seasonId = seasonId;
+        this.fixtureId = fixtureId;
+
+        gson = GsonSingleton.getInstance();
+        requestQueue = RequestQueueSingleton.getInstance(this.tableView.getContext().getApplicationContext());
     }
 
     @Override
     public void onCellClicked(@NonNull RecyclerView.ViewHolder cellView, int columnPosition, int rowPosition) {
+        if (columnPosition == rowPosition) return;
+
+        ScoreCell cell = (ScoreCell) tableView.getAdapter().getCellItem(rowPosition, columnPosition);
+
+        String message = cell.getPlayerOneName() + " " + cell.getPlayerOneScore() + '-' +
+                cell.getPlayerTwoScore() + " " + cell.getPlayerTwoName();
+
+        Log.d("GroupTableViewClickListener", message);
     }
 
     @Override
@@ -142,9 +176,49 @@ public class GroupTableViewClickListener implements ITableViewListener {
                 cell.setScores(p1Score, p2Score);
                 oppositeCell.setScores(p1Score, p2Score);
 
+                try {
+                    updateMatch(cell.getMatchId(), p1Score, p2Score);
+                } catch (JSONException e) {
+                    Log.e("GroupTableViewClickListener",
+                            String.format("Updating group match %s failed.", cell.getMatchId()), e);
+                }
+
                 tableView.getAdapter().notifyDataSetChanged();
                 alertDialog.dismiss();
             }
         });
+    }
+
+    private void updateMatch(@NonNull UUID matchId, int p1Score, int p2Score) throws JSONException {
+        final String patchGroupMatchURL =
+                ApiRoutes.PATCH_FIXTURE_GROUP_MATCH_ROUTE(seasonId, fixtureId, matchId.toString());
+
+        MatchPutDTO matchPutDTO = new MatchPutDTO(p1Score, p2Score);
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PATCH,
+                patchGroupMatchURL, new JSONObject(gson.toJson(matchPutDTO)),
+                response -> {
+                },
+                error -> Log.e("GroupTableViewClickListener", error != null & error.getMessage() != null ?
+                        error.getMessage() :
+                        "updateMatch crashed. Check: https://eu-west-1.console.aws.amazon.com/cloudwatch/home?region=eu-west-1#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fpatch-group-match-function")
+        ) {
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(@NonNull NetworkResponse response) {
+                try {
+                    String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+
+                    JSONObject result = null;
+                    if (jsonString != null && jsonString.length() > 0)
+                        result = new JSONObject(jsonString);
+
+                    return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException | JSONException e) {
+                    return Response.error(new ParseError(e));
+                }
+            }
+        };
+
+        requestQueue.add(increaseTimeout(jsonObjectRequest));
     }
 }

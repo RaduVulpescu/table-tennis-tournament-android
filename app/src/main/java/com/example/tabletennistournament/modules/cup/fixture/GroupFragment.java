@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment;
 
 import com.evrencoskun.tableview.TableView;
 import com.example.tabletennistournament.R;
-import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.models.GroupMatch;
 import com.example.tabletennistournament.modules.cup.fixture.models.Cell;
 import com.example.tabletennistournament.modules.cup.fixture.models.ColumnHeader;
@@ -29,16 +28,19 @@ import java.util.List;
 
 public class GroupFragment extends Fragment {
 
-    private static final String ARG_FIXTURE_PLAYERS_JSON = "ARG_FIXTURE_PLAYERS_JSON";
     private static final String ARG_GROUP_MATCHES_JSON = "ARG_GROUP_MATCHES_JSON";
+    private static final String ARG_SEASON_ID = "ARG_SEASON_ID";
+    private static final String ARG_FIXTURE_ID = "ARG_FIXTURE_ID";
+
+    List<GroupMatch> groupMatches;
+    String seasonId;
+    String fixtureId;
 
     Gson gson;
 
     View fragmentView;
     TableView tableView;
     GroupTableViewAdapter adapter;
-    List<FixturePlayer> fixturePlayers;
-    List<GroupMatch> groupMatches;
     List<RowHeader> mRowHeaderList;
     List<ColumnHeader> mColumnHeaderList;
     List<List<Cell>> mCellList;
@@ -47,11 +49,14 @@ public class GroupFragment extends Fragment {
     }
 
     @NonNull
-    public static GroupFragment newInstance(String groupMatchesJson, String playersJson) {
+    public static GroupFragment newInstance(String groupMatchesJson, String seasonId, String fixtureId) {
         GroupFragment fragment = new GroupFragment();
         Bundle args = new Bundle();
+
         args.putString(ARG_GROUP_MATCHES_JSON, groupMatchesJson);
-        args.putString(ARG_FIXTURE_PLAYERS_JSON, playersJson);
+        args.putString(ARG_SEASON_ID, seasonId);
+        args.putString(ARG_FIXTURE_ID, fixtureId);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,12 +68,11 @@ public class GroupFragment extends Fragment {
 
         gson = GsonSingleton.getInstance();
 
-        String playersJson = getArguments().getString(ARG_GROUP_MATCHES_JSON);
         String groupMatchesJson = getArguments().getString(ARG_GROUP_MATCHES_JSON);
-        fixturePlayers = gson.fromJson(playersJson, new TypeToken<List<FixturePlayer>>() {
-        }.getType());
         groupMatches = gson.fromJson(groupMatchesJson, new TypeToken<List<GroupMatch>>() {
         }.getType());
+        seasonId = getArguments().getString(ARG_SEASON_ID);
+        fixtureId = getArguments().getString(ARG_FIXTURE_ID);
 
         mRowHeaderList = new ArrayList<>();
         mColumnHeaderList = new ArrayList<>();
@@ -145,7 +149,7 @@ public class GroupFragment extends Fragment {
         }
 
         adapter.setAllItems(mColumnHeaderList, mRowHeaderList, mCellList);
-        tableView.setTableViewListener(new GroupTableViewClickListener(tableView, getLayoutInflater(), groupMatches));
+        tableView.setTableViewListener(new GroupTableViewClickListener(tableView, getLayoutInflater(), seasonId, fixtureId));
 
         final float scale = getContext().getResources().getDisplayMetrics().density;
         int dps = 40 * (playerNames.size() + 1) + 10;

@@ -2,6 +2,8 @@ package com.example.tabletennistournament.modules.cup.fixture.models;
 
 import androidx.annotation.Nullable;
 
+import java.util.UUID;
+
 public class ScoreCell extends Cell {
 
     ScoreData data;
@@ -17,11 +19,23 @@ public class ScoreCell extends Cell {
         this.data.playerTwoScore = playerTwoScore;
     }
 
+    public UUID getMatchId() {
+        return data.matchId;
+    }
+
     public String getPlayerOneName() {
         return data.playerOne;
     }
 
     public String getPlayerTwoName() {
         return data.playerTwo;
+    }
+
+    public String getPlayerOneScore() {
+        return String.valueOf(data.playerOneScore);
+    }
+
+    public String getPlayerTwoScore() {
+        return String.valueOf(data.playerTwoScore);
     }
 }
