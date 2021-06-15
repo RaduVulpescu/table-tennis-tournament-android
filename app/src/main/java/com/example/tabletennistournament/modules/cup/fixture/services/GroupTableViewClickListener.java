@@ -24,6 +24,7 @@ import com.evrencoskun.tableview.listener.ITableViewListener;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.dto.MatchPutDTO;
 import com.example.tabletennistournament.modules.cup.fixture.models.Cell;
+import com.example.tabletennistournament.modules.cup.fixture.models.NumberCell;
 import com.example.tabletennistournament.modules.cup.fixture.models.ScoreCell;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.GsonSingleton;
@@ -49,13 +50,15 @@ public class GroupTableViewClickListener implements ITableViewListener {
     private final LayoutInflater layoutInflater;
     private final String seasonId;
     private final String fixtureId;
+    private final int rowLength;
 
     public GroupTableViewClickListener(ITableView tableView, LayoutInflater layoutInflater,
-                                       String seasonId, String fixtureId) {
+                                       String seasonId, String fixtureId, int rowLength) {
         this.tableView = tableView;
         this.layoutInflater = layoutInflater;
         this.seasonId = seasonId;
         this.fixtureId = fixtureId;
+        this.rowLength = rowLength;
 
         gson = GsonSingleton.getInstance();
         requestQueue = RequestQueueSingleton.getInstance(this.tableView.getContext().getApplicationContext());
@@ -63,14 +66,6 @@ public class GroupTableViewClickListener implements ITableViewListener {
 
     @Override
     public void onCellClicked(@NonNull RecyclerView.ViewHolder cellView, int columnPosition, int rowPosition) {
-        if (columnPosition == rowPosition) return;
-
-        ScoreCell cell = (ScoreCell) tableView.getAdapter().getCellItem(rowPosition, columnPosition);
-
-        String message = cell.getPlayerOneName() + " " + cell.getPlayerOneScore() + '-' +
-                cell.getPlayerTwoScore() + " " + cell.getPlayerTwoName();
-
-        Log.d("GroupTableViewClickListener", message);
     }
 
     @Override
@@ -156,6 +151,8 @@ public class GroupTableViewClickListener implements ITableViewListener {
         cancelButton.setOnClickListener(v -> alertDialog.dismiss());
 
         saveButton.setOnClickListener(v -> {
+            NumberCell victoriesCell = (NumberCell) tableView.getAdapter().getCellItem(rowLength - 2, rowPosition);
+
             String playerOneScore = playerOneScoreEditText.getText().toString();
             String playerTwoScore = playerTwoScoreEditText.getText().toString();
 
@@ -173,6 +170,23 @@ public class GroupTableViewClickListener implements ITableViewListener {
             if (p1Score == p2Score) {
                 playerTwoScoreEditText.setError("Scores must be different");
             } else {
+                Integer initialPlayerOneScore = cell.getPlayerOneScore();
+                Integer initialPlayerTwoScore = cell.getPlayerTwoScore();
+
+                if (initialPlayerOneScore == null && initialPlayerTwoScore == null &&
+                        (columnPosition > rowPosition && p1Score > p2Score ||
+                                columnPosition < rowPosition && p1Score < p2Score)) {
+                    victoriesCell.increment();
+                } else if (initialPlayerOneScore != null && initialPlayerTwoScore != null) {
+                    if (columnPosition > rowPosition && p1Score > p2Score && initialPlayerOneScore < initialPlayerTwoScore ||
+                            columnPosition < rowPosition && p1Score < p2Score && initialPlayerOneScore > initialPlayerTwoScore) {
+                        victoriesCell.increment();
+                    } else if (columnPosition > rowPosition && p1Score < p2Score && initialPlayerOneScore > initialPlayerTwoScore ||
+                            columnPosition < rowPosition && p1Score > p2Score && initialPlayerOneScore < initialPlayerTwoScore) {
+                        victoriesCell.decrement();
+                    }
+                }
+
                 cell.setScores(p1Score, p2Score);
                 oppositeCell.setScores(p1Score, p2Score);
 

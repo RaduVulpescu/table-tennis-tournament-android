@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -237,24 +238,24 @@ public class FixtureFragment extends Fragment {
                 chipGroup.clearCheck();
                 ((Chip) v).setChecked(true);
 
-                populateGroups(groupMatchesForGroup);
+                displayGroupTable(groupMatchesForGroup);
             });
 
             if (i == 0) {
                 chip.setChecked(true);
-                populateGroups(groupMatchesForGroup);
+                displayGroupTable(groupMatchesForGroup);
             }
 
             chipGroup.addView(chip);
         }
     }
 
-    private void populateGroups(@NonNull List<GroupMatch> groupMatches) {
+    private void displayGroupTable(@NonNull List<GroupMatch> groupMatches) {
 
         String GROUP_FRAGMENT_TAG = String.format("FRAGMENT_GROUP_%s_%s", fixture.FixtureId,
                 groupMatches.stream().findFirst().orElseGet(null).Group.name());
 
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentManager fragmentManager = this.getChildFragmentManager();
         GroupFragment groupFragment = (GroupFragment) fragmentManager.findFragmentByTag(GROUP_FRAGMENT_TAG);
 
         if (groupFragment == null) {
@@ -265,10 +266,14 @@ public class FixtureFragment extends Fragment {
                             GROUP_FRAGMENT_TAG)
                     .commit();
         } else {
-            fragmentManager.beginTransaction()
-                    .setReorderingAllowed(true)
-                    .replace(R.id.fragment_container_view_group, groupFragment, GROUP_FRAGMENT_TAG)
-                    .addToBackStack(null)
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+            for (Fragment fragment : fragmentManager.getFragments()) {
+                transaction.hide(fragment);
+            }
+
+            transaction.setReorderingAllowed(true)
+                    .show(groupFragment)
                     .commit();
         }
     }

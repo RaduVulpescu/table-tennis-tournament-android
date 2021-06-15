@@ -14,6 +14,7 @@ import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.GroupMatch;
 import com.example.tabletennistournament.modules.cup.fixture.models.Cell;
 import com.example.tabletennistournament.modules.cup.fixture.models.ColumnHeader;
+import com.example.tabletennistournament.modules.cup.fixture.models.NumberCell;
 import com.example.tabletennistournament.modules.cup.fixture.models.RowHeader;
 import com.example.tabletennistournament.modules.cup.fixture.models.ScoreCell;
 import com.example.tabletennistournament.modules.cup.fixture.models.ScoreData;
@@ -93,7 +94,6 @@ public class GroupFragment extends Fragment {
         tableView = fragmentView.findViewById(R.id.table_view_group);
         adapter = new GroupTableViewAdapter();
         tableView.setAdapter(adapter);
-        tableView.setSaveEnabled(true);
 
         inflateTableView();
     }
@@ -117,6 +117,8 @@ public class GroupFragment extends Fragment {
 
         for (int i = 0; i < playerNames.size(); i++) {
             List<Cell> row = new ArrayList<>();
+            int numberOfVictories = 0;
+
             for (int j = 0; j < playerNames.size(); j++) {
                 if (i == j) {
                     row.add(new Cell(""));
@@ -139,18 +141,25 @@ public class GroupFragment extends Fragment {
                             i < j
                     );
 
+                    if (groupMatch.PlayerOneStats.SetsWon != null && groupMatch.PlayerTwoStats.SetsWon != null &&
+                            (i < j && groupMatch.PlayerOneStats.SetsWon > groupMatch.PlayerTwoStats.SetsWon ||
+                                    i > j && groupMatch.PlayerOneStats.SetsWon < groupMatch.PlayerTwoStats.SetsWon)) {
+                        numberOfVictories++;
+                    }
+
                     row.add(new ScoreCell(scoreData));
                 }
             }
 
-            row.add(new Cell("")); // Victories
+            row.add(new NumberCell(numberOfVictories));
             row.add(new Cell("")); // Rank
 
             mCellList.add(row);
         }
 
         adapter.setAllItems(mColumnHeaderList, mRowHeaderList, mCellList);
-        tableView.setTableViewListener(new GroupTableViewClickListener(tableView, getLayoutInflater(), seasonId, fixtureId));
+        tableView.setTableViewListener(new GroupTableViewClickListener(tableView,
+                getLayoutInflater(), seasonId, fixtureId, playerNames.size() + 2));
 
         final float scale = getContext().getResources().getDisplayMetrics().density;
         int dps = 40 * (playerNames.size() + 1) + 10;

@@ -11,7 +11,7 @@ public class ScoreCell extends Cell {
     public ScoreCell(@Nullable ScoreData data) {
         super(data);
 
-        this.data = (ScoreData) data;
+        this.data = data;
     }
 
     public void setScores(int playerOneScore, int playerTwoScore) {
@@ -31,11 +31,11 @@ public class ScoreCell extends Cell {
         return data.playerTwo;
     }
 
-    public String getPlayerOneScore() {
-        return String.valueOf(data.playerOneScore);
+    public Integer getPlayerOneScore() {
+        return data.playerOneScore;
     }
 
-    public String getPlayerTwoScore() {
-        return String.valueOf(data.playerTwoScore);
+    public Integer getPlayerTwoScore() {
+        return data.playerTwoScore;
     }
 }

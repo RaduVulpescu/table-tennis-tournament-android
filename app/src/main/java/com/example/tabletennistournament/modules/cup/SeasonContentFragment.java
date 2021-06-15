@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
@@ -152,7 +153,7 @@ public class SeasonContentFragment extends Fragment {
     private void displayRanking(@NonNull UUID seasonId) {
         String RANKING_FRAGMENT_TAG = String.format("FRAGMENT_RANKING_%s", seasonId.toString());
 
-        FragmentManager fragmentManager = fragmentActivity.getSupportFragmentManager();
+        FragmentManager fragmentManager = this.getChildFragmentManager();
         RankingFragment rankingFragment = (RankingFragment) fragmentManager.findFragmentByTag(RANKING_FRAGMENT_TAG);
 
         if (rankingFragment == null) {
@@ -163,9 +164,14 @@ public class SeasonContentFragment extends Fragment {
                             RANKING_FRAGMENT_TAG)
                     .commit();
         } else {
-            fragmentManager.beginTransaction()
-                    .setReorderingAllowed(true)
-                    .replace(R.id.fragment_container_view_season_content, rankingFragment, RANKING_FRAGMENT_TAG)
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+            for (Fragment fragment : fragmentManager.getFragments()) {
+                transaction.hide(fragment);
+            }
+
+            transaction.setReorderingAllowed(true)
+                    .show(rankingFragment)
                     .commit();
         }
     }
@@ -173,7 +179,7 @@ public class SeasonContentFragment extends Fragment {
     private void displayFixture(@NonNull FixtureModel fixture) {
         String FIXTURE_FRAGMENT_TAG = String.format("FRAGMENT_FIXTURE_%s", fixture.FixtureId);
 
-        FragmentManager fragmentManager = fragmentActivity.getSupportFragmentManager();
+        FragmentManager fragmentManager = this.getChildFragmentManager();
         FixtureFragment fixtureFragment = (FixtureFragment) fragmentManager.findFragmentByTag(FIXTURE_FRAGMENT_TAG);
 
         if (fixtureFragment == null) {
@@ -184,10 +190,14 @@ public class SeasonContentFragment extends Fragment {
                             FIXTURE_FRAGMENT_TAG)
                     .commit();
         } else {
-            fragmentManager.beginTransaction()
-                    .setReorderingAllowed(true)
-                    .replace(R.id.fragment_container_view_season_content, fixtureFragment, FIXTURE_FRAGMENT_TAG)
-                    .addToBackStack(null)
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+            for (Fragment fragment : fragmentManager.getFragments()) {
+                transaction.hide(fragment);
+            }
+
+            transaction.setReorderingAllowed(true)
+                    .show(fixtureFragment)
                     .commit();
         }
     }
