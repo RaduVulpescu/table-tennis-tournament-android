@@ -201,7 +201,7 @@ public class GroupTableViewClickListener implements ITableViewListener {
                 },
                 error -> Log.e("GroupTableViewClickListener", error != null & error.getMessage() != null ?
                         error.getMessage() :
-                        "updateMatch crashed. Check: https://eu-west-1.console.aws.amazon.com/cloudwatch/home?region=eu-west-1#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fpatch-group-match-function")
+                        "PATCH match crashed. Check: https://eu-west-1.console.aws.amazon.com/cloudwatch/home?region=eu-west-1#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fpatch-group-match-function")
         ) {
             @Override
             protected Response<JSONObject> parseNetworkResponse(@NonNull NetworkResponse response) {

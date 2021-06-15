@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -248,11 +249,27 @@ public class FixtureFragment extends Fragment {
         }
     }
 
-    private void populateGroups(List<GroupMatch> groupMatches) {
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowed(true)
-                .replace(R.id.fragment_container_view_group, GroupFragment.newInstance
-                        (gson.toJson(groupMatches), fixture.SeasonId.toString(), fixture.FixtureId.toString()))
-                .commit();
+    private void populateGroups(@NonNull List<GroupMatch> groupMatches) {
+
+        String GROUP_FRAGMENT_TAG = String.format("FRAGMENT_GROUP_%s_%s", fixture.FixtureId,
+                groupMatches.stream().findFirst().orElseGet(null).Group.name());
+
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        GroupFragment groupFragment = (GroupFragment) fragmentManager.findFragmentByTag(GROUP_FRAGMENT_TAG);
+
+        if (groupFragment == null) {
+            fragmentManager.beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(R.id.fragment_container_view_group,
+                            GroupFragment.newInstance(gson.toJson(groupMatches), fixture.SeasonId.toString(), fixture.FixtureId.toString()),
+                            GROUP_FRAGMENT_TAG)
+                    .commit();
+        } else {
+            fragmentManager.beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.fragment_container_view_group, groupFragment, GROUP_FRAGMENT_TAG)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 }

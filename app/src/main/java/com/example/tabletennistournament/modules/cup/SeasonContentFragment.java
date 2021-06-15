@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
@@ -149,16 +150,45 @@ public class SeasonContentFragment extends Fragment {
     }
 
     private void displayRanking(@NonNull UUID seasonId) {
-        fragmentActivity.getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowed(true)
-                .replace(R.id.fragment_container_view_season_content, RankingFragment.newInstance(seasonId.toString()))
-                .commit();
+        String RANKING_FRAGMENT_TAG = String.format("FRAGMENT_RANKING_%s", seasonId.toString());
+
+        FragmentManager fragmentManager = fragmentActivity.getSupportFragmentManager();
+        RankingFragment rankingFragment = (RankingFragment) fragmentManager.findFragmentByTag(RANKING_FRAGMENT_TAG);
+
+        if (rankingFragment == null) {
+            fragmentManager.beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(R.id.fragment_container_view_season_content,
+                            RankingFragment.newInstance(seasonId.toString()),
+                            RANKING_FRAGMENT_TAG)
+                    .commit();
+        } else {
+            fragmentManager.beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.fragment_container_view_season_content, rankingFragment, RANKING_FRAGMENT_TAG)
+                    .commit();
+        }
     }
 
-    private void displayFixture(FixtureModel fixture) {
-        fragmentActivity.getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowed(true)
-                .replace(R.id.fragment_container_view_season_content, FixtureFragment.newInstance(gson.toJson(fixture)))
-                .commit();
+    private void displayFixture(@NonNull FixtureModel fixture) {
+        String FIXTURE_FRAGMENT_TAG = String.format("FRAGMENT_FIXTURE_%s", fixture.FixtureId);
+
+        FragmentManager fragmentManager = fragmentActivity.getSupportFragmentManager();
+        FixtureFragment fixtureFragment = (FixtureFragment) fragmentManager.findFragmentByTag(FIXTURE_FRAGMENT_TAG);
+
+        if (fixtureFragment == null) {
+            fragmentManager.beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(R.id.fragment_container_view_season_content,
+                            FixtureFragment.newInstance(gson.toJson(fixture)),
+                            FIXTURE_FRAGMENT_TAG)
+                    .commit();
+        } else {
+            fragmentManager.beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.fragment_container_view_season_content, fixtureFragment, FIXTURE_FRAGMENT_TAG)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 }

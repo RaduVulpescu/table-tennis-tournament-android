@@ -93,6 +93,7 @@ public class GroupFragment extends Fragment {
         tableView = fragmentView.findViewById(R.id.table_view_group);
         adapter = new GroupTableViewAdapter();
         tableView.setAdapter(adapter);
+        tableView.setSaveEnabled(true);
 
         inflateTableView();
     }
