@@ -6,10 +6,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.tabletennistournament.services.LoginRepository;
 
-/**
- * ViewModel provider factory to instantiate LoginViewModel.
- * Required given LoginViewModel has a non-empty constructor
- */
 public class LoginViewModelFactory implements ViewModelProvider.Factory {
 
     @NonNull

@@ -26,6 +26,7 @@ import com.example.tabletennistournament.dto.MatchPutDTO;
 import com.example.tabletennistournament.modules.cup.fixture.models.Cell;
 import com.example.tabletennistournament.modules.cup.fixture.models.NumberCell;
 import com.example.tabletennistournament.modules.cup.fixture.models.ScoreCell;
+import com.example.tabletennistournament.modules.cup.fixture.viewModels.FixtureViewModel;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
@@ -51,14 +52,17 @@ public class GroupTableViewClickListener implements ITableViewListener {
     private final String seasonId;
     private final String fixtureId;
     private final int rowLength;
+    private final FixtureViewModel fixtureViewModel;
 
     public GroupTableViewClickListener(ITableView tableView, LayoutInflater layoutInflater,
-                                       String seasonId, String fixtureId, int rowLength) {
+                                       String seasonId, String fixtureId, int rowLength,
+                                       FixtureViewModel fixtureViewModel) {
         this.tableView = tableView;
         this.layoutInflater = layoutInflater;
         this.seasonId = seasonId;
         this.fixtureId = fixtureId;
         this.rowLength = rowLength;
+        this.fixtureViewModel = fixtureViewModel;
 
         gson = GsonSingleton.getInstance();
         requestQueue = RequestQueueSingleton.getInstance(this.tableView.getContext().getApplicationContext());
@@ -172,6 +176,10 @@ public class GroupTableViewClickListener implements ITableViewListener {
             } else {
                 Integer initialPlayerOneScore = cell.getPlayerOneScore();
                 Integer initialPlayerTwoScore = cell.getPlayerTwoScore();
+
+                if (initialPlayerOneScore == null && initialPlayerTwoScore == null){
+                    fixtureViewModel.incrementFinishedMatches();
+                }
 
                 if (initialPlayerOneScore == null && initialPlayerTwoScore == null &&
                         (columnPosition > rowPosition && p1Score > p2Score ||

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.evrencoskun.tableview.TableView;
 import com.example.tabletennistournament.R;
@@ -20,6 +21,7 @@ import com.example.tabletennistournament.modules.cup.fixture.models.ScoreCell;
 import com.example.tabletennistournament.modules.cup.fixture.models.ScoreData;
 import com.example.tabletennistournament.modules.cup.fixture.services.GroupTableViewAdapter;
 import com.example.tabletennistournament.modules.cup.fixture.services.GroupTableViewClickListener;
+import com.example.tabletennistournament.modules.cup.fixture.viewModels.FixtureViewModel;
 import com.example.tabletennistournament.services.GsonSingleton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -32,6 +34,8 @@ public class GroupFragment extends Fragment {
     private static final String ARG_GROUP_MATCHES_JSON = "ARG_GROUP_MATCHES_JSON";
     private static final String ARG_SEASON_ID = "ARG_SEASON_ID";
     private static final String ARG_FIXTURE_ID = "ARG_FIXTURE_ID";
+
+    FixtureViewModel fixtureViewModel;
 
     List<GroupMatch> groupMatches;
     String seasonId;
@@ -89,6 +93,8 @@ public class GroupFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         if (getArguments() == null) return;
         super.onViewCreated(view, savedInstanceState);
+
+        fixtureViewModel = new ViewModelProvider(requireParentFragment()).get(FixtureViewModel.class);
 
         fragmentView = view;
         tableView = fragmentView.findViewById(R.id.table_view_group);
@@ -159,7 +165,7 @@ public class GroupFragment extends Fragment {
 
         adapter.setAllItems(mColumnHeaderList, mRowHeaderList, mCellList);
         tableView.setTableViewListener(new GroupTableViewClickListener(tableView,
-                getLayoutInflater(), seasonId, fixtureId, playerNames.size() + 2));
+                getLayoutInflater(), seasonId, fixtureId, playerNames.size() + 2, fixtureViewModel));
 
         final float scale = getContext().getResources().getDisplayMetrics().density;
         int dps = 40 * (playerNames.size() + 1) + 10;

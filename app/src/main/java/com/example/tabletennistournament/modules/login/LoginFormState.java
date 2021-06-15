@@ -2,9 +2,6 @@ package com.example.tabletennistournament.modules.login;
 
 import androidx.annotation.Nullable;
 
-/**
- * Data validation state of the login form.
- */
 class LoginFormState {
     @Nullable
     private final Integer usernameError;

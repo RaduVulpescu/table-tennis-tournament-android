@@ -182,23 +182,20 @@ public class SeasonContentFragment extends Fragment {
         FragmentManager fragmentManager = this.getChildFragmentManager();
         FixtureFragment fixtureFragment = (FixtureFragment) fragmentManager.findFragmentByTag(FIXTURE_FRAGMENT_TAG);
 
-        if (fixtureFragment == null) {
-            fragmentManager.beginTransaction()
-                    .setReorderingAllowed(true)
-                    .add(R.id.fragment_container_view_season_content,
-                            FixtureFragment.newInstance(gson.toJson(fixture)),
-                            FIXTURE_FRAGMENT_TAG)
-                    .commit();
-        } else {
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-            for (Fragment fragment : fragmentManager.getFragments()) {
-                transaction.hide(fragment);
-            }
-
-            transaction.setReorderingAllowed(true)
-                    .show(fixtureFragment)
-                    .commit();
+        for (Fragment fragment : fragmentManager.getFragments()) {
+            transaction.hide(fragment);
         }
+
+        if (fixtureFragment == null) {
+            transaction.add(R.id.fragment_container_view_season_content,
+                    FixtureFragment.newInstance(gson.toJson(fixture)),
+                    FIXTURE_FRAGMENT_TAG);
+        } else {
+            transaction.show(fixtureFragment);
+        }
+
+        transaction.setReorderingAllowed(true).commit();
     }
 }

@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,14 +18,17 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tabletennistournament.R;
+import com.example.tabletennistournament.enums.FixtureState;
 import com.example.tabletennistournament.enums.Group;
 import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.models.GroupMatch;
+import com.example.tabletennistournament.modules.cup.fixture.viewModels.FixtureViewModel;
 import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.chip.Chip;
@@ -45,6 +49,8 @@ public class FixtureFragment extends Fragment {
     boolean groupsIsExpended = false;
     boolean pyramidsIsExpended = false;
     boolean rankingIsExpended = false;
+
+    FixtureViewModel fixtureViewModel;
 
     Gson gson;
     RequestQueueSingleton requestQueue;
@@ -109,10 +115,19 @@ public class FixtureFragment extends Fragment {
         pyramids_linear_layout = null;
         ranking_linear_layout = null;
 
+        int finishedMatches = (int) fixture.GroupMatches.stream()
+                .filter(x -> x.PlayerOneStats.SetsWon != null && x.PlayerTwoStats.SetsWon != null)
+                .count();
+
+        fixtureViewModel = new ViewModelProvider(this).get(FixtureViewModel.class);
+        fixtureViewModel.setFixtureGroup(fixture.GroupMatches.size(), finishedMatches);
+
         setOnClickToExpandButtons();
         populateFixtureData(fixture);
         populateParticipantsList(fixture.Players);
         populateChipGroup(fixture.GroupMatches);
+
+        if (fixture.State == FixtureState.GroupsStage) bindEndGroupStageButton();
     }
 
     private void setOnClickToExpandButtons() {
@@ -276,5 +291,21 @@ public class FixtureFragment extends Fragment {
                     .show(groupFragment)
                     .commit();
         }
+    }
+
+    private void bindEndGroupStageButton() {
+        Button button = fragmentView.findViewById(R.id.button_end_group_stage);
+        button.setOnClickListener(v -> {
+        });
+
+        fixtureViewModel.getFixtureGroupState().observe(getViewLifecycleOwner(), fixtureGroupState -> {
+            if (fixtureGroupState == null) {
+                return;
+            }
+
+            if (fixtureGroupState.isGroupStageComplete()) {
+                button.setVisibility(View.VISIBLE);
+            }
+        });
     }
 }
