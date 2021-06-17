@@ -6,6 +6,7 @@ public class FixturePlayer {
     public UUID PlayerId;
     public String Name;
     public Double Quality;
+    public Integer GroupRank;
 
     public FixturePlayer() { }
 

@@ -12,7 +12,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.evrencoskun.tableview.TableView;
 import com.example.tabletennistournament.R;
+import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.models.GroupMatch;
+import com.example.tabletennistournament.models.PlayerMatchStats;
 import com.example.tabletennistournament.modules.cup.fixture.models.Cell;
 import com.example.tabletennistournament.modules.cup.fixture.models.ColumnHeader;
 import com.example.tabletennistournament.modules.cup.fixture.models.NumberCell;
@@ -21,6 +23,7 @@ import com.example.tabletennistournament.modules.cup.fixture.models.ScoreCell;
 import com.example.tabletennistournament.modules.cup.fixture.models.ScoreData;
 import com.example.tabletennistournament.modules.cup.fixture.services.GroupTableViewAdapter;
 import com.example.tabletennistournament.modules.cup.fixture.services.GroupTableViewClickListener;
+import com.example.tabletennistournament.modules.cup.fixture.viewModels.FixtureData;
 import com.example.tabletennistournament.modules.cup.fixture.viewModels.FixtureViewModel;
 import com.example.tabletennistournament.services.GsonSingleton;
 import com.google.gson.Gson;
@@ -32,14 +35,10 @@ import java.util.List;
 public class GroupFragment extends Fragment {
 
     private static final String ARG_GROUP_MATCHES_JSON = "ARG_GROUP_MATCHES_JSON";
-    private static final String ARG_SEASON_ID = "ARG_SEASON_ID";
-    private static final String ARG_FIXTURE_ID = "ARG_FIXTURE_ID";
 
     FixtureViewModel fixtureViewModel;
 
     List<GroupMatch> groupMatches;
-    String seasonId;
-    String fixtureId;
 
     Gson gson;
 
@@ -54,13 +53,11 @@ public class GroupFragment extends Fragment {
     }
 
     @NonNull
-    public static GroupFragment newInstance(String groupMatchesJson, String seasonId, String fixtureId) {
+    public static GroupFragment newInstance(String groupMatchesJson) {
         GroupFragment fragment = new GroupFragment();
         Bundle args = new Bundle();
 
         args.putString(ARG_GROUP_MATCHES_JSON, groupMatchesJson);
-        args.putString(ARG_SEASON_ID, seasonId);
-        args.putString(ARG_FIXTURE_ID, fixtureId);
 
         fragment.setArguments(args);
         return fragment;
@@ -76,8 +73,6 @@ public class GroupFragment extends Fragment {
         String groupMatchesJson = getArguments().getString(ARG_GROUP_MATCHES_JSON);
         groupMatches = gson.fromJson(groupMatchesJson, new TypeToken<List<GroupMatch>>() {
         }.getType());
-        seasonId = getArguments().getString(ARG_SEASON_ID);
-        fixtureId = getArguments().getString(ARG_FIXTURE_ID);
 
         mRowHeaderList = new ArrayList<>();
         mColumnHeaderList = new ArrayList<>();
@@ -105,37 +100,46 @@ public class GroupFragment extends Fragment {
     }
 
     private void inflateTableView() {
-        List<String> playerNames = new ArrayList<>();
+        FixtureData initialData = fixtureViewModel.getFixtureData().getValue();
+
+        List<PlayerMatchStats> players = new ArrayList<>();
         for (GroupMatch match : groupMatches) {
-            if (!playerNames.contains(match.PlayerOneStats.PlayerName)) {
-                playerNames.add(match.PlayerOneStats.PlayerName);
+            boolean isAlreadyPresent = false;
+            for (PlayerMatchStats player : players) {
+                if (player.PlayerId.compareTo(match.PlayerOneStats.PlayerId) == 0) {
+                    isAlreadyPresent = true;
+                    break;
+                }
+            }
+            if (!isAlreadyPresent) {
+                players.add(match.PlayerOneStats);
             }
         }
-        playerNames.add(groupMatches.get(groupMatches.size() - 1).PlayerTwoStats.PlayerName);
+        players.add(groupMatches.get(groupMatches.size() - 1).PlayerTwoStats);
 
-        for (String name : playerNames) {
-            mColumnHeaderList.add(new ColumnHeader(name));
-            mRowHeaderList.add(new RowHeader(name));
+        for (PlayerMatchStats player : players) {
+            mColumnHeaderList.add(new ColumnHeader(player.PlayerName));
+            mRowHeaderList.add(new RowHeader(player.PlayerName));
         }
 
         mColumnHeaderList.add(new ColumnHeader("Victories"));
         mColumnHeaderList.add(new ColumnHeader("Rank"));
 
-        for (int i = 0; i < playerNames.size(); i++) {
+        for (int i = 0; i < players.size(); i++) {
             List<Cell> row = new ArrayList<>();
             int numberOfVictories = 0;
+            int finalI = i;
 
-            for (int j = 0; j < playerNames.size(); j++) {
+            for (int j = 0; j < players.size(); j++) {
                 if (i == j) {
                     row.add(new Cell(""));
                 } else {
-                    int finalI = i;
                     int finalJ = j;
                     GroupMatch groupMatch = groupMatches.stream().filter(x ->
-                            (x.PlayerOneStats.PlayerName.equals(playerNames.get(finalI)) ||
-                                    x.PlayerOneStats.PlayerName.equals(playerNames.get(finalJ))) &&
-                                    (x.PlayerTwoStats.PlayerName.equals(playerNames.get(finalI)) ||
-                                            x.PlayerTwoStats.PlayerName.equals(playerNames.get(finalJ)))
+                            (x.PlayerOneStats.PlayerId.compareTo(players.get(finalI).PlayerId) == 0 ||
+                                    x.PlayerOneStats.PlayerId.compareTo(players.get(finalJ).PlayerId) == 0) &&
+                                    (x.PlayerTwoStats.PlayerId.compareTo(players.get(finalI).PlayerId) == 0 ||
+                                            x.PlayerTwoStats.PlayerId.compareTo(players.get(finalJ).PlayerId) == 0)
                     ).findFirst().orElseGet(null);
 
                     ScoreData scoreData = new ScoreData(
@@ -158,17 +162,23 @@ public class GroupFragment extends Fragment {
             }
 
             row.add(new NumberCell(numberOfVictories));
-            row.add(new Cell("")); // Rank
+
+            FixturePlayer fixturePlayer = initialData.getPlayers().stream()
+                    .filter(x -> x.PlayerId.compareTo(players.get(finalI).PlayerId) == 0)
+                    .findFirst().orElseGet(null);
+
+            row.add(new Cell(fixturePlayer.GroupRank));
 
             mCellList.add(row);
         }
 
         adapter.setAllItems(mColumnHeaderList, mRowHeaderList, mCellList);
         tableView.setTableViewListener(new GroupTableViewClickListener(tableView,
-                getLayoutInflater(), seasonId, fixtureId, playerNames.size() + 2, fixtureViewModel));
+                getLayoutInflater(), initialData.getSeasonId(), initialData.getFixtureId(),
+                players.size() + 2, fixtureViewModel));
 
         final float scale = getContext().getResources().getDisplayMetrics().density;
-        int dps = 40 * (playerNames.size() + 1) + 10;
+        int dps = 40 * (players.size() + 1) + 10;
         tableView.getLayoutParams().height = (int) (dps * scale + 0.5f);
     }
 }

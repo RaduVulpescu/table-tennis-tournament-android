@@ -42,7 +42,8 @@ public class GroupTableViewAdapter extends AbstractTableAdapter<ColumnHeader, Ro
     @Override
     public void onBindCellViewHolder(@NonNull AbstractViewHolder holder, Cell cellItemModel, int columnPosition, int rowPosition) {
         CellViewHolder viewHolder = (CellViewHolder) holder;
-        viewHolder.cell_textview.setText(((Cell) cellItemModel).getData().toString());
+        String cellData = cellItemModel.getData() != null ? cellItemModel.getData().toString() : "";
+        viewHolder.cell_textview.setText(cellData);
 
         if (columnPosition == rowPosition) {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -79,14 +80,13 @@ public class GroupTableViewAdapter extends AbstractTableAdapter<ColumnHeader, Ro
     @Override
     public void onBindColumnHeaderViewHolder(@NonNull AbstractViewHolder holder, ColumnHeader columnHeaderItemModel, int position) {
         ColumnHeaderViewHolder columnHeaderViewHolder = (ColumnHeaderViewHolder) holder;
-        columnHeaderViewHolder.column_header_textView.setText(((ColumnHeader) columnHeaderItemModel).getData().toString());
+        columnHeaderViewHolder.column_header_textView.setText(columnHeaderItemModel.getData().toString());
 
         columnHeaderViewHolder.column_header_container.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
         columnHeaderViewHolder.column_header_textView.requestLayout();
     }
 
     static class RowHeaderViewHolder extends AbstractViewHolder {
-
         final TextView row_header_textview;
 
         public RowHeaderViewHolder(View itemView) {
@@ -107,7 +107,7 @@ public class GroupTableViewAdapter extends AbstractTableAdapter<ColumnHeader, Ro
     @Override
     public void onBindRowHeaderViewHolder(@NonNull AbstractViewHolder holder, RowHeader rowHeaderItemModel, int position) {
         RowHeaderViewHolder rowHeaderViewHolder = (RowHeaderViewHolder) holder;
-        rowHeaderViewHolder.row_header_textview.setText(((RowHeader) rowHeaderItemModel).getData().toString());
+        rowHeaderViewHolder.row_header_textview.setText(rowHeaderItemModel.getData().toString());
     }
 
     @NonNull

@@ -5,6 +5,7 @@ import android.transition.AutoTransition;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.enums.FixtureState;
 import com.example.tabletennistournament.enums.Group;
@@ -29,11 +32,13 @@ import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.models.GroupMatch;
 import com.example.tabletennistournament.modules.cup.fixture.viewModels.FixtureViewModel;
+import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipDrawable;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.gson.Gson;
 
 import java.time.format.DateTimeFormatter;
@@ -41,11 +46,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import static com.example.tabletennistournament.services.Common.increaseTimeout;
+
 public class FixtureFragment extends Fragment {
 
     private static final String ARG_FIXTURE_JSON = "FIXTURE_JSON";
 
-    boolean informationIsExpanded = true;
+    boolean informationIsExpanded = false;
     boolean groupsIsExpended = false;
     boolean pyramidsIsExpended = false;
     boolean rankingIsExpended = false;
@@ -56,6 +63,7 @@ public class FixtureFragment extends Fragment {
     RequestQueueSingleton requestQueue;
     FixtureModel fixture;
     View fragmentView;
+    FragmentManager fragmentManager;
 
     LinearLayout information_linear_fixture_content_container;
 
@@ -67,6 +75,10 @@ public class FixtureFragment extends Fragment {
     LinearLayout groups_linear_layout;
     LinearLayout pyramids_linear_layout;
     LinearLayout ranking_linear_layout;
+
+    TextView stateTextView;
+    LinearProgressIndicator linearProgressIndicator;
+    Button endGroupButton;
 
     public FixtureFragment() {
     }
@@ -104,6 +116,7 @@ public class FixtureFragment extends Fragment {
 
         fragmentView = view;
 
+        fragmentManager = this.getChildFragmentManager();
         information_linear_fixture_content_container = fragmentView.findViewById(R.id.linear_layout_fixture_content_container);
 
         information_expand_button = fragmentView.findViewById(R.id.button_fixture_information_expand_collapse);
@@ -114,20 +127,35 @@ public class FixtureFragment extends Fragment {
         groups_linear_layout = fragmentView.findViewById(R.id.linear_layout_groups_container);
         pyramids_linear_layout = null;
         ranking_linear_layout = null;
+        endGroupButton = fragmentView.findViewById(R.id.button_end_group_stage);
+        linearProgressIndicator = fragmentView.findViewById(R.id.linear_progress_indicator_main_fixture);
 
         int finishedMatches = (int) fixture.GroupMatches.stream()
                 .filter(x -> x.PlayerOneStats.SetsWon != null && x.PlayerTwoStats.SetsWon != null)
                 .count();
 
         fixtureViewModel = new ViewModelProvider(this).get(FixtureViewModel.class);
-        fixtureViewModel.setFixtureGroup(fixture.GroupMatches.size(), finishedMatches);
+        fixtureViewModel.setFixtureData(fixture);
+        fixtureViewModel.setFixtureGroup(fixture.GroupMatches.size(), finishedMatches, fixture.State != FixtureState.GroupsStage);
+
+        fixtureViewModel.getFixtureGroupState().observe(getViewLifecycleOwner(), fixtureGroupState -> {
+            if (fixtureGroupState == null) {
+                return;
+            }
+
+            if (fixtureGroupState.displayEndGroupStageButton()) {
+                endGroupButton.setVisibility(View.VISIBLE);
+            } else {
+                endGroupButton.setVisibility(View.GONE);
+            }
+        });
 
         setOnClickToExpandButtons();
         populateFixtureData(fixture);
         populateParticipantsList(fixture.Players);
         populateChipGroup(fixture.GroupMatches);
 
-        if (fixture.State == FixtureState.GroupsStage) bindEndGroupStageButton();
+        bindEndGroupStageButton();
     }
 
     private void setOnClickToExpandButtons() {
@@ -189,7 +217,7 @@ public class FixtureFragment extends Fragment {
         TextView locationTextView = fragmentView.findViewById(R.id.text_view_main_fixture_location_placeholder);
         TextView dateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_date_placeholder);
         TextView qualityAverageTextView = fragmentView.findViewById(R.id.text_view_main_fixture_quality_average_placeholder);
-        TextView stateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_state_placeholder);
+        stateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_state_placeholder);
 
         locationTextView.setText(String.format("Location: %s", fixture.Location));
         dateTextView.setText(String.format("Date: %s", fixture.Date.format(DateTimeFormatter.ofPattern("dd MMMM HH:mm"))));
@@ -247,37 +275,36 @@ public class FixtureFragment extends Fragment {
             chip.setChipDrawable(drawable);
             chip.setText(String.format("Group %s", group));
 
-            List<GroupMatch> groupMatchesForGroup = groupMatches.stream().filter(x -> x.Group == group).collect(Collectors.toList());
-
+            int finalI = i;
             chip.setOnClickListener(v -> {
                 chipGroup.clearCheck();
                 ((Chip) v).setChecked(true);
 
-                displayGroupTable(groupMatchesForGroup);
+                displayGroupTable(groups.get(finalI));
             });
 
             if (i == 0) {
                 chip.setChecked(true);
-                displayGroupTable(groupMatchesForGroup);
+                displayGroupTable(groups.get(finalI));
             }
 
             chipGroup.addView(chip);
         }
     }
 
-    private void displayGroupTable(@NonNull List<GroupMatch> groupMatches) {
+    private void displayGroupTable(Group group) {
+        List<GroupMatch> groupMatchesForGroup = fixture.GroupMatches.stream().filter(x -> x.Group == group).collect(Collectors.toList());
 
         String GROUP_FRAGMENT_TAG = String.format("FRAGMENT_GROUP_%s_%s", fixture.FixtureId,
-                groupMatches.stream().findFirst().orElseGet(null).Group.name());
+                groupMatchesForGroup.stream().findFirst().orElseGet(null).Group.name());
 
-        FragmentManager fragmentManager = this.getChildFragmentManager();
         GroupFragment groupFragment = (GroupFragment) fragmentManager.findFragmentByTag(GROUP_FRAGMENT_TAG);
 
         if (groupFragment == null) {
             fragmentManager.beginTransaction()
                     .setReorderingAllowed(true)
                     .add(R.id.fragment_container_view_group,
-                            GroupFragment.newInstance(gson.toJson(groupMatches), fixture.SeasonId.toString(), fixture.FixtureId.toString()),
+                            GroupFragment.newInstance(gson.toJson(groupMatchesForGroup)),
                             GROUP_FRAGMENT_TAG)
                     .commit();
         } else {
@@ -294,18 +321,36 @@ public class FixtureFragment extends Fragment {
     }
 
     private void bindEndGroupStageButton() {
-        Button button = fragmentView.findViewById(R.id.button_end_group_stage);
-        button.setOnClickListener(v -> {
-        });
+        String endGroupStageURL = ApiRoutes.END_GROUP_STAGE_ROUTE(fixture.SeasonId.toString(), fixture.FixtureId.toString());
 
-        fixtureViewModel.getFixtureGroupState().observe(getViewLifecycleOwner(), fixtureGroupState -> {
-            if (fixtureGroupState == null) {
-                return;
-            }
+        endGroupButton.setOnClickListener(v -> {
+            linearProgressIndicator.show();
+            v.setEnabled(false);
 
-            if (fixtureGroupState.isGroupStageComplete()) {
-                button.setVisibility(View.VISIBLE);
-            }
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, endGroupStageURL, null,
+                    response -> {
+                        fixture = gson.fromJson(response.toString(), FixtureModel.class);
+
+                        String FIXTURE_FRAGMENT_TAG = String.format("FRAGMENT_FIXTURE_%s", fixture.FixtureId);
+
+                        FixtureFragment thisFragment = (FixtureFragment) getParentFragmentManager().findFragmentByTag(FIXTURE_FRAGMENT_TAG);
+                        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+
+                        transaction.remove(thisFragment);
+                        transaction.add(R.id.fragment_container_view_season_content,
+                                FixtureFragment.newInstance(gson.toJson(fixture)),
+                                FIXTURE_FRAGMENT_TAG);
+
+                        transaction.setReorderingAllowed(true).commit();
+                    },
+                    error -> {
+                        linearProgressIndicator.hide();
+                        linearProgressIndicator.setVisibility(View.GONE);
+                        v.setEnabled(true);
+                    }
+            );
+
+            requestQueue.add(increaseTimeout(jsonObjectRequest));
         });
     }
 }
