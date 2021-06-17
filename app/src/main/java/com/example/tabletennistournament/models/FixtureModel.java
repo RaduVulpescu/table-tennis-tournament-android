@@ -18,6 +18,8 @@ public class FixtureModel {
     public FixtureType Type;
     public List<FixturePlayer> Players;
     public List<GroupMatch> GroupMatches;
+    public List<Pyramid> Pyramids;
+    public List<PlayerRank> Ranking;
 
     public FixtureModel() { }
 
