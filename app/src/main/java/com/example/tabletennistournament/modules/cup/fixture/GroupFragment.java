@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.evrencoskun.tableview.TableView;
 import com.example.tabletennistournament.R;
+import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.models.GroupMatch;
 import com.example.tabletennistournament.models.PlayerMatchStats;
@@ -23,7 +24,6 @@ import com.example.tabletennistournament.modules.cup.fixture.models.ScoreCell;
 import com.example.tabletennistournament.modules.cup.fixture.models.ScoreData;
 import com.example.tabletennistournament.modules.cup.fixture.services.GroupTableViewAdapter;
 import com.example.tabletennistournament.modules.cup.fixture.services.GroupTableViewClickListener;
-import com.example.tabletennistournament.modules.cup.fixture.viewModels.FixtureData;
 import com.example.tabletennistournament.modules.cup.fixture.viewModels.FixtureViewModel;
 import com.example.tabletennistournament.services.GsonSingleton;
 import com.google.gson.Gson;
@@ -34,10 +34,12 @@ import java.util.List;
 
 public class GroupFragment extends Fragment {
 
+    private static final String ARG_GROUP_FIXTURE_JSON = "ARG_GROUP_FIXTURE_JSON";
     private static final String ARG_GROUP_MATCHES_JSON = "ARG_GROUP_MATCHES_JSON";
 
     FixtureViewModel fixtureViewModel;
 
+    FixtureModel fixture;
     List<GroupMatch> groupMatches;
 
     Gson gson;
@@ -53,10 +55,11 @@ public class GroupFragment extends Fragment {
     }
 
     @NonNull
-    public static GroupFragment newInstance(String groupMatchesJson) {
+    public static GroupFragment newInstance(String fixtureJson, String groupMatchesJson) {
         GroupFragment fragment = new GroupFragment();
         Bundle args = new Bundle();
 
+        args.putString(ARG_GROUP_FIXTURE_JSON, fixtureJson);
         args.putString(ARG_GROUP_MATCHES_JSON, groupMatchesJson);
 
         fragment.setArguments(args);
@@ -70,7 +73,9 @@ public class GroupFragment extends Fragment {
 
         gson = GsonSingleton.getInstance();
 
+        String fixtureJson = getArguments().getString(ARG_GROUP_FIXTURE_JSON);
         String groupMatchesJson = getArguments().getString(ARG_GROUP_MATCHES_JSON);
+        fixture = gson.fromJson(fixtureJson, FixtureModel.class);
         groupMatches = gson.fromJson(groupMatchesJson, new TypeToken<List<GroupMatch>>() {
         }.getType());
 
@@ -100,8 +105,6 @@ public class GroupFragment extends Fragment {
     }
 
     private void inflateTableView() {
-        FixtureData initialData = fixtureViewModel.getFixtureData().getValue();
-
         List<PlayerMatchStats> players = new ArrayList<>();
         for (GroupMatch match : groupMatches) {
             boolean isAlreadyPresent = false;
@@ -163,7 +166,7 @@ public class GroupFragment extends Fragment {
 
             row.add(new NumberCell(numberOfVictories));
 
-            FixturePlayer fixturePlayer = initialData.getPlayers().stream()
+            FixturePlayer fixturePlayer = fixture.Players.stream()
                     .filter(x -> x.PlayerId.compareTo(players.get(finalI).PlayerId) == 0)
                     .findFirst().orElseGet(null);
 
@@ -174,7 +177,7 @@ public class GroupFragment extends Fragment {
 
         adapter.setAllItems(mColumnHeaderList, mRowHeaderList, mCellList);
         tableView.setTableViewListener(new GroupTableViewClickListener(tableView,
-                getLayoutInflater(), initialData.getSeasonId(), initialData.getFixtureId(),
+                getLayoutInflater(), fixture.SeasonId.toString(), fixture.FixtureId.toString(),
                 players.size() + 2, fixtureViewModel));
 
         final float scale = getContext().getResources().getDisplayMetrics().density;

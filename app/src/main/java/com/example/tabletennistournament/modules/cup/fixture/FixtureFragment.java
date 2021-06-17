@@ -5,7 +5,6 @@ import android.transition.AutoTransition;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -135,7 +134,6 @@ public class FixtureFragment extends Fragment {
                 .count();
 
         fixtureViewModel = new ViewModelProvider(this).get(FixtureViewModel.class);
-        fixtureViewModel.setFixtureData(fixture);
         fixtureViewModel.setFixtureGroup(fixture.GroupMatches.size(), finishedMatches, fixture.State != FixtureState.GroupsStage);
 
         fixtureViewModel.getFixtureGroupState().observe(getViewLifecycleOwner(), fixtureGroupState -> {
@@ -304,7 +302,7 @@ public class FixtureFragment extends Fragment {
             fragmentManager.beginTransaction()
                     .setReorderingAllowed(true)
                     .add(R.id.fragment_container_view_group,
-                            GroupFragment.newInstance(gson.toJson(groupMatchesForGroup)),
+                            GroupFragment.newInstance(gson.toJson(fixture), gson.toJson(groupMatchesForGroup)),
                             GROUP_FRAGMENT_TAG)
                     .commit();
         } else {
