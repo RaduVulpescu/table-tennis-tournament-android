@@ -23,7 +23,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:paddingBottom="16dp"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_player_profile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -108,11 +108,12 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="4dp"
                         android:layout_marginEnd="4dp"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:minHeight="62dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_gravity="center_horizontal"
                             android:gravity="center_horizontal"
                             android:orientation="vertical">
@@ -121,12 +122,16 @@
                                 android:id="@+id/text_view_player_profile_best_score"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textAppearance="?attr/textAppearanceHeadline6" />
+                                android:layout_marginTop="8dp"
+                                android:text="3"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
+                                android:gravity="center"
                                 android:text="@string/best_score"
                                 android:textAppearance="?attr/textAppearanceBody2"
                                 android:textColor="?android:attr/textColorSecondary" />
@@ -146,18 +151,23 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:gravity="center_horizontal"
+                            android:minHeight="62dp"
                             android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/text_view_player_profile_best_ranking"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textAppearance="?attr/textAppearanceHeadline6" />
+                                android:layout_marginTop="8dp"
+                                android:text="3"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
+                                android:gravity="center"
                                 android:text="@string/best_ranking"
                                 android:textAppearance="?attr/textAppearanceBody2"
                                 android:textColor="?android:attr/textColorSecondary" />
@@ -176,18 +186,23 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:gravity="center_horizontal"
+                            android:minHeight="62dp"
                             android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/text_view_player_profile_best_top4"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textAppearance="?attr/textAppearanceHeadline6" />
+                                android:layout_marginTop="8dp"
+                                android:text="3"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
+                                android:gravity="center"
                                 android:text="@string/best_top_4"
                                 android:textAppearance="?attr/textAppearanceBody2"
                                 android:textColor="?android:attr/textColorSecondary" />
@@ -206,18 +221,23 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:gravity="center_horizontal"
+                            android:minHeight="62dp"
                             android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/text_view_player_profile_best_level"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textAppearance="?attr/textAppearanceHeadline6" />
+                                android:layout_marginTop="8dp"
+                                android:text="3"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
+                                android:gravity="center"
                                 android:text="@string/best_level"
                                 android:textAppearance="?attr/textAppearanceBody2"
                                 android:textColor="?android:attr/textColorSecondary" />
@@ -246,19 +266,23 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:gravity="center_horizontal"
+                            android:minHeight="62dp"
                             android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/text_view_player_profile_beginner_cups"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textAppearance="?attr/textAppearanceHeadline6" />
+                                android:layout_marginTop="8dp"
+                                android:text="3"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:gravity="center_horizontal"
+                                android:gravity="center"
                                 android:text="@string/beginner_cups"
                                 android:textAppearance="?attr/textAppearanceBody2"
                                 android:textColor="?android:attr/textColorSecondary" />
@@ -277,19 +301,23 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:gravity="center_horizontal"
+                            android:minHeight="62dp"
                             android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/text_view_player_profile_intermediate_cups"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textAppearance="?attr/textAppearanceHeadline6" />
+                                android:layout_marginTop="8dp"
+                                android:text="3"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:gravity="center_horizontal"
+                                android:gravity="center"
                                 android:text="@string/intermediate_cups"
                                 android:textAppearance="?attr/textAppearanceBody2"
                                 android:textColor="?android:attr/textColorSecondary" />
@@ -308,19 +336,23 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:gravity="center_horizontal"
+                            android:minHeight="62dp"
                             android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/text_view_player_profile_advanced_cups"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textAppearance="?attr/textAppearanceHeadline6" />
+                                android:layout_marginTop="8dp"
+                                android:text="3"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:gravity="center_horizontal"
+                                android:gravity="center"
                                 android:text="@string/advanced_cups"
                                 android:textAppearance="?attr/textAppearanceBody2"
                                 android:textColor="?android:attr/textColorSecondary" />
@@ -339,13 +371,17 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center_horizontal"
                             android:gravity="center_horizontal"
+                            android:minHeight="62dp"
                             android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/text_view_player_profile_open_cups"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textAppearance="?attr/textAppearanceHeadline6" />
+                                android:layout_marginTop="8dp"
+                                android:text="3"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -380,19 +416,23 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center_horizontal"
                             android:gravity="center_horizontal"
+                            android:minHeight="62dp"
                             android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/text_view_player_profile_beginner_seasons"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textAppearance="?attr/textAppearanceHeadline6" />
+                                android:layout_marginTop="8dp"
+                                android:text="3"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:gravity="center_horizontal"
+                                android:gravity="center"
                                 android:text="@string/beginner_seasons"
                                 android:textAppearance="?attr/textAppearanceBody2"
                                 android:textColor="?android:attr/textColorSecondary" />
@@ -411,19 +451,23 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center_horizontal"
                             android:gravity="center_horizontal"
+                            android:minHeight="62dp"
                             android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/text_view_player_profile_intermediate_seasons"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textAppearance="?attr/textAppearanceHeadline6" />
+                                android:layout_marginTop="8dp"
+                                android:text="3"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:gravity="center_horizontal"
+                                android:gravity="center"
                                 android:text="@string/intermediate_seasons"
                                 android:textAppearance="?attr/textAppearanceBody2"
                                 android:textColor="?android:attr/textColorSecondary" />
@@ -442,19 +486,23 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center_horizontal"
                             android:gravity="center_horizontal"
+                            android:minHeight="62dp"
                             android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/text_view_player_profile_advanced_seasons"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textAppearance="?attr/textAppearanceHeadline6" />
+                                android:layout_marginTop="8dp"
+                                android:text="3"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:gravity="center_horizontal"
+                                android:gravity="center"
                                 android:text="@string/advanced_seasons"
                                 android:textAppearance="?attr/textAppearanceBody2"
                                 android:textColor="?android:attr/textColorSecondary" />
@@ -473,19 +521,23 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center_horizontal"
                             android:gravity="center_horizontal"
+                            android:minHeight="62dp"
                             android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/text_view_player_profile_open_seasons"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textAppearance="?attr/textAppearanceHeadline6" />
+                                android:layout_marginTop="8dp"
+                                android:text="3"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:gravity="center_horizontal"
+                                android:gravity="center"
                                 android:text="@string/open_seasons"
                                 android:textAppearance="?attr/textAppearanceBody2"
                                 android:textColor="?android:attr/textColorSecondary" />

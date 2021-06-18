@@ -179,16 +179,17 @@ public class FixtureFragment extends Fragment {
         populateChipGroup(fixture.GroupMatches);
 
         if (fixture.State == FixtureState.GroupsStage) bindEndGroupStageButton();
-        if (fixture.Pyramids.size() > 0) populatePyramids();
-        if (fixture.Ranking.size() > 0) populateFixtureRanking();
+        if (fixture.Pyramids != null && fixture.Pyramids.size() > 0) populatePyramids();
+        if (fixture.Ranking != null && fixture.Ranking.size() > 0) populateFixtureRanking();
     }
 
     private void expandRelevantSection() {
-        if (fixture.Pyramids.size() == 0) {
+        if (fixture.Pyramids == null || fixture.Pyramids.size() == 0) {
             pyramids_linear_fixture_content_container.setVisibility(View.GONE);
             fragmentView.findViewById(R.id.view_pyramids_delimiter).setVisibility(View.GONE);
         }
-        if (fixture.Ranking.size() == 0) {
+
+        if (fixture.Ranking == null || fixture.Ranking.size() == 0) {
             ranking_linear_fixture_content_container.setVisibility(View.GONE);
         }
 

@@ -34,6 +34,7 @@ import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -57,6 +58,7 @@ public class NextFixturesActivity extends AppCompatActivity {
     RequestQueueSingleton requestQueue;
     LoginRepository loginRepository;
 
+    LinearProgressIndicator linearProgressIndicator;
     CircularProgressIndicator progressIndicator;
     TextView serverErrorTextView;
     Button reloadButton;
@@ -78,6 +80,7 @@ public class NextFixturesActivity extends AppCompatActivity {
         requestQueue = RequestQueueSingleton.getInstance(this);
         loginRepository = LoginRepository.getInstance();
 
+        linearProgressIndicator = findViewById(R.id.linear_progress_indicator_start_fixture);
         progressIndicator = findViewById(R.id.circular_progress_indicator_upcoming);
         serverErrorTextView = findViewById(R.id.text_view_server_error_upcoming);
         reloadButton = findViewById(R.id.button_reload_upcoming);
@@ -230,16 +233,20 @@ public class NextFixturesActivity extends AppCompatActivity {
 
     private void startFixture(UpcomingFixtureListItemViewHolder vh, @NonNull FixtureModel fixture) {
         String url = ApiRoutes.START_FIXTURE_ROUTE(fixture.SeasonId.toString(), fixture.FixtureId.toString());
+        linearProgressIndicator.show();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
                 response -> {
                     vh.setVisibilityOnGone();
+                    linearProgressIndicator.hide();
 
                     Snackbar snackbar = Snackbar.make(findViewById(R.id.recycler_view_upcoming_fixtures), "Fixture started!", Snackbar.LENGTH_LONG);
                     snackbar.setAnchorView(findViewById(R.id.bottom_navigation_upcoming));
                     snackbar.show();
                 },
                 error -> {
+                    linearProgressIndicator.hide();
+
                     Snackbar snackbar = Snackbar.make(findViewById(R.id.recycler_view_upcoming_fixtures), R.string.server_error, Snackbar.LENGTH_LONG);
                     snackbar.setAnchorView(findViewById(R.id.bottom_navigation_upcoming));
                     snackbar.show();
