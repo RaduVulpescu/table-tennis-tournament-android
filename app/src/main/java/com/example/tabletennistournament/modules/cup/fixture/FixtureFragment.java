@@ -264,11 +264,13 @@ public class FixtureFragment extends Fragment {
     }
 
     private void populateFixtureInformation(@NonNull FixtureModel fixture) {
+        TextView participantsTitle = fragmentView.findViewById(R.id.text_view_participants_title);
         TextView locationTextView = fragmentView.findViewById(R.id.text_view_main_fixture_location_placeholder);
         TextView dateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_date_placeholder);
         TextView qualityAverageTextView = fragmentView.findViewById(R.id.text_view_main_fixture_quality_average_placeholder);
         stateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_state_placeholder);
 
+        participantsTitle.setText(String.format(Locale.getDefault(), "Participants (%d)", fixture.Players.size()));
         locationTextView.setText(String.format("Location: %s", fixture.Location));
         dateTextView.setText(String.format("Date: %s", fixture.Date.format(DateTimeFormatter.ofPattern("dd MMMM HH:mm"))));
         qualityAverageTextView.setText(String.format(Locale.getDefault(), "Quality Avg: %.2f", fixture.QualityAverage));
@@ -453,8 +455,11 @@ public class FixtureFragment extends Fragment {
             private void bind(@NonNull PyramidMatchesItemViewHolder vh, int position) {
                 MatchModel match = matches.get(position);
 
+                String displayOne = match.PlayerOneStats.SetsWon == null ? "" : match.PlayerOneStats.SetsWon.toString();
+                String displayTwo = match.PlayerTwoStats.SetsWon == null ? "" : match.PlayerTwoStats.SetsWon.toString();
+
                 vh.playerOneName.setText(match.PlayerOneStats.PlayerName);
-                vh.matchScore.setText(String.format("%s - %s", match.PlayerOneStats.SetsWon, match.PlayerTwoStats.SetsWon));
+                vh.matchScore.setText(String.format("%s - %s", displayOne , displayTwo));
                 vh.playerTwoName.setText(match.PlayerTwoStats.PlayerName);
             }
         };

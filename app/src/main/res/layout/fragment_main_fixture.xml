@@ -250,7 +250,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="8dp"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_view_fixture_pyramids"
@@ -259,7 +259,6 @@
                     android:nestedScrollingEnabled="false" />
 
             </LinearLayout>
-
 
             <View
                 android:layout_width="match_parent"

@@ -62,16 +62,11 @@ public class SeasonContentFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getArguments() == null) return;
 
         fragmentActivity = getActivity();
         gson = GsonSingleton.getInstance();
         requestQueue = RequestQueueSingleton.getInstance(fragmentActivity.getBaseContext());
-
-        progressIndicator = fragmentActivity.findViewById(R.id.circular_progress_indicator_main);
-        serverErrorTextView = fragmentActivity.findViewById(R.id.text_view_server_error_main);
-        reloadButton = fragmentActivity.findViewById(R.id.button_reload_main);
 
         String seasonJson = getArguments().getString(ARG_SEASON_JSON);
         SeasonModel season = gson.fromJson(seasonJson, SeasonModel.class);
@@ -90,6 +85,10 @@ public class SeasonContentFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         fixturesTabLayout = view.findViewById(R.id.tab_layout_main);
+
+        progressIndicator = fragmentActivity.findViewById(R.id.circular_progress_indicator_main);
+        serverErrorTextView = fragmentActivity.findViewById(R.id.text_view_server_error_main);
+        reloadButton = fragmentActivity.findViewById(R.id.button_reload_main);
     }
 
     private void getFixtures(String seasonId) {
