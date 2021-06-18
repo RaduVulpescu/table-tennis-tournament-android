@@ -10,4 +10,8 @@ public class PlayerRank {
 
     public PlayerRank() {
     }
+
+    public int getRank() {
+        return Rank;
+    }
 }

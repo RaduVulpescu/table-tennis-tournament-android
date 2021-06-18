@@ -30,6 +30,8 @@ import com.example.tabletennistournament.enums.Group;
 import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.models.GroupMatch;
+import com.example.tabletennistournament.models.PlayerRank;
+import com.example.tabletennistournament.modules.cup.fixture.ranking.FixtureRankingItemViewHolder;
 import com.example.tabletennistournament.modules.cup.fixture.viewModels.FixtureViewModel;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.GsonSingleton;
@@ -41,6 +43,7 @@ import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.gson.Gson;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -128,8 +131,8 @@ public class FixtureFragment extends Fragment {
         ranking_expand_button = fragmentView.findViewById(R.id.button_fixture_ranking_expand_collapse);
         information_linear_layout = fragmentView.findViewById(R.id.linear_layout_information_container);
         groups_linear_layout = fragmentView.findViewById(R.id.linear_layout_groups_container);
-        pyramids_linear_layout = null;
-        ranking_linear_layout = null;
+        pyramids_linear_layout = fragmentView.findViewById(R.id.linear_layout_pyramids_container);
+        ranking_linear_layout = fragmentView.findViewById(R.id.linear_layout_ranking_container);
         endGroupButton = fragmentView.findViewById(R.id.button_end_group_stage);
         linearProgressIndicator = fragmentView.findViewById(R.id.linear_progress_indicator_main_fixture);
 
@@ -154,11 +157,12 @@ public class FixtureFragment extends Fragment {
 
         expandRelevantSection();
         setOnClickToExpandButtons();
-        populateFixtureData(fixture);
+        populateFixtureInformation(fixture);
         populateParticipantsList(fixture.Players);
         populateChipGroup(fixture.GroupMatches);
 
         if (fixture.State == FixtureState.GroupsStage) bindEndGroupStageButton();
+        if (fixture.Ranking.size() > 0) populateFixtureRanking();
     }
 
     private void expandRelevantSection() {
@@ -180,7 +184,7 @@ public class FixtureFragment extends Fragment {
             pyramidsIsExpanded = true;
         } else if (fixture.State == FixtureState.Finished) {
             ranking_expand_button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24);
-            //ranking_linear_layout.setVisibility(View.VISIBLE);
+            ranking_linear_layout.setVisibility(View.VISIBLE);
             rankingIsExpanded = true;
         }
     }
@@ -218,10 +222,10 @@ public class FixtureFragment extends Fragment {
         pyramids_expand_button.setOnClickListener(v -> {
             if (pyramidsIsExpanded) {
                 pyramids_expand_button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24);
-                //pyramids_linear_layout.setVisibility(View.GONE);
+                pyramids_linear_layout.setVisibility(View.GONE);
             } else {
                 pyramids_expand_button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24);
-                //pyramids_linear_layout.setVisibility(View.VISIBLE);
+                pyramids_linear_layout.setVisibility(View.VISIBLE);
             }
 
             pyramidsIsExpanded = !pyramidsIsExpanded;
@@ -230,17 +234,17 @@ public class FixtureFragment extends Fragment {
         ranking_expand_button.setOnClickListener(v -> {
             if (rankingIsExpanded) {
                 ranking_expand_button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24);
-                //ranking_linear_layout.setVisibility(View.GONE);
+                ranking_linear_layout.setVisibility(View.GONE);
             } else {
                 ranking_expand_button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24);
-                //ranking_linear_layout.setVisibility(View.VISIBLE);
+                ranking_linear_layout.setVisibility(View.VISIBLE);
             }
 
             rankingIsExpanded = !rankingIsExpanded;
         });
     }
 
-    private void populateFixtureData(@NonNull FixtureModel fixture) {
+    private void populateFixtureInformation(@NonNull FixtureModel fixture) {
         TextView locationTextView = fragmentView.findViewById(R.id.text_view_main_fixture_location_placeholder);
         TextView dateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_date_placeholder);
         TextView qualityAverageTextView = fragmentView.findViewById(R.id.text_view_main_fixture_quality_average_placeholder);
@@ -379,5 +383,39 @@ public class FixtureFragment extends Fragment {
 
             requestQueue.add(increaseTimeout(jsonObjectRequest));
         });
+    }
+
+    private void populateFixtureRanking() {
+        RecyclerView recyclerView = fragmentView.findViewById(R.id.recycler_view_fixture_ranking);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        fixture.Ranking.sort(Comparator.comparing(PlayerRank::getRank));
+
+        RecyclerView.Adapter<RecyclerView.ViewHolder> fixtureRanking = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                return FixtureRankingItemViewHolder.create(parent);
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+                bind((FixtureRankingItemViewHolder) viewHolder, position);
+            }
+
+            @Override
+            public int getItemCount() {
+                return fixture.Ranking.size();
+            }
+
+            private void bind(@NonNull FixtureRankingItemViewHolder vh, int position) {
+                PlayerRank playerRank = fixture.Ranking.get(position);
+
+                vh.playerRank.setText(String.format(Locale.getDefault(), "%d. ", playerRank.Rank));
+                vh.playerName.setText(playerRank.PlayerName);
+                vh.playerScore.setText(String.format(Locale.getDefault(), "%.2f", playerRank.Score));
+            }
+        };
+
+        recyclerView.setAdapter(fixtureRanking);
     }
 }

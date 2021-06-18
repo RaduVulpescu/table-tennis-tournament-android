@@ -37,7 +37,7 @@ public class RankingItemViewHolder extends RecyclerView.ViewHolder {
 
     public RankingItemViewHolder(@NonNull View view) {
         super(view);
-        this.cardView =  itemView.findViewById(R.id.card);
+        this.cardView = itemView.findViewById(R.id.card);
 
         this.playerRank = itemView.findViewById(R.id.text_view_ranking_rank);
         this.playerName = itemView.findViewById(R.id.text_view_ranking_name);
