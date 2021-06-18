@@ -28,4 +28,9 @@ public class ApiRoutes {
     public static String END_GROUP_STAGE_ROUTE(@NonNull String seasonId, @NonNull String fixtureId) {
         return String.format("%s/%s/fixtures/%s/endGroupStage", SEASONS_ROUTE, seasonId, fixtureId);
     }
+
+    @NonNull
+    public static String PATCH_FIXTURE_DECIDER_MATCH_ROUTE(@NonNull String seasonId, @NonNull String fixtureId, @NonNull String matchId) {
+        return String.format("%s/%s/fixtures/%s/deciderMatches/%s", SEASONS_ROUTE, seasonId, fixtureId, matchId);
+    }
 }

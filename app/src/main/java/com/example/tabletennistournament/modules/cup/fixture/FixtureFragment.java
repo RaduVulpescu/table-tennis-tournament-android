@@ -1,20 +1,25 @@
 package com.example.tabletennistournament.modules.cup.fixture;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.transition.AutoTransition;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -25,30 +30,39 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.tabletennistournament.R;
+import com.example.tabletennistournament.dto.MatchPutDTO;
 import com.example.tabletennistournament.enums.FixtureState;
 import com.example.tabletennistournament.enums.Group;
 import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.models.GroupMatch;
+import com.example.tabletennistournament.models.MatchModel;
 import com.example.tabletennistournament.models.PlayerRank;
 import com.example.tabletennistournament.models.Pyramid;
 import com.example.tabletennistournament.modules.cup.fixture.deciders.PyramidItemViewHolder;
+import com.example.tabletennistournament.modules.cup.fixture.deciders.PyramidMatchesItemViewHolder;
 import com.example.tabletennistournament.modules.cup.fixture.group.GroupFragment;
-import com.example.tabletennistournament.modules.cup.fixture.ranking.FixtureRankingItemViewHolder;
 import com.example.tabletennistournament.modules.cup.fixture.group.viewModels.FixtureViewModel;
+import com.example.tabletennistournament.modules.cup.fixture.ranking.FixtureRankingItemViewHolder;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
+import com.example.tabletennistournament.services.Util;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipDrawable;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.example.tabletennistournament.services.Common.increaseTimeout;
@@ -363,21 +377,7 @@ public class FixtureFragment extends Fragment {
             v.setEnabled(false);
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, endGroupStageURL, null,
-                    response -> {
-                        fixture = gson.fromJson(response.toString(), FixtureModel.class);
-
-                        String FIXTURE_FRAGMENT_TAG = String.format("FRAGMENT_FIXTURE_%s", fixture.FixtureId);
-
-                        FixtureFragment thisFragment = (FixtureFragment) getParentFragmentManager().findFragmentByTag(FIXTURE_FRAGMENT_TAG);
-                        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-
-                        transaction.remove(thisFragment);
-                        transaction.add(R.id.fragment_container_view_season_content,
-                                FixtureFragment.newInstance(gson.toJson(fixture)),
-                                FIXTURE_FRAGMENT_TAG);
-
-                        transaction.setReorderingAllowed(true).commit();
-                    },
+                    this::refreshFixtureFragment,
                     error -> {
                         linearProgressIndicator.hide();
                         linearProgressIndicator.setVisibility(View.GONE);
@@ -392,6 +392,7 @@ public class FixtureFragment extends Fragment {
     private void populatePyramids() {
         RecyclerView recyclerView = fragmentView.findViewById(R.id.recycler_view_fixture_pyramids);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        fixture.Pyramids.sort(Comparator.comparing(Pyramid::getType));
 
         RecyclerView.Adapter<RecyclerView.ViewHolder> fixturePyramids = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             @NonNull
@@ -413,11 +414,51 @@ public class FixtureFragment extends Fragment {
             private void bind(@NonNull PyramidItemViewHolder vh, int position) {
                 Pyramid pyramid = fixture.Pyramids.get(position);
 
-                vh.pyramidTitle.setText(String.format("Deciders %s", pyramid.Type));
+                String[] deciderRanks = pyramid.Type.toString().split("_");
+
+                vh.pyramidTitle.setText(String.format("Deciders %s - %s", deciderRanks[1], deciderRanks[2]));
+                populatePyramidsMatches(vh.pyramidMatches, pyramid.Matches);
             }
         };
 
         recyclerView.setAdapter(fixturePyramids);
+    }
+
+    private void populatePyramidsMatches(@NonNull RecyclerView recyclerView, List<MatchModel> matches) {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        RecyclerView.Adapter<RecyclerView.ViewHolder> pyramidMatches = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                return PyramidMatchesItemViewHolder.create(parent);
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+                bind((PyramidMatchesItemViewHolder) viewHolder, position);
+
+                viewHolder.itemView.setOnLongClickListener(v -> {
+                    createAlertDialog(matches.get(position));
+                    return false;
+                });
+            }
+
+            @Override
+            public int getItemCount() {
+                return matches.size();
+            }
+
+            private void bind(@NonNull PyramidMatchesItemViewHolder vh, int position) {
+                MatchModel match = matches.get(position);
+
+                vh.playerOneName.setText(match.PlayerOneStats.PlayerName);
+                vh.matchScore.setText(String.format("%s - %s", match.PlayerOneStats.SetsWon, match.PlayerTwoStats.SetsWon));
+                vh.playerTwoName.setText(match.PlayerTwoStats.PlayerName);
+            }
+        };
+
+        recyclerView.setAdapter(pyramidMatches);
     }
 
     private void populateFixtureRanking() {
@@ -445,7 +486,8 @@ public class FixtureFragment extends Fragment {
             private void bind(@NonNull FixtureRankingItemViewHolder vh, int position) {
                 PlayerRank playerRank = fixture.Ranking.get(position);
 
-                vh.playerRank.setText(String.format(Locale.getDefault(), "%d. ", playerRank.Rank));
+                String extraWhiteSpace = playerRank.Rank < 10 ? "   " : " ";
+                vh.playerRank.setText(String.format(Locale.getDefault(), "%d.%s", playerRank.Rank, extraWhiteSpace));
                 vh.playerName.setText(playerRank.PlayerName);
                 vh.playerScore.setText(String.format(Locale.getDefault(), "%.2f", playerRank.Score));
             }
@@ -453,4 +495,107 @@ public class FixtureFragment extends Fragment {
 
         recyclerView.setAdapter(fixtureRanking);
     }
+
+    private void createAlertDialog(@NonNull MatchModel match) {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getView().getContext());
+
+        final View alertDialogView = getLayoutInflater().inflate(R.layout.alert_dialog_edit_match_score, null);
+
+        builder.setTitle("Set score");
+        builder.setView(alertDialogView);
+        AlertDialog alertDialog = builder.create();
+
+        alertDialog.show();
+
+        TextView playerOneNameTextView = alertDialogView.findViewById(R.id.text_view_match_score_player_one_name);
+        TextView playerTwoNameTextView = alertDialogView.findViewById(R.id.text_view_match_score_player_two_name);
+        EditText playerOneScoreEditText = alertDialogView.findViewById(R.id.edit_text_match_score_player_one_score);
+        EditText playerTwoScoreEditText = alertDialogView.findViewById(R.id.edit_text_match_score_player_two_score);
+        Button cancelButton = alertDialogView.findViewById(R.id.button_set_score_dismiss);
+        Button saveButton = alertDialogView.findViewById(R.id.button_set_score_save);
+
+        TextWatcher afterTextChangedListener = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                saveButton.setEnabled(!Util.isNullOrEmpty(playerOneScoreEditText.getText().toString()) &&
+                        !Util.isNullOrEmpty(playerTwoScoreEditText.getText().toString()));
+            }
+        };
+
+        playerOneScoreEditText.addTextChangedListener(afterTextChangedListener);
+        playerTwoScoreEditText.addTextChangedListener(afterTextChangedListener);
+
+        playerOneNameTextView.setText(match.PlayerOneStats.PlayerName);
+        playerTwoNameTextView.setText(match.PlayerTwoStats.PlayerName);
+
+        cancelButton.setOnClickListener(v -> alertDialog.dismiss());
+
+        saveButton.setOnClickListener(v -> {
+            linearProgressIndicator.show();
+
+            String playerOneScore = playerOneScoreEditText.getText().toString();
+            String playerTwoScore = playerTwoScoreEditText.getText().toString();
+
+            int p1Score = Integer.parseInt(playerOneScore);
+            int p2Score = Integer.parseInt(playerTwoScore);
+
+            if (p1Score == p2Score) {
+                playerTwoScoreEditText.setError("Scores must be different");
+            } else {
+                try {
+                    updateMatch(match.MatchId, p1Score, p2Score);
+                } catch (JSONException e) {
+                    Log.e("FixtureFragment",
+                            String.format("Updating decider match %s failed.", match.MatchId), e);
+                }
+
+                alertDialog.dismiss();
+            }
+        });
+    }
+
+    private void updateMatch(@NonNull UUID matchId, int p1Score, int p2Score) throws JSONException {
+        final String patchGroupMatchURL =
+                ApiRoutes.PATCH_FIXTURE_DECIDER_MATCH_ROUTE(fixture.SeasonId.toString(), fixture.FixtureId.toString(), matchId.toString());
+
+        MatchPutDTO matchPutDTO = new MatchPutDTO(p1Score, p2Score);
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PATCH,
+                patchGroupMatchURL, new JSONObject(gson.toJson(matchPutDTO)),
+                this::refreshFixtureFragment,
+                error -> {
+                    linearProgressIndicator.hide();
+                    linearProgressIndicator.setVisibility(View.GONE);
+                    Log.e("FixtureFragment", error != null & error.getMessage() != null ?
+                            error.getMessage() : "PATCH match crashed.");
+                }
+        );
+
+        requestQueue.add(increaseTimeout(jsonObjectRequest));
+    }
+
+    private void refreshFixtureFragment(@NonNull JSONObject response) {
+        fixture = gson.fromJson(response.toString(), FixtureModel.class);
+
+        String FIXTURE_FRAGMENT_TAG = String.format("FRAGMENT_FIXTURE_%s", fixture.FixtureId);
+
+        FixtureFragment thisFragment = (FixtureFragment) getParentFragmentManager().findFragmentByTag(FIXTURE_FRAGMENT_TAG);
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+
+        transaction.remove(thisFragment);
+        transaction.add(R.id.fragment_container_view_season_content,
+                FixtureFragment.newInstance(gson.toJson(fixture)),
+                FIXTURE_FRAGMENT_TAG);
+
+        transaction.setReorderingAllowed(true).commit();
+    }
+
 }

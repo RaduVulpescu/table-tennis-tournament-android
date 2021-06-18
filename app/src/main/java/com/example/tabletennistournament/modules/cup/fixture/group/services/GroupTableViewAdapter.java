@@ -1,4 +1,4 @@
-package com.example.tabletennistournament.modules.cup.fixture.services;
+package com.example.tabletennistournament.modules.cup.fixture.group.services;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;

@@ -1,4 +1,4 @@
-package com.example.tabletennistournament.modules.cup.fixture.services;
+package com.example.tabletennistournament.modules.cup.fixture.group.services;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -115,7 +115,7 @@ public class GroupTableViewClickListener implements ITableViewListener {
     private void createAlertDialog(@NonNull ScoreCell cell, @NonNull ScoreCell oppositeCell, int columnPosition, int rowPosition) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(tableView.getContext());
 
-        final View alertDialogView = layoutInflater.inflate(R.layout.alert_dialog_edit_group_match_score, null);
+        final View alertDialogView = layoutInflater.inflate(R.layout.alert_dialog_edit_match_score, null);
 
         builder.setTitle("Set score");
         builder.setView(alertDialogView);

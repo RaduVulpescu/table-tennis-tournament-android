@@ -22,8 +22,8 @@ import com.example.tabletennistournament.modules.cup.fixture.group.models.Number
 import com.example.tabletennistournament.modules.cup.fixture.group.models.RowHeader;
 import com.example.tabletennistournament.modules.cup.fixture.group.models.ScoreCell;
 import com.example.tabletennistournament.modules.cup.fixture.group.models.ScoreData;
-import com.example.tabletennistournament.modules.cup.fixture.services.GroupTableViewAdapter;
-import com.example.tabletennistournament.modules.cup.fixture.services.GroupTableViewClickListener;
+import com.example.tabletennistournament.modules.cup.fixture.group.services.GroupTableViewAdapter;
+import com.example.tabletennistournament.modules.cup.fixture.group.services.GroupTableViewClickListener;
 import com.example.tabletennistournament.modules.cup.fixture.group.viewModels.FixtureViewModel;
 import com.example.tabletennistournament.services.GsonSingleton;
 import com.google.gson.Gson;

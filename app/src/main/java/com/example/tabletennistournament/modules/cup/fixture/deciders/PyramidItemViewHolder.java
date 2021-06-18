@@ -13,12 +13,12 @@ import com.example.tabletennistournament.R;
 public class PyramidItemViewHolder extends RecyclerView.ViewHolder {
 
     public final TextView pyramidTitle;
-    //public final RecyclerView pyramidMatches;
+    public final RecyclerView pyramidMatches;
 
     public PyramidItemViewHolder(@NonNull View view) {
         super(view);
         this.pyramidTitle = itemView.findViewById(R.id.text_view_pyramid_title);
-        //this.pyramidMatches = itemView.findViewById(R.id.recycler_view_pyramid_matches);
+        this.pyramidMatches = itemView.findViewById(R.id.recycler_view_pyramid_matches);
     }
 
     @NonNull

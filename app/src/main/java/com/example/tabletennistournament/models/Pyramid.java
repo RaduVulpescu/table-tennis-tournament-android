@@ -10,4 +10,8 @@ public class Pyramid {
 
     public Pyramid() {
     }
+
+    public PyramidType getType() {
+        return Type;
+    }
 }
