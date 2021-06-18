@@ -52,9 +52,9 @@ public class FixtureFragment extends Fragment {
     private static final String ARG_FIXTURE_JSON = "FIXTURE_JSON";
 
     boolean informationIsExpanded = false;
-    boolean groupsIsExpended = false;
-    boolean pyramidsIsExpended = false;
-    boolean rankingIsExpended = false;
+    boolean groupsIsExpanded = false;
+    boolean pyramidsIsExpanded = false;
+    boolean rankingIsExpanded = false;
 
     FixtureViewModel fixtureViewModel;
 
@@ -65,6 +65,8 @@ public class FixtureFragment extends Fragment {
     FragmentManager fragmentManager;
 
     LinearLayout information_linear_fixture_content_container;
+    LinearLayout pyramids_linear_fixture_content_container;
+    LinearLayout ranking_linear_fixture_content_container;
 
     ImageButton information_expand_button;
     ImageButton groups_expand_button;
@@ -117,6 +119,8 @@ public class FixtureFragment extends Fragment {
 
         fragmentManager = this.getChildFragmentManager();
         information_linear_fixture_content_container = fragmentView.findViewById(R.id.linear_layout_fixture_content_container);
+        pyramids_linear_fixture_content_container = fragmentView.findViewById(R.id.linear_layout_pyramids_all_section);
+        ranking_linear_fixture_content_container = fragmentView.findViewById(R.id.linear_layout_ranking_all_section);
 
         information_expand_button = fragmentView.findViewById(R.id.button_fixture_information_expand_collapse);
         groups_expand_button = fragmentView.findViewById(R.id.button_fixture_groups_expand_collapse);
@@ -148,12 +152,37 @@ public class FixtureFragment extends Fragment {
             }
         });
 
+        expandRelevantSection();
         setOnClickToExpandButtons();
         populateFixtureData(fixture);
         populateParticipantsList(fixture.Players);
         populateChipGroup(fixture.GroupMatches);
 
-        bindEndGroupStageButton();
+        if (fixture.State == FixtureState.GroupsStage) bindEndGroupStageButton();
+    }
+
+    private void expandRelevantSection() {
+        if (fixture.Pyramids.size() == 0) {
+            pyramids_linear_fixture_content_container.setVisibility(View.GONE);
+            fragmentView.findViewById(R.id.view_pyramids_delimiter).setVisibility(View.GONE);
+        }
+        if (fixture.Ranking.size() == 0) {
+            ranking_linear_fixture_content_container.setVisibility(View.GONE);
+        }
+
+        if (fixture.State == FixtureState.GroupsStage) {
+            groups_expand_button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24);
+            groups_linear_layout.setVisibility(View.VISIBLE);
+            groupsIsExpanded = true;
+        } else if (fixture.State == FixtureState.PyramidsStage) {
+            pyramids_expand_button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24);
+            pyramids_linear_layout.setVisibility(View.VISIBLE);
+            pyramidsIsExpanded = true;
+        } else if (fixture.State == FixtureState.Finished) {
+            ranking_expand_button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24);
+            //ranking_linear_layout.setVisibility(View.VISIBLE);
+            rankingIsExpanded = true;
+        }
     }
 
     private void setOnClickToExpandButtons() {
@@ -175,7 +204,7 @@ public class FixtureFragment extends Fragment {
 
         TransitionManager.beginDelayedTransition(information_linear_fixture_content_container, new AutoTransition());
         groups_expand_button.setOnClickListener(v -> {
-            if (groupsIsExpended) {
+            if (groupsIsExpanded) {
                 groups_expand_button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24);
                 groups_linear_layout.setVisibility(View.GONE);
             } else {
@@ -183,11 +212,11 @@ public class FixtureFragment extends Fragment {
                 groups_linear_layout.setVisibility(View.VISIBLE);
             }
 
-            groupsIsExpended = !groupsIsExpended;
+            groupsIsExpanded = !groupsIsExpanded;
         });
 
         pyramids_expand_button.setOnClickListener(v -> {
-            if (pyramidsIsExpended) {
+            if (pyramidsIsExpanded) {
                 pyramids_expand_button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24);
                 //pyramids_linear_layout.setVisibility(View.GONE);
             } else {
@@ -195,11 +224,11 @@ public class FixtureFragment extends Fragment {
                 //pyramids_linear_layout.setVisibility(View.VISIBLE);
             }
 
-            pyramidsIsExpended = !pyramidsIsExpended;
+            pyramidsIsExpanded = !pyramidsIsExpanded;
         });
 
         ranking_expand_button.setOnClickListener(v -> {
-            if (rankingIsExpended) {
+            if (rankingIsExpanded) {
                 ranking_expand_button.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24);
                 //ranking_linear_layout.setVisibility(View.GONE);
             } else {
@@ -207,7 +236,7 @@ public class FixtureFragment extends Fragment {
                 //ranking_linear_layout.setVisibility(View.VISIBLE);
             }
 
-            rankingIsExpended = !rankingIsExpended;
+            rankingIsExpanded = !rankingIsExpanded;
         });
     }
 
