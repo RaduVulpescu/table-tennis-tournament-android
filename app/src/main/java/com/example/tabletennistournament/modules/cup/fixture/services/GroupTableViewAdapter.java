@@ -12,9 +12,9 @@ import androidx.annotation.NonNull;
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 import com.example.tabletennistournament.R;
-import com.example.tabletennistournament.modules.cup.fixture.models.Cell;
-import com.example.tabletennistournament.modules.cup.fixture.models.ColumnHeader;
-import com.example.tabletennistournament.modules.cup.fixture.models.RowHeader;
+import com.example.tabletennistournament.modules.cup.fixture.group.models.Cell;
+import com.example.tabletennistournament.modules.cup.fixture.group.models.ColumnHeader;
+import com.example.tabletennistournament.modules.cup.fixture.group.models.RowHeader;
 
 public class GroupTableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHeader, Cell> {
     static class CellViewHolder extends AbstractViewHolder {

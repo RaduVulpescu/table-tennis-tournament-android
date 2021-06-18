@@ -1,4 +1,4 @@
-package com.example.tabletennistournament.modules.cup.fixture;
+package com.example.tabletennistournament.modules.cup.fixture.group;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,15 +16,15 @@ import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.models.GroupMatch;
 import com.example.tabletennistournament.models.PlayerMatchStats;
-import com.example.tabletennistournament.modules.cup.fixture.models.Cell;
-import com.example.tabletennistournament.modules.cup.fixture.models.ColumnHeader;
-import com.example.tabletennistournament.modules.cup.fixture.models.NumberCell;
-import com.example.tabletennistournament.modules.cup.fixture.models.RowHeader;
-import com.example.tabletennistournament.modules.cup.fixture.models.ScoreCell;
-import com.example.tabletennistournament.modules.cup.fixture.models.ScoreData;
+import com.example.tabletennistournament.modules.cup.fixture.group.models.Cell;
+import com.example.tabletennistournament.modules.cup.fixture.group.models.ColumnHeader;
+import com.example.tabletennistournament.modules.cup.fixture.group.models.NumberCell;
+import com.example.tabletennistournament.modules.cup.fixture.group.models.RowHeader;
+import com.example.tabletennistournament.modules.cup.fixture.group.models.ScoreCell;
+import com.example.tabletennistournament.modules.cup.fixture.group.models.ScoreData;
 import com.example.tabletennistournament.modules.cup.fixture.services.GroupTableViewAdapter;
 import com.example.tabletennistournament.modules.cup.fixture.services.GroupTableViewClickListener;
-import com.example.tabletennistournament.modules.cup.fixture.viewModels.FixtureViewModel;
+import com.example.tabletennistournament.modules.cup.fixture.group.viewModels.FixtureViewModel;
 import com.example.tabletennistournament.services.GsonSingleton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -91,8 +91,8 @@ public class GroupFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        if (getArguments() == null) return;
         super.onViewCreated(view, savedInstanceState);
+        if (getArguments() == null) return;
 
         fixtureViewModel = new ViewModelProvider(requireParentFragment()).get(FixtureViewModel.class);
 

@@ -1,4 +1,4 @@
-package com.example.tabletennistournament.modules.cup.fixture.models;
+package com.example.tabletennistournament.modules.cup.fixture.group.models;
 
 import androidx.annotation.NonNull;
 

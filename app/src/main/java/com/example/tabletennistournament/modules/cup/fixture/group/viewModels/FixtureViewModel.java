@@ -1,4 +1,4 @@
-package com.example.tabletennistournament.modules.cup.fixture.viewModels;
+package com.example.tabletennistournament.modules.cup.fixture.group.viewModels;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

@@ -31,8 +31,11 @@ import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.models.GroupMatch;
 import com.example.tabletennistournament.models.PlayerRank;
+import com.example.tabletennistournament.models.Pyramid;
+import com.example.tabletennistournament.modules.cup.fixture.deciders.PyramidItemViewHolder;
+import com.example.tabletennistournament.modules.cup.fixture.group.GroupFragment;
 import com.example.tabletennistournament.modules.cup.fixture.ranking.FixtureRankingItemViewHolder;
-import com.example.tabletennistournament.modules.cup.fixture.viewModels.FixtureViewModel;
+import com.example.tabletennistournament.modules.cup.fixture.group.viewModels.FixtureViewModel;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
@@ -162,6 +165,7 @@ public class FixtureFragment extends Fragment {
         populateChipGroup(fixture.GroupMatches);
 
         if (fixture.State == FixtureState.GroupsStage) bindEndGroupStageButton();
+        if (fixture.Pyramids.size() > 0) populatePyramids();
         if (fixture.Ranking.size() > 0) populateFixtureRanking();
     }
 
@@ -383,6 +387,37 @@ public class FixtureFragment extends Fragment {
 
             requestQueue.add(increaseTimeout(jsonObjectRequest));
         });
+    }
+
+    private void populatePyramids() {
+        RecyclerView recyclerView = fragmentView.findViewById(R.id.recycler_view_fixture_pyramids);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        RecyclerView.Adapter<RecyclerView.ViewHolder> fixturePyramids = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                return PyramidItemViewHolder.create(parent);
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+                bind((PyramidItemViewHolder) viewHolder, position);
+            }
+
+            @Override
+            public int getItemCount() {
+                return fixture.Pyramids.size();
+            }
+
+            private void bind(@NonNull PyramidItemViewHolder vh, int position) {
+                Pyramid pyramid = fixture.Pyramids.get(position);
+
+                vh.pyramidTitle.setText(String.format("Deciders %s", pyramid.Type));
+            }
+        };
+
+        recyclerView.setAdapter(fixturePyramids);
     }
 
     private void populateFixtureRanking() {

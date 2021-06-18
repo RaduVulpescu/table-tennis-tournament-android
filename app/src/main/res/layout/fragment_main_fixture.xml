@@ -195,7 +195,7 @@
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/fragment_container_view_group"
-                    android:name="com.example.tabletennistournament.modules.cup.fixture.GroupFragment"
+                    android:name="com.example.tabletennistournament.modules.cup.fixture.group.GroupFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
@@ -249,16 +249,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingStart="8dp"
-                android:paddingTop="4dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="4dp"
+                android:padding="8dp"
                 android:visibility="visible">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="To be completed" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_fixture_pyramids"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 

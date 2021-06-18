@@ -1,4 +1,4 @@
-package com.example.tabletennistournament.modules.cup.fixture.models;
+package com.example.tabletennistournament.modules.cup.fixture.group.models;
 
 public class NumberCell extends Cell {
     private Integer number;
