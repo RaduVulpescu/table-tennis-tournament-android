@@ -52,4 +52,5 @@
     <string name="fixture_content_information">Information</string>
     <string name="expand_information_button_description">Expand Information</string>
     <string name="end_group_stage_button">End Group Stage</string>
+    <string name="end_fixture_fab">End fixture</string>
 </resources>

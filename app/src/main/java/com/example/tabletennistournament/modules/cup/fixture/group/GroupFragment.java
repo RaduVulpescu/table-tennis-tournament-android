@@ -182,6 +182,6 @@ public class GroupFragment extends Fragment {
 
         final float scale = getContext().getResources().getDisplayMetrics().density;
         int dps = 40 * (players.size() + 1) + 10;
-        tableView.getLayoutParams().height = (int) (dps * scale + 0.5f);
+        //tableView.getLayoutParams().height = (int) (dps * scale + 0.5f);
     }
 }

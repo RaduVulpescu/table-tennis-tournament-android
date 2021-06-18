@@ -52,7 +52,9 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipDrawable;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -87,7 +89,6 @@ public class FixtureFragment extends Fragment {
     LinearLayout information_linear_fixture_content_container;
     LinearLayout pyramids_linear_fixture_content_container;
     LinearLayout ranking_linear_fixture_content_container;
-
     ImageButton information_expand_button;
     ImageButton groups_expand_button;
     ImageButton pyramids_expand_button;
@@ -97,9 +98,9 @@ public class FixtureFragment extends Fragment {
     LinearLayout pyramids_linear_layout;
     LinearLayout ranking_linear_layout;
 
-    TextView stateTextView;
     LinearProgressIndicator linearProgressIndicator;
     Button endGroupButton;
+    ExtendedFloatingActionButton endFixtureButton;
 
     public FixtureFragment() {
     }
@@ -138,6 +139,7 @@ public class FixtureFragment extends Fragment {
         fragmentView = view;
 
         fragmentManager = this.getChildFragmentManager();
+
         information_linear_fixture_content_container = fragmentView.findViewById(R.id.linear_layout_fixture_content_container);
         pyramids_linear_fixture_content_container = fragmentView.findViewById(R.id.linear_layout_pyramids_all_section);
         ranking_linear_fixture_content_container = fragmentView.findViewById(R.id.linear_layout_ranking_all_section);
@@ -153,12 +155,14 @@ public class FixtureFragment extends Fragment {
         endGroupButton = fragmentView.findViewById(R.id.button_end_group_stage);
         linearProgressIndicator = fragmentView.findViewById(R.id.linear_progress_indicator_main_fixture);
 
+        endFixtureButton = fragmentView.findViewById(R.id.floating_action_button_end_fixture);
+
         int finishedMatches = (int) fixture.GroupMatches.stream()
                 .filter(x -> x.PlayerOneStats.SetsWon != null && x.PlayerTwoStats.SetsWon != null)
                 .count();
 
         fixtureViewModel = new ViewModelProvider(this).get(FixtureViewModel.class);
-        fixtureViewModel.setFixtureGroup(fixture.GroupMatches.size(), finishedMatches, fixture.State != FixtureState.GroupsStage);
+        fixtureViewModel.setFixtureGroup(fixture.GroupMatches.size(), finishedMatches, fixture.State == FixtureState.GroupsStage);
 
         fixtureViewModel.getFixtureGroupState().observe(getViewLifecycleOwner(), fixtureGroupState -> {
             if (fixtureGroupState == null) {
@@ -181,6 +185,7 @@ public class FixtureFragment extends Fragment {
         if (fixture.State == FixtureState.GroupsStage) bindEndGroupStageButton();
         if (fixture.Pyramids != null && fixture.Pyramids.size() > 0) populatePyramids();
         if (fixture.Ranking != null && fixture.Ranking.size() > 0) populateFixtureRanking();
+        if (fixture.State == FixtureState.ReadyToFinish) bindEndFixtureButton();
     }
 
     private void expandRelevantSection() {
@@ -268,7 +273,7 @@ public class FixtureFragment extends Fragment {
         TextView locationTextView = fragmentView.findViewById(R.id.text_view_main_fixture_location_placeholder);
         TextView dateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_date_placeholder);
         TextView qualityAverageTextView = fragmentView.findViewById(R.id.text_view_main_fixture_quality_average_placeholder);
-        stateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_state_placeholder);
+        TextView stateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_state_placeholder);
 
         participantsTitle.setText(String.format(Locale.getDefault(), "Participants (%d)", fixture.Players.size()));
         locationTextView.setText(String.format("Location: %s", fixture.Location));
@@ -459,7 +464,7 @@ public class FixtureFragment extends Fragment {
                 String displayTwo = match.PlayerTwoStats.SetsWon == null ? "" : match.PlayerTwoStats.SetsWon.toString();
 
                 vh.playerOneName.setText(match.PlayerOneStats.PlayerName);
-                vh.matchScore.setText(String.format("%s - %s", displayOne , displayTwo));
+                vh.matchScore.setText(String.format("%s - %s", displayOne, displayTwo));
                 vh.playerTwoName.setText(match.PlayerTwoStats.PlayerName);
             }
         };
@@ -602,6 +607,31 @@ public class FixtureFragment extends Fragment {
                 FIXTURE_FRAGMENT_TAG);
 
         transaction.setReorderingAllowed(true).commit();
+    }
+
+    private void bindEndFixtureButton() {
+        endFixtureButton.setVisibility(View.VISIBLE);
+        final String endFixtureURL = ApiRoutes.END_FIXTURE_ROUTE(fixture.SeasonId.toString(), fixture.FixtureId.toString());
+
+        endFixtureButton.setOnClickListener(v -> {
+            linearProgressIndicator.show();
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, endFixtureURL, null,
+                    response -> {
+
+                    },
+                    error -> {
+                        linearProgressIndicator.hide();
+                        linearProgressIndicator.setVisibility(View.GONE);
+
+                        Snackbar snackbar = Snackbar.make(getView(), R.string.server_error, Snackbar.LENGTH_LONG);
+                        snackbar.setAnchorView(fragmentView.findViewById(R.id.floating_action_button_end_fixture));
+                        snackbar.show();
+                    }
+            );
+
+            requestQueue.add(increaseTimeout(jsonObjectRequest));
+        });
     }
 
 }

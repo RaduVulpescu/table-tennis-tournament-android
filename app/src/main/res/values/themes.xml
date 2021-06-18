@@ -16,7 +16,7 @@
 
         <!-- Customize your theme here. -->
         <item name="android:colorBackground">@color/lt_grey_background</item>-->
-        <!--        <item name="colorError">@color/design_default_color_error</item>-->
+        <item name="colorError">@color/design_default_color_error</item>
 
         <item name="textAppearanceHeadline1">@style/TextAppearance.MaterialComponents.Headline1
         </item>

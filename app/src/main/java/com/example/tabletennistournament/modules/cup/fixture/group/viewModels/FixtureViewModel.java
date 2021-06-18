@@ -11,13 +11,13 @@ public class FixtureViewModel extends ViewModel {
         return fixtureGroupState;
     }
 
-    public void setFixtureGroup(int totalMatches, int finishedMatches, boolean groupStageIsFinished) {
-        fixtureGroupState.setValue(new FixtureGroupState(totalMatches, finishedMatches, groupStageIsFinished));
+    public void setFixtureGroup(int totalMatches, int finishedMatches, boolean isGroupStage) {
+        fixtureGroupState.setValue(new FixtureGroupState(totalMatches, finishedMatches, isGroupStage));
     }
 
     public void incrementFinishedMatches() {
         FixtureGroupState currentValue = fixtureGroupState.getValue();
         fixtureGroupState.setValue(new FixtureGroupState(currentValue.getTotalMatches(),
-                currentValue.getFinishedMatches() + 1, false));
+                currentValue.getFinishedMatches() + 1, currentValue.getIsGroupStage()));
     }
 }
