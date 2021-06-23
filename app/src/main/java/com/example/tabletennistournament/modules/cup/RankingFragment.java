@@ -145,10 +145,10 @@ public class RankingFragment extends Fragment {
                 vh.playerQuality.setText(String.format(Locale.getDefault(), "Q: %.2f", player.Quality));
                 vh.playerTop4.setText(String.format(Locale.getDefault(), "Top 4: %.2f", player.Top4));
 
-                vh.playerScore1.setText(String.format("Score 1: %s", player.Score1));
-                vh.playerScore2.setText(String.format("Score 2: %s", player.Score2));
-                vh.playerScore3.setText(String.format("Score 3: %s", player.Score3));
-                vh.playerScore4.setText(String.format("Score 4: %s", player.Score4));
+                vh.playerScore1.setText(String.format(Locale.getDefault(),"Score 1: %.2f", player.Score1));
+                vh.playerScore2.setText(String.format(Locale.getDefault(),"Score 2: %.2f", player.Score2));
+                vh.playerScore3.setText(String.format(Locale.getDefault(),"Score 3: %.2f", player.Score3));
+                vh.playerScore4.setText(String.format(Locale.getDefault(),"Score 4: %.2f", player.Score4));
 
                 DecimalFormat decimalFormat = new DecimalFormat("+#,##0.0000;-#");
                 vh.playerShape.setText(String.format("Shape:   %s", decimalFormat.format(player.Shape)));

@@ -124,11 +124,11 @@ public class PlayerProfileActivity extends AppCompatActivity {
         playerNameTextView.setText(player.Name);
         playerLevelImageView.setImageResource(getPlayerLevelIcon(player.CurrentLevel));
 
-        Picasso.get()
-                .load("https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account-male-user-icon.png")
-                .resize(playerPictureImageView.getWidth(), playerPictureImageView.getHeight())
-                .centerCrop()
-                .into(playerPictureImageView);
+//        Picasso.get()
+//                .load("https://.png")
+//                .resize(playerPictureImageView.getWidth(), playerPictureImageView.getHeight())
+//                .centerCrop()
+//                .into(playerPictureImageView);
 
         bestScoreTextView.setText(getValueOrNa(String.valueOf(player.BestScore)));
         bestRankingTextView.setText(getValueOrNa(String.valueOf(player.BestRanking)));

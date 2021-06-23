@@ -27,7 +27,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.dto.MatchPutDTO;
@@ -39,6 +43,7 @@ import com.example.tabletennistournament.models.GroupMatch;
 import com.example.tabletennistournament.models.MatchModel;
 import com.example.tabletennistournament.models.PlayerRank;
 import com.example.tabletennistournament.models.Pyramid;
+import com.example.tabletennistournament.modules.cup.RankingFragment;
 import com.example.tabletennistournament.modules.cup.fixture.deciders.PyramidItemViewHolder;
 import com.example.tabletennistournament.modules.cup.fixture.deciders.PyramidMatchesItemViewHolder;
 import com.example.tabletennistournament.modules.cup.fixture.group.GroupFragment;
@@ -55,11 +60,13 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
@@ -98,6 +105,7 @@ public class FixtureFragment extends Fragment {
     LinearLayout pyramids_linear_layout;
     LinearLayout ranking_linear_layout;
 
+    TextView stateTextView;
     LinearProgressIndicator linearProgressIndicator;
     Button endGroupButton;
     ExtendedFloatingActionButton endFixtureButton;
@@ -273,7 +281,7 @@ public class FixtureFragment extends Fragment {
         TextView locationTextView = fragmentView.findViewById(R.id.text_view_main_fixture_location_placeholder);
         TextView dateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_date_placeholder);
         TextView qualityAverageTextView = fragmentView.findViewById(R.id.text_view_main_fixture_quality_average_placeholder);
-        TextView stateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_state_placeholder);
+        stateTextView = fragmentView.findViewById(R.id.text_view_main_fixture_state_placeholder);
 
         participantsTitle.setText(String.format(Locale.getDefault(), "Participants (%d)", fixture.Players.size()));
         locationTextView.setText(String.format("Location: %s", fixture.Location));
@@ -613,22 +621,65 @@ public class FixtureFragment extends Fragment {
         endFixtureButton.setVisibility(View.VISIBLE);
         final String endFixtureURL = ApiRoutes.END_FIXTURE_ROUTE(fixture.SeasonId.toString(), fixture.FixtureId.toString());
 
+        TabLayout tabLayout = getParentFragment().getView().findViewById(R.id.tab_layout_main);
+        tabLayout.setEnabled(false);
+
         endFixtureButton.setOnClickListener(v -> {
             linearProgressIndicator.show();
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, endFixtureURL, null,
                     response -> {
+                        endFixtureButton.setVisibility(View.GONE);
+                        linearProgressIndicator.hide();
 
+                        String FIXTURE_FRAGMENT_TAG = String.format("FRAGMENT_FIXTURE_%s", fixture.FixtureId);
+                        String RANKING_FRAGMENT_TAG = String.format("FRAGMENT_RANKING_%s", fixture.SeasonId.toString());
+
+                        FixtureFragment thisFragment = (FixtureFragment) getParentFragmentManager().findFragmentByTag(FIXTURE_FRAGMENT_TAG);
+                        RankingFragment rankingFragment = (RankingFragment) getParentFragmentManager().findFragmentByTag(RANKING_FRAGMENT_TAG);
+
+                        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+
+                        transaction.remove(rankingFragment);
+                        transaction.hide(thisFragment);
+
+                        transaction.add(R.id.fragment_container_view_season_content,
+                                RankingFragment.newInstance(fixture.SeasonId.toString()),
+                                RANKING_FRAGMENT_TAG);
+
+                        transaction.setReorderingAllowed(true).commit();
+
+                        stateTextView.setText(String.format("State: %s", FixtureState.Finished));
+
+                        tabLayout.setEnabled(true);
+                        TabLayout.Tab rankingTab = tabLayout.getTabAt(0);
+                        tabLayout.selectTab(rankingTab);
                     },
                     error -> {
                         linearProgressIndicator.hide();
                         linearProgressIndicator.setVisibility(View.GONE);
+                        tabLayout.setEnabled(true);
 
                         Snackbar snackbar = Snackbar.make(getView(), R.string.server_error, Snackbar.LENGTH_LONG);
                         snackbar.setAnchorView(fragmentView.findViewById(R.id.floating_action_button_end_fixture));
                         snackbar.show();
                     }
-            );
+            ) {
+                @Override
+                protected Response<JSONObject> parseNetworkResponse(@NonNull NetworkResponse response) {
+                    try {
+                        String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+
+                        JSONObject result = null;
+                        if (jsonString != null && jsonString.length() > 0)
+                            result = new JSONObject(jsonString);
+
+                        return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
+                    } catch (UnsupportedEncodingException | JSONException e) {
+                        return Response.error(new ParseError(e));
+                    }
+                }
+            };
 
             requestQueue.add(increaseTimeout(jsonObjectRequest));
         });

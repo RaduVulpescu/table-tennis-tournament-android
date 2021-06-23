@@ -157,7 +157,8 @@
                     android:paddingTop="2dp"
                     android:paddingEnd="4dp"
                     android:text="Shape:   0.0606"
-                    android:textAppearance="?attr/textAppearanceBody2" />
+                    android:textAppearance="?attr/textAppearanceBody2"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
