@@ -23,6 +23,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.tabletennistournament.R;
+import com.example.tabletennistournament.enums.FixtureType;
 import com.example.tabletennistournament.models.FixtureModel;
 import com.example.tabletennistournament.models.FixturePlayer;
 import com.example.tabletennistournament.modules.cup.CupActivity;
@@ -108,7 +109,18 @@ public class NextFixturesActivity extends AppCompatActivity {
                 response -> {
                     List<FixtureModel> fixtures = gson.fromJson(response.toString(), new TypeToken<List<FixtureModel>>() {
                     }.getType());
-                    fixtures.sort(Comparator.comparing(FixtureModel::getDate));
+
+                    boolean allFixturesHaveDateDefined = true;
+
+                    for (int i = 0; i < fixtures.size() && allFixturesHaveDateDefined; i++) {
+                        if (fixtures.get(i).Date == null) {
+                            allFixturesHaveDateDefined = false;
+                        }
+                    }
+
+                    if (allFixturesHaveDateDefined) {
+                        fixtures.sort(Comparator.comparing(FixtureModel::getDate));
+                    }
 
                     progressIndicator.hide();
 
@@ -156,6 +168,11 @@ public class NextFixturesActivity extends AppCompatActivity {
                 vh.fixtureTime.setText(extractTime(fixture.Date));
                 vh.fixtureLocation.setText(extractLocation(fixture.Location));
                 vh.fixtureQualityAvg.setText(String.format(Locale.getDefault(), "QAvg: %.2f", fixture.QualityAverage));
+
+                if (fixture.Type != FixtureType.Normal) {
+                    vh.fixtureType.setText(String.format("%s Final", fixture.Type));
+                    vh.fixtureType.setVisibility(View.VISIBLE);
+                }
 
                 fixture.Players.sort(Comparator.comparing(FixturePlayer::getQuality).reversed());
                 inflateRecyclerViewPlayers(vh.recyclerViewPlayers, fixture.Players);

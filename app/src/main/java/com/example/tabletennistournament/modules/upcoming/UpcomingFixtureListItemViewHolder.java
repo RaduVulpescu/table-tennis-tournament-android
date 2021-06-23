@@ -21,6 +21,7 @@ public class UpcomingFixtureListItemViewHolder extends RecyclerView.ViewHolder {
     public final TextView fixtureTime;
     public final TextView fixtureLocation;
     public final TextView fixtureQualityAvg;
+    public final TextView fixtureType;
 
     public final Button expandButton;
     public final Button collapseButton;
@@ -42,6 +43,7 @@ public class UpcomingFixtureListItemViewHolder extends RecyclerView.ViewHolder {
         this.fixtureTime = itemView.findViewById(R.id.text_view_upcoming_time);
         this.fixtureLocation = itemView.findViewById(R.id.text_view_upcoming_location);
         this.fixtureQualityAvg = itemView.findViewById(R.id.text_view_upcoming_qavg);
+        this.fixtureType = itemView.findViewById(R.id.text_view_fixture_type);
 
         this.expandButton = itemView.findViewById(R.id.button_upcoming_expand);
         this.collapseButton = itemView.findViewById(R.id.button_upcoming_collapse);

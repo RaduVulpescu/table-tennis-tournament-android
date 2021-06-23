@@ -637,14 +637,13 @@ public class FixtureFragment extends Fragment {
 
                         FixtureFragment thisFragment = (FixtureFragment) getParentFragmentManager().findFragmentByTag(FIXTURE_FRAGMENT_TAG);
                         RankingFragment rankingFragment = (RankingFragment) getParentFragmentManager().findFragmentByTag(RANKING_FRAGMENT_TAG);
-
                         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
 
                         transaction.remove(rankingFragment);
                         transaction.hide(thisFragment);
 
                         transaction.add(R.id.fragment_container_view_season_content,
-                                RankingFragment.newInstance(fixture.SeasonId.toString()),
+                                RankingFragment.newInstance(fixture.SeasonId.toString(), rankingFragment.getArguments().get("ARG_END_DATE").toString()),
                                 RANKING_FRAGMENT_TAG);
 
                         transaction.setReorderingAllowed(true).commit();

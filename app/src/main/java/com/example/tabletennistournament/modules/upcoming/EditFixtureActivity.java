@@ -283,8 +283,9 @@ public class EditFixtureActivity extends AppCompatActivity {
 
     private void populateFields() {
         locationTextInputLayout.getEditText().setText(fixtureModel.Location);
-        timeTextInputLayout.getEditText().setText((formatTime(fixtureModel.Date.getHour(), fixtureModel.Date.getMinute())));
-        dateTextInputLayout.getEditText().setText(fixtureModel.Date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
+        timeTextInputLayout.getEditText().setText(extractTime(fixtureModel.Date));
+        dateTextInputLayout.getEditText().setText(extractDate(fixtureModel.Date));
     }
 
     @Nullable
@@ -421,6 +422,24 @@ public class EditFixtureActivity extends AppCompatActivity {
         if (textInputEditText.getText() == null) return null;
 
         return textInputEditText.getText().toString();
+    }
+
+    @NonNull
+    private String extractDate(ZonedDateTime date) {
+        if (date == null) {
+            return "TBA";
+        }
+
+        return date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    @NonNull
+    private String extractTime(ZonedDateTime date) {
+        if (date == null) {
+            return "TBA";
+        }
+
+        return formatTime(date.getHour(), date.getMinute());
     }
 
     private static class DropDownItem {

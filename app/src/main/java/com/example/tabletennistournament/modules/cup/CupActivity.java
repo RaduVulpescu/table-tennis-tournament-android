@@ -82,7 +82,7 @@ public class CupActivity extends AppCompatActivity {
 
                     getSupportFragmentManager().beginTransaction()
                             .setReorderingAllowed(true)
-                            .add(R.id.fragment_container_view_cup, SeasonContentFragment.newInstance(gson.toJson(currentSeason)))
+                            .replace(R.id.fragment_container_view_cup, SeasonContentFragment.newInstance(gson.toJson(currentSeason)))
                             .commit();
 
                     setMenu(seasonModels);
@@ -134,7 +134,7 @@ public class CupActivity extends AppCompatActivity {
                 topBar.setTitle("Season " + seasonModel.Number);
                 getSupportFragmentManager().beginTransaction()
                         .setReorderingAllowed(true)
-                        .add(R.id.fragment_container_view_cup, SeasonContentFragment.newInstance(gson.toJson(seasonModel)))
+                        .replace(R.id.fragment_container_view_cup, SeasonContentFragment.newInstance(gson.toJson(seasonModel)))
                         .commit();
                 return true;
             });

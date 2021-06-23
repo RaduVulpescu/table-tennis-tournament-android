@@ -1,5 +1,6 @@
 package com.example.tabletennistournament.modules.cup;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
@@ -16,17 +17,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.SeasonPlayerModel;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.GsonSingleton;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.text.DecimalFormat;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,8 +42,11 @@ import static com.example.tabletennistournament.services.Common.increaseTimeout;
 public class RankingFragment extends Fragment {
 
     private static final String ARG_SEASON_ID = "ARG_SEASON_ID";
+    private static final String ARG_END_DATE_JSON = "ARG_END_DATE_JSON";
 
     String seasonId;
+    String endDateJson;
+    Date endDate;
 
     Gson gson;
     RequestQueueSingleton requestQueue;
@@ -46,19 +55,24 @@ public class RankingFragment extends Fragment {
     CircularProgressIndicator progressIndicator;
     TextView serverErrorTextView;
     Button reloadButton;
+    LinearProgressIndicator linearProgressIndicator;
+    ExtendedFloatingActionButton endSeasonButton;
+    TextView noFixtureFinished;
 
     public RankingFragment() {
     }
 
     @NonNull
-    public static RankingFragment newInstance(String seasonId) {
+    public static RankingFragment newInstance(String seasonId, String endDateJson) {
         RankingFragment fragment = new RankingFragment();
         Bundle args = new Bundle();
         args.putString(ARG_SEASON_ID, seasonId);
+        args.putString(ARG_END_DATE_JSON, endDateJson);
         fragment.setArguments(args);
         return fragment;
     }
 
+    @SuppressLint("SimpleDateFormat")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,9 +80,12 @@ public class RankingFragment extends Fragment {
         if (getArguments() == null) return;
 
         seasonId = getArguments().getString(ARG_SEASON_ID);
+        endDateJson = getArguments().getString(ARG_END_DATE_JSON);
 
         gson = GsonSingleton.getInstance();
         requestQueue = RequestQueueSingleton.getInstance(getActivity().getBaseContext());
+
+        endDate = endDateJson.equals("null") ? null : gson.fromJson(endDateJson, Date.class);
     }
 
     @Override
@@ -85,6 +102,9 @@ public class RankingFragment extends Fragment {
         serverErrorTextView = view.findViewById(R.id.text_view_server_error_ranking);
         reloadButton = view.findViewById(R.id.button_reload_ranking);
         reloadButton.setOnClickListener(v -> getPlayers());
+        endSeasonButton = view.findViewById(R.id.floating_action_button_end_season);
+        linearProgressIndicator = view.findViewById(R.id.linear_progress_indicator_main_ranking);
+        noFixtureFinished = view.findViewById(R.id.text_view_no_fixture_finished);
 
         getPlayers();
     }
@@ -102,7 +122,9 @@ public class RankingFragment extends Fragment {
                     players.sort(Comparator.comparing(SeasonPlayerModel::getRank));
 
                     progressIndicator.hide();
+                    if (players.size() == 0) noFixtureFinished.setVisibility(View.VISIBLE);
 
+                    if (endDate == null && players.size() > 0) bindEndSeasonButton();
                     createRankingRecyclerView(players);
                 },
                 error -> {
@@ -145,10 +167,10 @@ public class RankingFragment extends Fragment {
                 vh.playerQuality.setText(String.format(Locale.getDefault(), "Q: %.2f", player.Quality));
                 vh.playerTop4.setText(String.format(Locale.getDefault(), "Top 4: %.2f", player.Top4));
 
-                vh.playerScore1.setText(String.format(Locale.getDefault(),"Score 1: %.2f", player.Score1));
-                vh.playerScore2.setText(String.format(Locale.getDefault(),"Score 2: %.2f", player.Score2));
-                vh.playerScore3.setText(String.format(Locale.getDefault(),"Score 3: %.2f", player.Score3));
-                vh.playerScore4.setText(String.format(Locale.getDefault(),"Score 4: %.2f", player.Score4));
+                vh.playerScore1.setText(String.format(Locale.getDefault(), "Score 1: %.2f", player.Score1));
+                vh.playerScore2.setText(String.format(Locale.getDefault(), "Score 2: %.2f", player.Score2));
+                vh.playerScore3.setText(String.format(Locale.getDefault(), "Score 3: %.2f", player.Score3));
+                vh.playerScore4.setText(String.format(Locale.getDefault(), "Score 4: %.2f", player.Score4));
 
                 DecimalFormat decimalFormat = new DecimalFormat("+#,##0.0000;-#");
                 vh.playerShape.setText(String.format("Shape:   %s", decimalFormat.format(player.Shape)));
@@ -171,4 +193,29 @@ public class RankingFragment extends Fragment {
 
         recyclerView.setAdapter(rankingAdapter);
     }
+
+    private void bindEndSeasonButton() {
+        endSeasonButton.setVisibility(View.VISIBLE);
+        final String endSeasonURL = ApiRoutes.END_SEASON_ROUTE(seasonId);
+
+        endSeasonButton.setOnClickListener(v -> {
+            linearProgressIndicator.show();
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, endSeasonURL, null,
+                    response -> getActivity().recreate(),
+                    error -> {
+                        linearProgressIndicator.hide();
+                        linearProgressIndicator.setVisibility(View.GONE);
+                        endSeasonButton.setVisibility(View.VISIBLE);
+
+                        Snackbar snackbar = Snackbar.make(getView(), R.string.server_error, Snackbar.LENGTH_LONG);
+                        snackbar.setAnchorView(fragmentView.findViewById(R.id.floating_action_button_end_season));
+                        snackbar.show();
+                    }
+            );
+
+            requestQueue.add(increaseTimeout(jsonObjectRequest));
+        });
+    }
+
 }

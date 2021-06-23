@@ -29,8 +29,8 @@ import com.google.gson.reflect.TypeToken;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import static com.example.tabletennistournament.services.Common.increaseTimeout;
 
@@ -41,6 +41,7 @@ public class SeasonContentFragment extends Fragment {
     FragmentActivity fragmentActivity;
     Gson gson;
     RequestQueueSingleton requestQueue;
+    SeasonModel season;
 
     CircularProgressIndicator progressIndicator;
     TextView serverErrorTextView;
@@ -69,10 +70,10 @@ public class SeasonContentFragment extends Fragment {
         requestQueue = RequestQueueSingleton.getInstance(fragmentActivity.getBaseContext());
 
         String seasonJson = getArguments().getString(ARG_SEASON_JSON);
-        SeasonModel season = gson.fromJson(seasonJson, SeasonModel.class);
+        season = gson.fromJson(seasonJson, SeasonModel.class);
 
-        getFixtures(season.SeasonId.toString());
-        displayRanking(season.SeasonId);
+        displayFixtures();
+        displayRanking();
     }
 
     @Override
@@ -91,8 +92,8 @@ public class SeasonContentFragment extends Fragment {
         reloadButton = fragmentActivity.findViewById(R.id.button_reload_main);
     }
 
-    private void getFixtures(String seasonId) {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, ApiRoutes.FIXTURES_ROUTE(seasonId), null,
+    private void displayFixtures() {
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, ApiRoutes.FIXTURES_ROUTE(season.SeasonId.toString()), null,
                 response -> {
                     List<FixtureModel> fixtures = gson.fromJson(response.toString(), new TypeToken<List<FixtureModel>>() {
                     }.getType());
@@ -132,7 +133,7 @@ public class SeasonContentFragment extends Fragment {
             public void onTabSelected(TabLayout.Tab tab) {
 
                 if (tab.getTag().toString().equals("Ranking")) {
-                    displayRanking(fixtures.get(0).SeasonId);
+                    displayRanking();
                 } else {
                     int fixtureIndex = Integer.parseInt(tab.getTag().toString());
                     displayFixture(fixtures.get(fixtureIndex));
@@ -149,8 +150,8 @@ public class SeasonContentFragment extends Fragment {
         });
     }
 
-    private void displayRanking(@NonNull UUID seasonId) {
-        String RANKING_FRAGMENT_TAG = String.format("FRAGMENT_RANKING_%s", seasonId.toString());
+    private void displayRanking() {
+        String RANKING_FRAGMENT_TAG = String.format("FRAGMENT_RANKING_%s", season.SeasonId.toString());
 
         FragmentManager fragmentManager = this.getChildFragmentManager();
         RankingFragment rankingFragment = (RankingFragment) fragmentManager.findFragmentByTag(RANKING_FRAGMENT_TAG);
@@ -159,7 +160,7 @@ public class SeasonContentFragment extends Fragment {
             fragmentManager.beginTransaction()
                     .setReorderingAllowed(true)
                     .add(R.id.fragment_container_view_season_content,
-                            RankingFragment.newInstance(seasonId.toString()),
+                            RankingFragment.newInstance(season.SeasonId.toString(), gson.toJson(season.EndDate)),
                             RANKING_FRAGMENT_TAG)
                     .commit();
         } else {

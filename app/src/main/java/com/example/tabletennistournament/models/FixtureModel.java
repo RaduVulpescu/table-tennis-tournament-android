@@ -2,6 +2,7 @@ package com.example.tabletennistournament.models;
 
 import com.example.tabletennistournament.enums.FixtureState;
 import com.example.tabletennistournament.enums.FixtureType;
+import com.google.gson.annotations.SerializedName;
 
 import java.time.ZonedDateTime;
 import java.util.List;

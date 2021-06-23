@@ -53,4 +53,5 @@
     <string name="expand_information_button_description">Expand Information</string>
     <string name="end_group_stage_button">End Group Stage</string>
     <string name="end_fixture_fab">End fixture</string>
+    <string name="end_season_fab">End Season</string>
 </resources>
