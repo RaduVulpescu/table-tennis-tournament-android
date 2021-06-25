@@ -110,6 +110,10 @@ public class NextFixturesActivity extends AppCompatActivity {
                     List<FixtureModel> fixtures = gson.fromJson(response.toString(), new TypeToken<List<FixtureModel>>() {
                     }.getType());
 
+                    if (fixtures.size() == 0) {
+                        findViewById(R.id.text_view_no_fixture_planned).setVisibility(View.VISIBLE);
+                    }
+
                     boolean allFixturesHaveDateDefined = true;
 
                     for (int i = 0; i < fixtures.size() && allFixturesHaveDateDefined; i++) {
@@ -197,7 +201,11 @@ public class NextFixturesActivity extends AppCompatActivity {
                     vh.upcomingButtonsDelimiter.setVisibility(View.VISIBLE);
                     vh.upcomingButtonsLinearLayout.setVisibility(View.VISIBLE);
 
-                    vh.startFixtureButton.setOnClickListener(v -> startFixture(vh, fixture));
+                    if (fixture.Location == null || fixture.Date == null || fixture.Players.size() > 2) {
+                        vh.startFixtureButton.setVisibility(View.GONE);
+                    } else {
+                        vh.startFixtureButton.setOnClickListener(v -> startFixture(vh, fixture));
+                    }
 
                     vh.editFixtureButton.setOnClickListener(v -> {
                         Intent intent = new Intent(getBaseContext(), EditFixtureActivity.class);

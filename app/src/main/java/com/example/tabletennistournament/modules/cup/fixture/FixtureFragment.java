@@ -51,6 +51,7 @@ import com.example.tabletennistournament.modules.cup.fixture.group.viewModels.Fi
 import com.example.tabletennistournament.modules.cup.fixture.ranking.FixtureRankingItemViewHolder;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.GsonSingleton;
+import com.example.tabletennistournament.services.LoginRepository;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.example.tabletennistournament.services.Util;
 import com.google.android.material.chip.Chip;
@@ -173,7 +174,7 @@ public class FixtureFragment extends Fragment {
         fixtureViewModel.setFixtureGroup(fixture.GroupMatches.size(), finishedMatches, fixture.State == FixtureState.GroupsStage);
 
         fixtureViewModel.getFixtureGroupState().observe(getViewLifecycleOwner(), fixtureGroupState -> {
-            if (fixtureGroupState == null) {
+            if (fixtureGroupState == null || !LoginRepository.getInstance().isLoggedIn()) {
                 return;
             }
 
@@ -618,6 +619,10 @@ public class FixtureFragment extends Fragment {
     }
 
     private void bindEndFixtureButton() {
+        if (!LoginRepository.getInstance().isLoggedIn()) {
+            return;
+        }
+
         endFixtureButton.setVisibility(View.VISIBLE);
         final String endFixtureURL = ApiRoutes.END_FIXTURE_ROUTE(fixture.SeasonId.toString(), fixture.FixtureId.toString());
 
@@ -642,8 +647,12 @@ public class FixtureFragment extends Fragment {
                         transaction.remove(rankingFragment);
                         transaction.hide(thisFragment);
 
+                        String endDate = rankingFragment.getArguments().get("ARG_END_DATE") == null ?
+                                "null" :
+                                rankingFragment.getArguments().get("ARG_END_DATE").toString();
+
                         transaction.add(R.id.fragment_container_view_season_content,
-                                RankingFragment.newInstance(fixture.SeasonId.toString(), rankingFragment.getArguments().get("ARG_END_DATE").toString()),
+                                RankingFragment.newInstance(fixture.SeasonId.toString(), endDate),
                                 RANKING_FRAGMENT_TAG);
 
                         transaction.setReorderingAllowed(true).commit();

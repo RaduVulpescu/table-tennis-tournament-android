@@ -102,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onContinueWithoutSignIn(View view) {
-        LoginRepository.getInstance().login("username");
+        //LoginRepository.getInstance().login("username");
         Intent intent = new Intent(this, CupActivity.class);
         startActivity(intent);
         finish();

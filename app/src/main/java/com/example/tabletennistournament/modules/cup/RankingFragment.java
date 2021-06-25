@@ -22,6 +22,7 @@ import com.example.tabletennistournament.R;
 import com.example.tabletennistournament.models.SeasonPlayerModel;
 import com.example.tabletennistournament.services.ApiRoutes;
 import com.example.tabletennistournament.services.GsonSingleton;
+import com.example.tabletennistournament.services.LoginRepository;
 import com.example.tabletennistournament.services.RequestQueueSingleton;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -195,6 +196,10 @@ public class RankingFragment extends Fragment {
     }
 
     private void bindEndSeasonButton() {
+        if (!LoginRepository.getInstance().isLoggedIn()) {
+            return;
+        }
+
         endSeasonButton.setVisibility(View.VISIBLE);
         final String endSeasonURL = ApiRoutes.END_SEASON_ROUTE(seasonId);
 
